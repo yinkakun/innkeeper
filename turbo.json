@@ -3,7 +3,7 @@
   "globalDependencies": [
     "**/.env.*local"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": [
         "^build"
@@ -23,7 +23,7 @@
       "outputs": [
         "node_modules/.cache/.prettiercache"
       ],
-      "outputMode": "new-only"
+      "outputLogs": "new-only"
     },
     "lint": {
       "dependsOn": [],
