@@ -2,30 +2,24 @@
   "name": "tailwind-config",
   "version": "0.0.0",
   "private": true,
-  "main": "index.ts",
-  "files": [
-    "index.ts"
-  ],
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "lint": "eslint .",
-    "format": "prettier --check \"**/*.{mjs,ts,md,json}\"",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "eslint": "^8.48.0",
+    "eslint": "^9.5.0",
     "eslint-config-custom": "*",
-    "prettier": "^3.0.3",
+    "prettier": "^3.3.1",
     "prettier-config": "*",
-    "tailwindcss": "3.3.2",
+    "tailwindcss": "3.4.4",
     "tsconfig": "*",
-    "typescript": "^5.2.2"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "eslint-config-custom/base"
-    ]
+    "typescript": "^5.4.5"
   },
   "prettier": "prettier-config"
 }

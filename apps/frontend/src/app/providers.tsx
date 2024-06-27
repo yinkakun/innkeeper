@@ -5,10 +5,36 @@ import superjson from 'superjson';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { loggerLink, unstable_httpBatchStreamLink } from '@trpc/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryStreamedHydration } from '@tanstack/react-query-next-experimental';
 
-import { env } from '@/env.mjs';
-import { TRPCReact } from '@/utils/api';
+import { createTRPCReact } from '@trpc/react-query';
+
+import type { AppRouter } from 'trpc';
+
+const createQueryClient = () => {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        // With SSR, we usually want to set some default staleTime
+        // above 0 to avoid refetching immediately on the client
+        staleTime: 30 * 1000,
+      },
+    },
+  });
+};
+
+let clientQueryClientSingleton: QueryClient | undefined = undefined;
+
+const getQueryClient = () => {
+  if (typeof window === 'undefined') {
+    // Server: always make a new query client
+    return createQueryClient();
+  } else {
+    // Browser: use singleton pattern to keep the same query client
+    return (clientQueryClientSingleton ??= createQueryClient());
+  }
+};
+
+export const trpcAPI = createTRPCReact<AppRouter>();
 
 interface AppProviderProps {
   headers?: Headers;
@@ -16,26 +42,17 @@ interface AppProviderProps {
 }
 
 export function AppProvider(props: AppProviderProps) {
-  const [queryClient] = React.useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 5 * 1000,
-          },
-        },
-      }),
-  );
+  const queryClient = getQueryClient();
 
   const [trpcClient] = React.useState(() =>
-    TRPCReact.createClient({
-      transformer: superjson,
+    trpcAPI.createClient({
       links: [
         loggerLink({
           enabled: (opts) => process.env.NODE_ENV === 'development' || (opts.direction === 'down' && opts.result instanceof Error),
         }),
         unstable_httpBatchStreamLink({
-          url: `${env.NEXT_PUBLIC_API_URL}/trpc`,
+          transformer: superjson,
+          url: `${process.env.NEXT_PUBLIC_API_URL}/trpc`,
           headers() {
             const headers = new Map(props.headers);
             headers.set('x-trpc-source', 'nextjs');
@@ -48,11 +65,11 @@ export function AppProvider(props: AppProviderProps) {
   );
 
   return (
-    <TRPCReact.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryStreamedHydration transformer={superjson}>{props.children}</ReactQueryStreamedHydration>
+    <QueryClientProvider client={queryClient}>
+      <trpcAPI.Provider client={trpcClient} queryClient={queryClient}>
+        {props.children}
         <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </TRPCReact.Provider>
+      </trpcAPI.Provider>
+    </QueryClientProvider>
   );
 }

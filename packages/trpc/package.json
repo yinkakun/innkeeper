@@ -2,34 +2,32 @@
   "name": "trpc",
   "version": "0.0.0",
   "private": true,
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
     "clean": "rm -rf .turbo node_modules",
     "lint": "eslint .",
-    "format": "prettier --check \"**/*.{mjs,ts,md,json}\"",
-    "typecheck": "tsc --noEmit"
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@trpc/server": "^10.38.0",
+    "@trpc/server": "^11.0.0-rc.421",
     "db": "*",
-    "superjson": "1.13.1",
+    "superjson": "2.2.1",
     "zod": "^3.22.2"
   },
   "devDependencies": {
-    "eslint": "^8.48.0",
+    "eslint": "^9.5.0",
     "eslint-config-custom": "*",
-    "prettier": "^3.0.3",
+    "prettier": "^3.3.1",
     "prettier-config": "*",
     "tsconfig": "*",
-    "typescript": "^5.2.2"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "eslint-config-custom/base"
-    ]
+    "typescript": "^5.4.5"
   },
   "prettier": "prettier-config"
 }

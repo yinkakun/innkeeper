@@ -2,56 +2,48 @@
   "name": "web",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "yarn with-env next build",
     "clean": "git clean -xdf .next .turbo node_modules",
     "dev": "yarn with-env next dev",
-    "lint": "dotenv -v SKIP_ENV_VALIDATION=1 next lint",
-    "format": "prettier --ignore-path ../../.gitignore --check \"**/*.{js,cjs,mjs,ts,tsx,md,json}\"",
+    "lint": "eslint",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
     "start": "yarn with-env next start",
     "typecheck": "tsc --noEmit",
-    "with-env": "dotenv -e ../../.env"
+    "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@t3-oss/env-nextjs": "^0.6.1",
-    "@tanstack/react-query": "^4.33.0",
-    "@tanstack/react-query-devtools": "^4.33.0",
-    "@tanstack/react-query-next-experimental": "5.0.0-alpha.80",
-    "@trpc/client": "^10.38.0",
-    "@trpc/next": "^10.38.1",
-    "@trpc/react-query": "^10.38.1",
-    "@trpc/server": "^10.38.0",
+    "@t3-oss/env-nextjs": "^0.10.1",
+    "@tanstack/react-query": "^5.35.5",
+    "@tanstack/react-query-devtools": "^5.48.0",
+    "@trpc/client": "^11.0.0-rc.421",
+    "@trpc/react-query": "^11.0.0-rc.421",
+    "@trpc/server": "^11.0.0-rc.421",
     "db": "*",
-    "next": "^13.4.19",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "superjson": "1.13.1",
+    "next": "^14.2.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "superjson": "2.2.1",
     "trpc": "*",
     "zod": "^3.22.2"
   },
   "devDependencies": {
-    "@types/node": "^18.17.14",
+    "@types/node": "^20.14.9",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
     "autoprefixer": "^10.4.18",
     "dotenv-cli": "^7.3.0",
-    "eslint": "^8.48.0",
+    "eslint": "^9.5.0",
     "eslint-config-custom": "*",
+    "jiti": "^1.21.6",
     "postcss": "^8.4.35",
-    "prettier": "^3.0.3",
+    "prettier": "^3.3.1",
     "prettier-config": "*",
     "tailwind-config": "*",
-    "tailwindcss": "3.3.2",
+    "tailwindcss": "3.4.4",
     "tsconfig": "*",
-    "typescript": "^5.2.2"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "eslint-config-custom/base",
-      "eslint-config-custom/next",
-      "eslint-config-custom/react"
-    ]
+    "typescript": "^5.4.5"
   },
   "prettier": "prettier-config"
 }

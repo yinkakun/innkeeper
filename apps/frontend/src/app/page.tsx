@@ -1,21 +1,20 @@
-import { Example } from './example';
-import { Suspense } from 'react';
-
-export const dynamic = 'force-dynamic';
+'use client';
+import { trpcAPI } from '@/app/providers';
 
 export default function HomePage() {
-  return (
-    <main className="flex h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container mt-12 flex flex-col items-center justify-center gap-4 py-8">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-pink-400">T3</span> Turbo
-        </h1>
+  const greetingQuery = trpcAPI.example.hello.useQuery({ text: 'Yinka' });
 
-        <div className="h-[40vh] w-full max-w-2xl overflow-y-scroll">
-          <Suspense fallback={<div className="flex w-full flex-col gap-4">loading</div>}>
-            <Example />
-          </Suspense>
-        </div>
+  const handleClick = async () => {
+    await greetingQuery.refetch();
+  };
+
+  return (
+    <main className="p-2">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-lg">{greetingQuery.data?.greeting}</h1>
+        <button onClick={handleClick} className="w-fit border bg-blue-600 px-3 py-1 text-white">
+          Say Hello
+        </button>
       </div>
     </main>
   );

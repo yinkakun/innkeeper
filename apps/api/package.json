@@ -2,36 +2,32 @@
   "name": "api",
   "version": "0.0.0",
   "private": true,
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "clean": "rm -rf .turbo node_modules",
-    "lint": "eslint .",
-    "format": "prettier --check \"**/*.{mjs,ts,md,json}\"",
+    "lint": "eslint",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@trpc/server": "^10.38.0",
+    "@trpc/server": "^11.0.0-rc.421",
     "trpc": "*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230904.0",
     "dotenv-cli": "^7.3.0",
-    "eslint": "^8.48.0",
+    "eslint": "^9.5.0",
     "eslint-config-custom": "*",
-    "prettier": "^3.0.3",
+    "prettier": "^3.3.1",
     "prettier-config": "*",
     "tsconfig": "*",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.5",
     "wrangler": "^3.7.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "eslint-config-custom/base"
-    ]
   },
   "prettier": "prettier-config"
 }
