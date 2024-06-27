@@ -12,9 +12,9 @@
     "format:fix": "turbo format --continue -- --write --cache --cache-location='node_modules/.cache/.prettiercache'",
     "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
-    "typecheck": "turbo typecheck",
     "lint:monorepo": "npx sherif",
-    "postinstall": "yarn lint:monorepo"
+    "postinstall": "yarn lint:monorepo",
+    "typecheck": "turbo typecheck"
   },
   "prettier": "prettier-config",
   "packageManager": "yarn@1.22.19",
@@ -23,9 +23,13 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@types/aws-lambda": "8.10.140",
     "prettier": "^3.0.3",
     "prettier-config": "*",
     "turbo": "^2.0.5",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "sst": "ion"
   }
 }
