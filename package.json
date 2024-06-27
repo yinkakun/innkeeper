@@ -1,18 +1,17 @@
 {
   "private": true,
-  "name": "habit-buddy",
+  "name": "turbo-sst",
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "turbo build",
+    "clean": "turbo clean",
     "db:push": "yarn -F db push",
     "db:studio": "yarn -F db dev",
-    "typecheck": "turbo typecheck",
-    "clean:workspaces": "turbo clean",
-    "clean": "git clean -xdf node_modules",
-    "lint": "turbo lint --continue -- --cache --cache-location 'node_modules/.cache/.eslintcache' && manypkg check",
+    "dev": "turbo dev",
     "format": "turbo format --continue -- --cache --cache-location='node_modules/.cache/.prettiercache'",
     "format:fix": "turbo format --continue -- --write --cache --cache-location='node_modules/.cache/.prettiercache'",
-    "lint:fix": "turbo lint --continue -- --fix --cache --cache-location 'node_modules/.cache/.eslintcache' && manypkg fix"
+    "lint": "turbo lint --continue -- --cache --cache-location 'node_modules/.cache/.eslintcache' && manypkg check",
+    "lint:fix": "turbo lint --continue -- --fix --cache && manypkg fix",
+    "typecheck": "turbo typecheck"
   },
   "prettier": "prettier-config",
   "packageManager": "yarn@1.22.19",
@@ -22,9 +21,11 @@
   ],
   "dependencies": {
     "@manypkg/cli": "^0.21.0",
+    "@types/aws-lambda": "8.10.140",
     "eslint": "^8.48.0",
     "prettier": "^3.0.3",
     "prettier-config": "*",
+    "sst": "ion",
     "turbo": "^2.0.5"
   }
 }

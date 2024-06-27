@@ -1,10 +1,9 @@
-import { Login } from './auth';
 import { Example } from './example';
 import { Suspense } from 'react';
 
 export const dynamic = 'force-dynamic';
 
-export default async function HomePage() {
+export default function HomePage() {
   return (
     <main className="flex h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
       <div className="container mt-12 flex flex-col items-center justify-center gap-4 py-8">
@@ -14,7 +13,6 @@ export default async function HomePage() {
 
         <div className="h-[40vh] w-full max-w-2xl overflow-y-scroll">
           <Suspense fallback={<div className="flex w-full flex-col gap-4">loading</div>}>
-            <Login />
             <Example />
           </Suspense>
         </div>

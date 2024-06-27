@@ -2,7 +2,6 @@
 
 import React from 'react';
 import superjson from 'superjson';
-import type { Session } from '@supabase/auth-helpers-nextjs';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { loggerLink, unstable_httpBatchStreamLink } from '@trpc/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -13,7 +12,6 @@ import { TRPCReact } from '@/utils/api';
 
 interface AppProviderProps {
   headers?: Headers;
-  session?: Session | null;
   children: React.ReactNode;
 }
 
@@ -41,7 +39,7 @@ export function AppProvider(props: AppProviderProps) {
           headers() {
             const headers = new Map(props.headers);
             headers.set('x-trpc-source', 'nextjs');
-            headers.set('authorization', `Bearer ${props.session?.access_token}`);
+            headers.set('authorization', `Bearer ${''}`);
             return Object.fromEntries(headers);
           },
         }),

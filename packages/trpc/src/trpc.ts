@@ -10,19 +10,12 @@ import { db } from 'db';
 import { ZodError } from 'zod';
 import superjson from 'superjson';
 import { initTRPC, TRPCError } from '@trpc/server';
-import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-import { User, createClient } from '@supabase/supabase-js';
+import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 
-const supabase = createClient(
-  'https://egnhnzlipwqpxtmzqrjk.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVnbmhuemxpcHdxcHh0bXpxcmprIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODk5Mzg3MjIsImV4cCI6MjAwNTUxNDcyMn0.LGYhhpIJwZQSAtPVg41fMKk1YGA_417uCk7zdOblhK4',
-  {
-    auth: {
-      persistSession: false,
-      detectSessionInUrl: false,
-    },
-  },
-);
+interface Session {
+  id: string;
+}
+
 /**
  * 1. CONTEXT
  *
@@ -32,9 +25,9 @@ const supabase = createClient(
  * processing a request
  *
  */
-type CreateContextOptions = {
-  user: User | null;
-};
+interface CreateContextOptions {
+  session: Session | null;
+}
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use
@@ -44,10 +37,10 @@ type CreateContextOptions = {
  * - testing, so we don't have to mock Next.js' req/res
  * - trpc's `createSSGHelpers` where we don't have req/res
  */
-const createInnerTRPCContext = ({ user }: CreateContextOptions) => {
+const createInnerTRPCContext = ({ session }: CreateContextOptions) => {
   return {
     db,
-    user,
+    session,
   };
 };
 
@@ -57,11 +50,11 @@ const createInnerTRPCContext = ({ user }: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContext = async ({ req }: FetchCreateContextFnOptions) => {
-  const accessToken = req.headers.get('authorization')?.replace('Bearer ', '');
-  const { data } = await supabase.auth.getUser(accessToken);
+  // const accessToken = req.headers.get('authorization')?.replace('Bearer ', '');
+  // get session from accessToken
 
   return createInnerTRPCContext({
-    user: data.user,
+    session: null,
   });
 };
 
@@ -111,12 +104,12 @@ export const publicProcedure = t.procedure;
  * procedure
  */
 const enforceAuthentication = t.middleware(({ ctx, next }) => {
-  if (!ctx.user?.id) {
+  if (!ctx.session?.id) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next({
     ctx: {
-      user: ctx.user,
+      session: ctx.session,
     },
   });
 });

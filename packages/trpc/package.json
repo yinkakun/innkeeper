@@ -12,7 +12,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.33.1",
     "@trpc/server": "^10.38.0",
     "db": "*",
     "superjson": "1.13.1",

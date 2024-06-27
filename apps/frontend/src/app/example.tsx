@@ -1,6 +1,5 @@
 'use client';
 import { TRPCReact } from '@/utils/api';
-import type { RouterOutputs } from '@/utils/api';
 
 export const Example = () => {
   const greet = TRPCReact.example.hello.useQuery({ text: 'Yinka' });

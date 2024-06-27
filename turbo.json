@@ -1,41 +1,26 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    "**/.env.*local"
-  ],
+  "globalDependencies": ["**/.env.*local"],
   "tasks": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "next-env.d.ts",
-        ".expo/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", ".expo/**", "dist/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
     "format": {
-      "outputs": [
-        "node_modules/.cache/.prettiercache"
-      ],
+      "outputs": ["node_modules/.cache/.prettiercache"],
       "outputLogs": "new-only"
     },
     "lint": {
       "dependsOn": [],
-      "outputs": [
-        "node_modules/.cache/.eslintcache"
-      ]
+      "outputs": ["node_modules/.cache/.eslintcache"]
     },
     "typecheck": {
       "dependsOn": [],
-      "outputs": [
-        "node_modules/.cache/tsbuildinfo.json"
-      ]
+      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
     },
     "clean": {
       "cache": false
