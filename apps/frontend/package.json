@@ -1,12 +1,12 @@
 {
-  "name": "web",
+  "name": "frontend",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "yarn with-env next build",
     "clean": "git clean -xdf .next .turbo node_modules",
-    "dev": "yarn with-env next dev",
+    "dev": "sst dev yarn with-env next dev",
     "lint": "eslint",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "start": "yarn with-env next start",

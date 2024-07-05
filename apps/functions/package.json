@@ -1,33 +1,22 @@
 {
-  "name": "api",
+  "name": "functions",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
   "scripts": {
-    "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "clean": "rm -rf .turbo node_modules",
+    "build": "tsc",
+    "dev": "tsc --watch",
     "lint": "eslint",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@trpc/server": "^11.0.0-rc.421",
-    "trpc": "*"
-  },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230904.0",
-    "dotenv-cli": "^7.3.0",
     "eslint": "^9.5.0",
     "eslint-config-custom": "*",
     "prettier": "^3.3.1",
     "prettier-config": "*",
     "tsconfig": "*",
-    "typescript": "^5.4.5",
-    "wrangler": "^3.7.0"
+    "typescript": "^5.4.5"
   },
   "prettier": "prettier-config"
 }

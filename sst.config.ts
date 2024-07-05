@@ -3,10 +3,25 @@
 export default $config({
   app(input) {
     return {
-      name: "turbo-sst",
-      removal: input?.stage === "production" ? "retain" : "remove",
-      home: "aws",
+      home: 'aws',
+      name: 'innkeeper',
+      removal: input?.stage === 'production' ? 'retain' : 'remove',
     };
   },
-  async run() {},
+  async run() {
+    console.log('🔥');
+    const lambda = new sst.aws.Function('TestLambda', {
+      url: true,
+      handler: './apps/functions/src/hello.handler',
+    });
+    const frontend = new sst.aws.Nextjs('TestNextJS', {
+      path: './apps/frontend',
+      buildCommand: 'yarn build',
+    });
+
+    return {
+      lambda: lambda.url,
+      frontend: frontend.url,
+    };
+  },
 });
