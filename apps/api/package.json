@@ -1,22 +1,8 @@
 {
-  "name": "db",
+  "name": "api",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./src/index.ts"
-    },
-    "./client": {
-      "types": "./dist/client.d.ts",
-      "default": "./src/client.ts"
-    },
-    "./schema": {
-      "types": "./dist/schema.d.ts",
-      "default": "./src/schema.ts"
-    }
-  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -24,19 +10,15 @@
     "lint": "eslint",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "db:studio": "yarn with-env drizzle-kit studio",
-    "db:push": "yarn with-env drizzle-kit push",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@t3-oss/env-core": "^0.10.1",
-    "drizzle-orm": "^0.31.2",
-    "drizzle-zod": "^0.5.1",
-    "postgres": "^3.3.5"
+    "@trpc/server": "npm:@trpc/server@next",
+    "trpc": "*"
   },
   "devDependencies": {
+    "@types/node": "^20.14.10",
     "dotenv-cli": "^7.3.0",
-    "drizzle-kit": "^0.22.7",
     "eslint": "^9.5.0",
     "eslint-config-custom": "*",
     "prettier": "^3.3.1",

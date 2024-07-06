@@ -1,8 +1,11 @@
 {
-  "name": "functions",
+  "name": "services",
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -12,8 +15,12 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "with-env": "dotenv -e ../../.env --"
   },
+  "dependencies": {
+    "@t3-oss/env-core": "^0.10.1"
+  },
   "devDependencies": {
     "@types/node": "^20.14.10",
+    "dotenv-cli": "^7.3.0",
     "eslint": "^9.5.0",
     "eslint-config-custom": "*",
     "prettier": "^3.3.1",

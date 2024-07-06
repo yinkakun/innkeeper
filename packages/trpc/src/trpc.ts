@@ -1,20 +1,8 @@
-/**
- * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
- * 1. You want to modify request context (see Part 1)
- * 2. You want to create a new middleware or type of procedure (see Part 3)
- *
- * tl;dr - this is where all the tRPC server stuff is created and plugged in.
- * The pieces you will need to use are documented accordingly near the end
- */
-import * as db from 'db';
 import { ZodError } from 'zod';
 import superjson from 'superjson';
 import { initTRPC, TRPCError } from '@trpc/server';
-import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-
-interface Session {
-  id: string;
-}
+import type { APIGatewayProxyEvent } from 'aws-lambda';
+import type { CreateAWSLambdaContextOptions } from '@trpc/server/adapters/aws-lambda';
 
 /**
  * 1. CONTEXT
@@ -25,37 +13,23 @@ interface Session {
  * processing a request
  *
  */
-interface CreateContextOptions {
-  session: Session | null;
-}
-
-/**
- * This helper generates the "internals" for a tRPC context. If you need to use
- * it, you can export it from here
- *
- * Examples of things you may need it for:
- * - testing, so we don't have to mock Next.js' req/res
- * - trpc's `createSSGHelpers` where we don't have req/res
- */
-const createInnerTRPCContext = ({ session }: CreateContextOptions) => {
-  return {
-    db,
-    session,
-  };
-};
 
 /**
  * This is the actual context you'll use in your router. It will be used to
  * process every request that goes through your tRPC endpoint
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = async ({ req }: FetchCreateContextFnOptions) => {
+export const createContext = async ({ event, context }: CreateAWSLambdaContextOptions<APIGatewayProxyEvent>) => {
   // const accessToken = req.headers.get('authorization')?.replace('Bearer ', '');
   // get session from accessToken
 
-  return createInnerTRPCContext({
-    session: null,
-  });
+  return {
+    event,
+    context,
+    session: {
+      id: '',
+    },
+  };
 };
 
 /**
@@ -64,7 +38,7 @@ export const createTRPCContext = async ({ req }: FetchCreateContextFnOptions) =>
  * This is where the trpc api is initialized, connecting the context and
  * transformer
  */
-const t = initTRPC.context<typeof createTRPCContext>().create({
+const t = initTRPC.context<typeof createContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
     return {
@@ -91,7 +65,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 export const createTRPCRouter = t.router;
 
 /**
- * Public (unauthed) procedure
+ * Public procedure
  *
  * This is the base piece you use to build new queries and mutations on your
  * tRPC API. It does not guarantee that a user querying is authorized, but you
@@ -103,8 +77,8 @@ export const publicProcedure = t.procedure;
  * Reusable middleware that enforces users are logged in before running the
  * procedure
  */
-const enforceAuthentication = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.id) {
+const enforceAuth = t.middleware(({ ctx, next }) => {
+  if (!ctx.session.id) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next({
@@ -115,7 +89,7 @@ const enforceAuthentication = t.middleware(({ ctx, next }) => {
 });
 
 /**
- * Protected (authed) procedure
+ * Protected procedure
  *
  * If you want a query or mutation to ONLY be accessible to logged in users, use
  * this. It verifies the session is valid and guarantees ctx.session.user is not
@@ -123,4 +97,4 @@ const enforceAuthentication = t.middleware(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(enforceAuthentication);
+export const protectedProcedure = t.procedure.use(enforceAuth);

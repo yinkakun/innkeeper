@@ -8,7 +8,7 @@ export default typescriptESLint.config({
       {
         object: 'process',
         property: 'env',
-        message: "Use `import { env } from '~/env'` instead to ensure validated types.",
+        message: "Use `import { env } from '@/env'` instead to ensure validated types.",
       },
     ],
     'no-restricted-imports': [
@@ -16,7 +16,7 @@ export default typescriptESLint.config({
       {
         name: 'process',
         importNames: ['env'],
-        message: "Use `import { env } from '~/env'` instead to ensure validated types.",
+        message: "Use `import { env } from '@/env'` instead to ensure validated types.",
       },
     ],
   },

@@ -12,8 +12,9 @@ export default [
       'react-refresh': reactRefresh,
     },
     rules: {
-      ...reactPlugin.configs['jsx-runtime'].rules,
       ...hooksPlugin.configs.recommended.rules,
+      ...reactPlugin.configs['jsx-runtime'].rules,
+      'react-refresh/only-export-components': 'warn',
     },
     languageOptions: {
       globals: {
