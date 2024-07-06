@@ -9,18 +9,21 @@ export default $config({
     };
   },
   async run() {
-    console.log('🔥');
     const lambda = new sst.aws.Function('TestLambda', {
       url: true,
       handler: './apps/functions/src/hello.handler',
     });
-    const frontend = new sst.aws.Nextjs('TestNextJS', {
+
+    const frontend = new sst.aws.StaticSite('Frontend', {
       path: './apps/frontend',
-      buildCommand: 'yarn build',
+      build: {
+        output: 'dist',
+        command: 'yarn build',
+      },
     });
 
     return {
-      lambda: lambda.url,
+      hello: lambda.url,
       frontend: frontend.url,
     };
   },

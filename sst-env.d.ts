@@ -3,13 +3,13 @@
 import "sst"
 declare module "sst" {
   export interface Resource {
+    Frontend: {
+      type: "sst.aws.StaticSite"
+      url: string
+    }
     TestLambda: {
       name: string
       type: "sst.aws.Function"
-      url: string
-    }
-    TestNextJS: {
-      type: "sst.aws.Nextjs"
       url: string
     }
   }

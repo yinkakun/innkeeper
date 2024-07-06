@@ -1,5 +1,6 @@
 import reactPlugin from 'eslint-plugin-react';
 import hooksPlugin from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
 
 /** @type {Awaited<import('typescript-eslint').Config>} */
 export default [
@@ -8,6 +9,7 @@ export default [
     plugins: {
       react: reactPlugin,
       'react-hooks': hooksPlugin,
+      'react-refresh': reactRefresh,
     },
     rules: {
       ...reactPlugin.configs['jsx-runtime'].rules,

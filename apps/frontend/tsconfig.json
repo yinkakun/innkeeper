@@ -1,16 +1,16 @@
 {
   "extends": "tsconfig/base.json",
   "compilerOptions": {
-    "lib": ["es2022", "dom", "dom.iterable"],
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "baseUrl": ".",
-    "jsx": "preserve",
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "plugins": [{ "name": "next" }],
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
-    "module": "esnext"
+    }
   },
-  "include": [".", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src", "vite-env.d.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
