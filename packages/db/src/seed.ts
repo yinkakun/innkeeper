@@ -1,0 +1,97 @@
+import type { z } from 'zod';
+import { db } from './client';
+import { Chance } from 'chance';
+import { usersTable } from './schema';
+import { createDbService } from './service';
+import type { CreateUsersSchema, CreatePromptsSchema, CreateResponseSchema, UserSchema } from 'db/schema';
+
+const chance = new Chance();
+const dbService = createDbService({ db: db });
+
+const createUser = async () => {
+  const userData: z.infer<typeof CreateUsersSchema> = {
+    id: chance.guid(),
+    name: chance.name(),
+    email: chance.email(),
+    timezone: chance.timezone().name,
+    preferredHourUTC: chance.integer({ min: 0, max: 23 }),
+  };
+  return await dbService.createUser(userData);
+};
+
+const seedUsers = async (count: number) => {
+  return (await Promise.all(Array.from({ length: count }, createUser))).filter((user) => !!user);
+};
+
+const seedPrompt = async (userId: string) => {
+  const promptData: z.infer<typeof CreatePromptsSchema> = {
+    userId,
+    prompt: chance.sentence(),
+  };
+  return await dbService.createPrompt(promptData);
+};
+
+const seedResponse = async (userId: string, promptId: string) => {
+  const responseData: z.infer<typeof CreateResponseSchema> = {
+    userId,
+    promptId,
+    response: chance.paragraph(),
+  };
+  return await dbService.createResponse(responseData);
+};
+
+const seedJournalEntry = async (user: z.infer<typeof UserSchema>) => {
+  const prompt = await seedPrompt(user.id).catch((error) => {
+    console.error(`Failed to create prompt for user ${user.id}:`, error);
+    return null;
+  });
+
+  if (!prompt) return null;
+
+  const response = await seedResponse(user.id, prompt.id).catch((error) => {
+    console.error(`Failed to create response for user ${user.id}:`, error);
+    return null;
+  });
+
+  if (!response) return null;
+
+  return { prompt, response };
+};
+
+const seedJournalEntries = async (users: z.infer<typeof UserSchema>[], count: number) => {
+  const entriesPromises = users.flatMap((user) => Array.from({ length: count }, () => seedJournalEntry(user)));
+  return (await Promise.all(entriesPromises)).filter((entry) => !!entry);
+};
+
+async function seed() {
+  console.log('Starting seeding...');
+  await db.delete(usersTable);
+
+  const users = await seedUsers(10).catch((error) => {
+    console.error('Failed to seed users:', error);
+    return null;
+  });
+
+  if (!users) return;
+
+  console.log(`${users.length} users seeded successfully`);
+
+  const journalEntries = await seedJournalEntries(users, 20).catch((error) => {
+    console.error('Failed to seed journal entries:', error);
+    return null;
+  });
+
+  if (!journalEntries) return;
+
+  console.log(`${journalEntries.length} journal entries seeded successfully`);
+}
+
+seed()
+  .then(() => {
+    console.log('Seeding complete');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('Error seeding database:', error);
+    process.exit(1);
+  });
