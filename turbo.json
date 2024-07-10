@@ -1,7 +1,7 @@
 {
   "ui": "stream",
   "$schema": "https://turborepo.org/schema.json",
-  "globalEnv": ["DATABASE_URL", "NEXT_PUBLIC_API_URL", "SKIP_ENV_VALIDATION", "CI"],
+  "globalEnv": ["DATABASE_URL", "API_URL"],
   "globalPassThroughEnv": ["NODE_ENV", "npm_lifecycle_event"],
   "tasks": {
     "topo": {
@@ -14,6 +14,13 @@
     "dev": {
       "persistent": true,
       "cache": false
+    },
+    "push": {
+      "cache": false
+    },
+    "studio": {
+      "cache": false,
+      "persistent": true
     },
     "format": {
       "outputs": ["node_modules/.cache/.prettiercache"],

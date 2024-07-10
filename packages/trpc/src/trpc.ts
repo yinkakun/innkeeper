@@ -23,6 +23,13 @@ export const createContext = async ({ event, context }: CreateAWSLambdaContextOp
   // const accessToken = req.headers.get('authorization')?.replace('Bearer ', '');
   // get session from accessToken
 
+  const session = {
+    id: '',
+  };
+
+  const source = event.headers['x-trpc-source'] ?? 'unknown';
+  console.log('>>> tRPC Request from', source, 'by', session.id);
+
   return {
     event,
     context,
@@ -50,6 +57,12 @@ const t = initTRPC.context<typeof createContext>().create({
     };
   },
 });
+
+/**
+ * Create a server-side caller
+ * @see https://trpc.io/docs/server/server-side-calls
+ */
+export const createCallerFactory = t.createCallerFactory;
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)

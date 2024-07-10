@@ -1,2 +1,2 @@
-export * from './user-service';
-export * from './prompt-service';
+export * from './user.service';
+export * from './journal-entry.service';
