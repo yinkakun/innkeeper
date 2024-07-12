@@ -8,7 +8,7 @@ if (!process.env.DATABASE_URL) {
 import * as schema from './schema';
 
 // Supabase: Disable prefetch as it is not supported for "Transaction" pool mode
-export const db = drizzle(postgres(process.env.DATABASE_URL, { prepare: false }), {
+export const dbClient = drizzle(postgres(process.env.DATABASE_URL, { prepare: false }), {
   schema,
   logger: process.env.NODE_ENV === 'development' ? true : false,
 });

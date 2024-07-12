@@ -1,22 +1,22 @@
 import type { z } from 'zod';
-import { db } from './client';
+import { dbClient } from './client';
 import { Chance } from 'chance';
 import { usersTable } from './schema';
 import { createDbService } from './service';
 import type { CreateUsersSchema, CreatePromptsSchema, CreateResponseSchema, UserSchema } from 'db/schema';
 
 const chance = new Chance();
-const dbService = createDbService({ db: db });
+const db = createDbService({ db: dbClient });
 
 const createUser = async () => {
   const userData: z.infer<typeof CreateUsersSchema> = {
     id: chance.guid(),
     name: chance.name(),
     email: chance.email(),
-    timezone: chance.timezone().name,
+    timezone: chance.timezone().abbr,
     preferredHourUTC: chance.integer({ min: 0, max: 23 }),
   };
-  return await dbService.createUser(userData);
+  return await db.createUser(userData);
 };
 
 const seedUsers = async (count: number) => {
@@ -28,7 +28,7 @@ const seedPrompt = async (userId: string) => {
     userId,
     prompt: chance.sentence(),
   };
-  return await dbService.createPrompt(promptData);
+  return await db.createPrompt(promptData);
 };
 
 const seedResponse = async (userId: string, promptId: string) => {
@@ -37,7 +37,7 @@ const seedResponse = async (userId: string, promptId: string) => {
     promptId,
     response: chance.paragraph(),
   };
-  return await dbService.createResponse(responseData);
+  return await db.createResponse(responseData);
 };
 
 const seedJournalEntry = async (user: z.infer<typeof UserSchema>) => {
@@ -65,7 +65,7 @@ const seedJournalEntries = async (users: z.infer<typeof UserSchema>[], count: nu
 
 async function seed() {
   console.log('Starting seeding...');
-  await db.delete(usersTable);
+  await dbClient.delete(usersTable);
 
   const users = await seedUsers(10).catch((error) => {
     console.error('Failed to seed users:', error);

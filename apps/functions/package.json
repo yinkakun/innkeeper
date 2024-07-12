@@ -13,6 +13,8 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "devDependencies": {
+    "@aws-sdk/client-ses": "^3.614.0",
+    "@types/aws-lambda": "^8.10.141",
     "@types/node": "^20.14.10",
     "eslint": "^9.5.0",
     "eslint-config-custom": "*",
@@ -20,6 +22,13 @@
     "prettier-config": "*",
     "tsconfig": "*",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sesv2": "^3.614.0",
+    "@innkeeper/inngest": "*",
+    "aws-lambda": "^1.0.7",
+    "db": "*",
+    "zod": "^3.23.8"
   },
   "prettier": "prettier-config"
 }

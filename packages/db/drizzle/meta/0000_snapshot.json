@@ -62,12 +62,8 @@
           "name": "prompts_userId_users_id_fk",
           "tableFrom": "prompts",
           "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -173,12 +169,8 @@
           "name": "responses_userId_users_id_fk",
           "tableFrom": "responses",
           "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -186,12 +178,8 @@
           "name": "responses_promptId_prompts_id_fk",
           "tableFrom": "responses",
           "tableTo": "prompts",
-          "columnsFrom": [
-            "promptId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["promptId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

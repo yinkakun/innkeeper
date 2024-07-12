@@ -24,6 +24,8 @@
     "toolings/*"
   ],
   "devDependencies": {
+    "@pulumi/aws": "^6.44.0",
+    "@pulumi/aws-native": "^0.111.0",
     "@types/aws-lambda": "8.10.140",
     "concurrently": "^8.2.2",
     "prettier": "^3.0.3",

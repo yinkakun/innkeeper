@@ -1,6 +1,6 @@
 import type { z } from 'zod';
-import { between, eq, and, sql } from 'drizzle-orm';
-import type { db as dbClient } from 'db/client';
+import { between, eq, and } from 'drizzle-orm';
+import type { dbClient as dbClient } from 'db/client';
 import { promptsTable, responseTable, usersTable } from 'db/schema';
 import type { CreateResponseSchema, CreatePromptsSchema, UpdateUserSchema, CreateUsersSchema } from 'db/schema';
 
@@ -80,9 +80,9 @@ export const createDbService = ({ db }: { db: typeof dbClient }) => {
       });
     },
 
-    async getUsersByPreferredHourUTC({ preferredHourUTC }: { preferredHourUTC: number }) {
+    async getUsersToPromptByHourUTC({ hourUtc }: { hourUtc: number }) {
       return db.query.usersTable.findMany({
-        where: and(eq(usersTable.preferredHourUTC, preferredHourUTC), eq(usersTable.isPaused, false)),
+        where: and(eq(usersTable.preferredHourUTC, hourUtc), eq(usersTable.isPaused, false)),
       });
     },
 
