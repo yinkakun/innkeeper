@@ -8,15 +8,20 @@ import { Ollama } from '@langchain/community/llms/ollama';
 
 import { ChatAnthropic } from '@langchain/anthropic';
 
-const ollama = new Ollama({
-  baseUrl: 'http://localhost:11434', // Default value
-  model: 'llama2', // Default value
-});
+// const ollama = new Ollama({
+//   baseUrl: 'http://localhost:11434', // Default value
+//   model: 'llama2', // Default value
+// });
 
-const model = new ChatAnthropic({
-  model: 'claude-3-sonnet-20240229',
-  temperature: 0,
-});
+// const model = new ChatAnthropic({
+//   model: 'claude-3-sonnet-20240229',
+//   temperature: 0,
+// });
+
+// const llm = new OpenAI({
+//   apiKey: '',
+//   baseURL: 'xxx',
+// });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/sesv2/command/SendEmailCommand/
 // https://logsnag.com/blog/handling-timezones-in-javascript-with-date-fns-tz
@@ -24,11 +29,6 @@ const model = new ChatAnthropic({
 
 const ses = new SESv2Client();
 const db = createDbService({ db: dbClient });
-
-const llm = new OpenAI({
-  apiKey: '',
-  baseURL: 'xxx',
-});
 
 const dummyPromptData = {
   userEmail: '',
@@ -61,7 +61,12 @@ const sendEmailCommand = new SendEmailCommand({
     },
   },
 });
+
 // const response = await sesClient.send(sendEmailCommand);
+
+// `step.run` creates a new reliable step which retries automatically, and
+// only runs once on success.  It returns data which is stored in function
+// state automatically.
 
 export const sendDailyPrompts = inngest.createFunction(
   {
@@ -88,5 +93,9 @@ export const sendDailyPrompts = inngest.createFunction(
         // await sendPromptToUser(); using ses
       }),
     ]);
+
+    // return { output, title };
   },
 );
+
+//  aws-nuke -c aws-nuke-config.yml --access-key-id AKIAY6A574KFPBYZ76YD --secret-access-key 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

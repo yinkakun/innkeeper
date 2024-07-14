@@ -9,9 +9,12 @@ export const inngest = new Inngest({
   }),
 });
 
-// TODO: Pause inactive users
-// TODO: Add schema to inngest client
-// TODO: Rename all workspace packages to start with `@innkeeper/`
-// TODO: Add onboarded field to db, create a unpause function in db
-// TODO: Add domain to SES tomorrow
-// TODO: Install all notboring apps and learn workflow
+// Blockers
+// - Need to add domain to SES
+// - Complete Inngest client schema and setup
+// - Rename response table in db to journal entry
+// - Add onboarded field to db, and other fields for onboarding
+// - Create a unpause function in db
+// - Rename all workspace packages to start with `@innkeeper/`
+// - Explore all notBoring apps and learn workflow
+// - Setup Clerk, read dev.to blog
