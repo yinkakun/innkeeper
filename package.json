@@ -7,7 +7,7 @@
     "clean:workspaces": "turbo run clean",
     "db:push": "turbo -F db push",
     "db:studio": "turbo -F db studio",
-    "dev": "concurrently --kill-others \"sst dev\" \"turbo dev\"",
+    "dev": "turbo dev",
     "format": "turbo format --continue -- --cache --cache-location='node_modules/.cache/.prettiercache'",
     "format:fix": "turbo format --continue -- --write --cache --cache-location='node_modules/.cache/.prettiercache'",
     "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
@@ -24,13 +24,8 @@
     "toolings/*"
   ],
   "devDependencies": {
-    "@pulumi/aws": "^6.44.0",
-    "@pulumi/aws-native": "^0.111.0",
-    "@types/aws-lambda": "8.10.140",
-    "concurrently": "^8.2.2",
     "prettier": "^3.0.3",
     "prettier-config": "*",
-    "sst": "ion",
     "turbo": "^2.0.5",
     "typescript": "^5.4.5"
   }

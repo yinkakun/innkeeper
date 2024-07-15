@@ -1,8 +1,6 @@
 import { ZodError } from 'zod';
 import superjson from 'superjson';
 import { initTRPC, TRPCError } from '@trpc/server';
-import type { APIGatewayProxyEvent } from 'aws-lambda';
-import type { CreateAWSLambdaContextOptions } from '@trpc/server/adapters/aws-lambda';
 
 /**
  * 1. CONTEXT
@@ -19,17 +17,16 @@ import type { CreateAWSLambdaContextOptions } from '@trpc/server/adapters/aws-la
  * process every request that goes through your tRPC endpoint
  * @link https://trpc.io/docs/context
  */
-export const createContext = async ({ event, context }: CreateAWSLambdaContextOptions<APIGatewayProxyEvent>) => {
-  // const accessToken = req.headers.get('authorization')?.replace('Bearer ', '');
-  // get session from accessToken
 
-  const session = {
-    id: '',
+interface Context {
+  event: unknown;
+  context: unknown;
+  session: {
+    id: string;
   };
+}
 
-  const source = event.headers['x-trpc-source'] ?? 'unknown';
-  console.log('>>> tRPC Request from', source, 'by', session.id);
-
+export const createContext = async ({ event, context }: Context) => {
   return {
     event,
     context,

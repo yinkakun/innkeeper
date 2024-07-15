@@ -1,14 +1,14 @@
 import { inngest } from './client';
 
-export const pauseInactiveUsers = inngest.createFunction(
+export const pauseInactiveUsersCron = inngest.createFunction(
   {
-    name: 'pause-inactive-users',
-    id: 'app/pause.inactive.users',
+    id: 'pause-inactive-users',
+    name: 'Pause Inactive Users',
   },
   {
     cron: '0 0 * * *', // every day
   },
-  async ({ event, step }) => {
+  async ({ step }) => {
     console.log('Pausing inactive users');
 
     // send email to inactive users if inactive for 3 days

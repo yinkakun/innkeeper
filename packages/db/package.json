@@ -1,5 +1,5 @@
 {
-  "name": "db",
+  "name": "@innkeeper/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -18,9 +18,9 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "yarn with-env tsc",
     "lint": "eslint",
-    "dev": "tsc --watch",
+    "dev": "yarn with-env tsc --watch",
     "with-env": "dotenv -e ../../.env --",
     "clean": "rm -rf .turbo node_modules",
     "push": "yarn with-env drizzle-kit push",
