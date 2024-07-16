@@ -3,7 +3,7 @@ import { dbClient } from './client';
 import { Chance } from 'chance';
 import { usersTable } from './schema';
 import { createDbService } from './service';
-import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db/schema';
+import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@package/db/schema';
 
 const chance = new Chance();
 const db = createDbService({ db: dbClient });

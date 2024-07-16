@@ -1,5 +1,5 @@
 {
-  "name": "@innkeeper/db",
+  "name": "@package/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -48,7 +48,7 @@
     "prettier-config": "*",
     "tsconfig": "*",
     "tsx": "^4.16.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "prettier": "prettier-config"
 }
