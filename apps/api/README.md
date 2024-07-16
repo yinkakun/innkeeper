@@ -1,10 +1,3 @@
-```
-npm install
-npm run dev
-```
+# API
 
-```
-npm run deploy
-```
-
-<!-- "types": ["@cloudflare/workers-types"] -->
+you can create a new d1 database by running `npx wranger d1 create db-name`

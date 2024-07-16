@@ -1,21 +1,24 @@
-name = "api"
+name = "innkeeper-api"
 compatibility_date = "2024-07-16"
 
-# [vars]
-# MY_VAR = "my-variable"
-
-# [[kv_namespaces]]
-# binding = "MY_KV_NAMESPACE"
-# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-
-# [[r2_buckets]]
-# binding = "MY_BUCKET"
-# bucket_name = "my-bucket"
-
-# [[d1_databases]]
+# [[env.staging.d1_databases]]
 # binding = "DB"
-# database_name = "my-database"
-# database_id = ""
+# database_name = "db-staging"
+# database_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
-# [ai]
+# [[env.production.d1_databases]] 
+# binding = "DB"  
+# database_name = "db-production"
+# database_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+[[env.production.ai]]
 # binding = "AI"
+
+[[env.staging.ai]]
+# binding = "AI"
+
+# [env.staging.vars]
+# ENVIRONMENT = "staging"
+
+# [env.production.vars]
+# ENVIRONMENT = "production"

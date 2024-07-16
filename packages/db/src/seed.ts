@@ -1,11 +1,16 @@
 import type { z } from 'zod';
-import { dbClient } from './client';
 import { Chance } from 'chance';
 import { usersTable } from './schema';
+import type { DbClient } from './client';
 import { createDbService } from './service';
-import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@package/db/schema';
+import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db/schema';
+
+import { Database } from '@libsql/sqlite3';
+import { drizzle } from 'drizzle-orm/libsql';
 
 const chance = new Chance();
+const dbClient: DbClient = drizzle(new Database('sqlite.db'));
+
 const db = createDbService({ db: dbClient });
 
 const createUser = async () => {
