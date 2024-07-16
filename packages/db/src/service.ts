@@ -1,8 +1,8 @@
 import type { z } from 'zod';
 import { between, eq, and } from 'drizzle-orm';
-import type { DbClient } from '@innkeeper/db/client';
-import { promptsTable, journalEntriesTable, usersTable } from '@innkeeper/db/schema';
-import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema, CreateUserSchema } from '@innkeeper/db/schema';
+import type { DbClient } from '@package/db/client';
+import { promptsTable, journalEntriesTable, usersTable } from '@package/db/schema';
+import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema, CreateUserSchema } from '@package/db/schema';
 
 export const createDbService = ({ db }: { db: DbClient }) => {
   return {

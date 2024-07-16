@@ -6,7 +6,6 @@ if (!process.env.DATABASE_URL) {
 
 import * as schema from './schema';
 
-// @ts-expect-error this is only used for type checking
 export const dbClient = drizzle('', {
   schema,
   logger: process.env.NODE_ENV === 'development' ? true : false,
