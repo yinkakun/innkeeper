@@ -1,13 +1,13 @@
 import type { z } from 'zod';
 import { between, eq, and } from 'drizzle-orm';
-import type { dbClient as dbClient } from 'db/client';
-import { promptsTable, responseTable, usersTable } from 'db/schema';
-import type { CreateResponseSchema, CreatePromptsSchema, UpdateUserSchema, CreateUsersSchema } from 'db/schema';
+import type { DbClient } from '@innkeeper/db/client';
+import { promptsTable, journalEntriesTable, usersTable } from '@innkeeper/db/schema';
+import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema, CreateUserSchema } from '@innkeeper/db/schema';
 
-export const createDbService = ({ db }: { db: typeof dbClient }) => {
+export const createDbService = ({ db }: { db: DbClient }) => {
   return {
-    async createUser({ id, name, email, preferredHourUTC, timezone }: z.infer<typeof CreateUsersSchema>) {
-      const [newUser] = await db.insert(usersTable).values({ id, name, email, preferredHourUTC, timezone }).returning();
+    async createUser({ id, name, email, promptHourUTC, timezone }: z.infer<typeof CreateUserSchema>) {
+      const [newUser] = await db.insert(usersTable).values({ id, name, email, promptHourUTC, timezone }).returning();
       return newUser;
     },
 
@@ -16,45 +16,50 @@ export const createDbService = ({ db }: { db: typeof dbClient }) => {
       return pausedUser;
     },
 
+    async unPauseUser({ userId }: { userId: string }) {
+      const [unPausedUser] = await db.update(usersTable).set({ isPaused: false }).where(eq(usersTable.id, userId)).returning();
+      return unPausedUser;
+    },
+
     async deleteUser({ userId }: { userId: string }) {
       const [deletedUser] = await db.delete(usersTable).where(eq(usersTable.id, userId)).returning();
       return deletedUser;
     },
 
-    async updateUser({ id, name, email, preferredHourUTC, timezone }: z.infer<typeof UpdateUserSchema>) {
+    async updateUser({ id, name, email, promptHourUTC, timezone }: z.infer<typeof UpdateUserSchema>) {
       const [updatedUser] = await db
         .update(usersTable)
-        .set({ name, email, preferredHourUTC, timezone })
+        .set({ name, email, promptHourUTC, timezone })
         .where(eq(usersTable.id, id))
         .returning();
       return updatedUser;
     },
 
-    async createPrompt({ prompt, userId }: z.infer<typeof CreatePromptsSchema>) {
-      const [newPrompt] = await db.insert(promptsTable).values({ prompt, userId }).returning();
+    async createPrompt({ title, body, userId }: z.infer<typeof CreatePromptSchema>) {
+      const [newPrompt] = await db.insert(promptsTable).values({ title, body, userId }).returning();
       return newPrompt;
     },
 
-    async createResponse({ response, promptId, userId }: z.infer<typeof CreateResponseSchema>) {
+    async createJournalEntry({ entry, promptId, userId }: z.infer<typeof CreateJournalEntrySchema>) {
       return db.transaction(async (tx) => {
-        await tx.insert(responseTable).values({ response, promptId, userId }).returning();
-        await tx.update(usersTable).set({ lastResponseAt: new Date().toISOString() }).where(eq(usersTable.id, userId));
-        return tx.query.responseTable.findFirst({
+        await tx.insert(journalEntriesTable).values({ entry, promptId, userId }).returning();
+        await tx.update(usersTable).set({ lastEntryTime: new Date().toISOString() }).where(eq(usersTable.id, userId));
+        return tx.query.journalEntriesTable.findFirst({
           columns: {
             isDeleted: false,
           },
-          where: eq(responseTable.promptId, promptId),
+          where: eq(journalEntriesTable.promptId, promptId),
         });
       });
     },
 
-    async updateResponse(id: string, { response }: { response: string }) {
-      const [updatedResponse] = await db.update(responseTable).set({ response }).where(eq(responseTable.id, id)).returning();
-      return updatedResponse;
+    async updateJournalEntry(id: string, { entry }: { entry: string }) {
+      const [updatedJournalEntry] = await db.update(journalEntriesTable).set({ entry }).where(eq(journalEntriesTable.id, id)).returning();
+      return updatedJournalEntry;
     },
 
-    async deleteResponse(id: string) {
-      const [deletedUser] = await db.update(responseTable).set({ isDeleted: true }).where(eq(responseTable.id, id)).returning();
+    async deleteJournalEntry(id: string) {
+      const [deletedUser] = await db.update(journalEntriesTable).set({ isDeleted: true }).where(eq(journalEntriesTable.id, id)).returning();
       return deletedUser;
     },
 
@@ -80,37 +85,37 @@ export const createDbService = ({ db }: { db: typeof dbClient }) => {
       });
     },
 
-    async getUsersToPromptByHourUTC({ hourUtc }: { hourUtc: number }) {
+    async getUsersToPromptByCurrentHour({ hourUtc }: { hourUtc: number }) {
       return db.query.usersTable.findMany({
-        where: and(eq(usersTable.preferredHourUTC, hourUtc), eq(usersTable.isPaused, false)),
+        where: and(eq(usersTable.promptHourUTC, hourUtc), eq(usersTable.isPaused, false)),
       });
     },
 
-    async getUsersByLastResponseAt({ days }: { days: number }) {
+    async getUsersByLastJournalEntryTime({ days }: { days: number }) {
       const now = new Date();
       const start = new Date(now);
       start.setDate(start.getDate() - days);
       return db.query.usersTable.findMany({
-        where: and(between(usersTable.lastResponseAt, start.toISOString(), now.toISOString()), eq(usersTable.isPaused, false)),
+        where: and(between(usersTable.lastEntryTime, start.toISOString(), now.toISOString()), eq(usersTable.isPaused, false)),
       });
     },
 
     async getJournalEntriesByUserId({ userId, isDeleted = false }: { userId: string; isDeleted?: boolean }) {
-      return db.query.responseTable.findMany({
-        where: (response, { and, eq }) => and(eq(response.userId, userId), eq(response.isDeleted, isDeleted)),
+      return db.query.journalEntriesTable.findMany({
+        where: (journalEntry, { and, eq }) => and(eq(journalEntry.userId, userId), eq(journalEntry.isDeleted, isDeleted)),
         with: {
           prompt: true,
         },
         columns: {
           isDeleted: false,
         },
-        orderBy: (response, { desc }) => desc(response.createdAt),
+        orderBy: (journalEntry, { desc }) => desc(journalEntry.createdAt),
       });
     },
 
     async getJournalEntryByPromptId({ promptId, isDeleted = false }: { promptId: string; isDeleted?: boolean }) {
-      return db.query.responseTable.findFirst({
-        where: (response, { and, eq }) => and(eq(response.promptId, promptId), eq(response.isDeleted, isDeleted)),
+      return db.query.journalEntriesTable.findFirst({
+        where: (journalEntry, { and, eq }) => and(eq(journalEntry.promptId, promptId), eq(journalEntry.isDeleted, isDeleted)),
         with: {
           prompt: true,
         },
@@ -120,9 +125,9 @@ export const createDbService = ({ db }: { db: typeof dbClient }) => {
       });
     },
 
-    async getJournalEntryByResponseId({ responseId, isDeleted = false }: { responseId: string; isDeleted?: boolean }) {
-      return db.query.responseTable.findFirst({
-        where: (response, { and, eq }) => and(eq(response.id, responseId), eq(response.isDeleted, isDeleted)),
+    async getJournalEntryById({ journalEntryId, isDeleted = false }: { journalEntryId: string; isDeleted?: boolean }) {
+      return db.query.journalEntriesTable.findFirst({
+        where: (journalEntry, { and, eq }) => and(eq(journalEntry.id, journalEntryId), eq(journalEntry.isDeleted, isDeleted)),
         with: {
           prompt: true,
         },

@@ -1,5 +1,4 @@
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/d1';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set');
@@ -7,8 +6,10 @@ if (!process.env.DATABASE_URL) {
 
 import * as schema from './schema';
 
-// Supabase: Disable prefetch as it is not supported for "Transaction" pool mode
-export const dbClient = drizzle(postgres(process.env.DATABASE_URL, { prepare: false }), {
+// @ts-expect-error this is only used for type checking
+export const dbClient = drizzle('', {
   schema,
   logger: process.env.NODE_ENV === 'development' ? true : false,
 });
+
+export type DbClient = typeof dbClient;

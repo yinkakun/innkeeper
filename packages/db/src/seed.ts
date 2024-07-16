@@ -3,18 +3,18 @@ import { dbClient } from './client';
 import { Chance } from 'chance';
 import { usersTable } from './schema';
 import { createDbService } from './service';
-import type { CreateUsersSchema, CreatePromptsSchema, CreateResponseSchema, UserSchema } from 'db/schema';
+import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db/schema';
 
 const chance = new Chance();
 const db = createDbService({ db: dbClient });
 
 const createUser = async () => {
-  const userData: z.infer<typeof CreateUsersSchema> = {
+  const userData: z.infer<typeof CreateUserSchema> = {
     id: chance.guid(),
     name: chance.name(),
     email: chance.email(),
     timezone: chance.timezone().abbr,
-    preferredHourUTC: chance.integer({ min: 0, max: 23 }),
+    promptHourUTC: chance.integer({ min: 0, max: 23 }),
   };
   return await db.createUser(userData);
 };
@@ -24,20 +24,12 @@ const seedUsers = async (count: number) => {
 };
 
 const seedPrompt = async (userId: string) => {
-  const promptData: z.infer<typeof CreatePromptsSchema> = {
+  const promptData: z.infer<typeof CreatePromptSchema> = {
     userId,
-    prompt: chance.sentence(),
+    body: chance.paragraph(),
+    title: chance.sentence(),
   };
   return await db.createPrompt(promptData);
-};
-
-const seedResponse = async (userId: string, promptId: string) => {
-  const responseData: z.infer<typeof CreateResponseSchema> = {
-    userId,
-    promptId,
-    response: chance.paragraph(),
-  };
-  return await db.createResponse(responseData);
 };
 
 const seedJournalEntry = async (user: z.infer<typeof UserSchema>) => {
@@ -48,14 +40,20 @@ const seedJournalEntry = async (user: z.infer<typeof UserSchema>) => {
 
   if (!prompt) return null;
 
-  const response = await seedResponse(user.id, prompt.id).catch((error) => {
-    console.error(`Failed to create response for user ${user.id}:`, error);
+  const journalEntryData: z.infer<typeof CreateJournalEntrySchema> = {
+    userId: user.id,
+    promptId: prompt.id,
+    entry: chance.paragraph(),
+  };
+
+  const journalEntry = await db.createJournalEntry(journalEntryData).catch((error) => {
+    console.error(`Failed to create journalEntry for user ${user.id}:`, error);
     return null;
   });
 
-  if (!response) return null;
+  if (!journalEntry) return null;
 
-  return { prompt, response };
+  return { prompt, journalEntry };
 };
 
 const seedJournalEntries = async (users: z.infer<typeof UserSchema>[], count: number) => {

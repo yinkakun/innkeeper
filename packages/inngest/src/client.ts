@@ -14,14 +14,3 @@ export const inngest = new Inngest({
     'app/save.journal.entry': { data: z.object({ entry: z.string(), promptId: z.string() }) },
   }),
 });
-
-// Blockers
-// - Need to add domain to SES
-// - Complete Inngest client schema and setup
-// - Rename response table in db to journal entry
-// - Add prompt_title, prompt_body, prompt_email_subject to prompt table
-// - Add onboarded field to db, and other fields for onboarding
-// - Create a unpause function in db
-// - Rename all workspace packages to start with `@innkeeper/`
-// - Explore all notBoring apps and learn workflow
-// - Setup Clerk, read dev.to blog

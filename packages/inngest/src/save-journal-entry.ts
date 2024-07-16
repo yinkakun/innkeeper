@@ -1,6 +1,6 @@
 import { inngest } from './client';
-import { dbClient } from 'db/client';
-import { createDbService } from 'db/service';
+import { dbClient } from '@innkeeper/db/client';
+import { createDbService } from '@innkeeper/db/service';
 
 const db = createDbService({ db: dbClient });
 

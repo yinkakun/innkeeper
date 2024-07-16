@@ -50,7 +50,7 @@ export const dailyPromptsCron = inngest.createFunction(
 
     // Get users to prompt based on current hour
     const usersToPrompt = await step.run('get-users-to-prompt', async () => {
-      return db.getUsersToPromptByHourUTC({ hourUtc: currentHourUtc });
+      return db.getUsersToPromptByCurrentHour({ hourUtc: currentHourUtc });
     });
 
     if (!usersToPrompt.length) {

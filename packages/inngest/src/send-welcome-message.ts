@@ -1,8 +1,6 @@
-import { Resource } from 'sst';
 import { inngest } from './client';
-import { dbClient } from 'db/client';
-import { createDbService } from 'db/service';
-import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
+import { dbClient } from '@innkeeper/db/client';
+import { createDbService } from '@innkeeper/db/service';
 
 const DUMMY_DATA = {
   title: 'Dummy Prompt Title',
@@ -10,7 +8,6 @@ const DUMMY_DATA = {
   userEmail: 'dryinkuzz@gmail.com',
 };
 
-const ses = new SESv2Client();
 const db = createDbService({ db: dbClient });
 
 export const sendWelcomeEmail = inngest.createFunction(
@@ -37,27 +34,9 @@ export const sendWelcomeEmail = inngest.createFunction(
 
     // Send welcome email
     await step.run('send-welcome-email', async () => {
-      const command = new SendEmailCommand({
-        FromEmailAddress: 'innkeeper@studiolefleur.com', // Resource.MyEmail.sender,
-        Destination: {
-          ToAddresses: [DUMMY_DATA.userEmail],
-        },
-        ReplyToAddresses: ['innkeeper@studiolefleur.com'], // [Resource.MyEmail.sender],
-        Content: {
-          Simple: {
-            Subject: { Data: 'Welcome to Innkeeper' },
-            Body: { Text: { Data: 'Welcome to Innkeeper' } },
-            Headers: [
-              {
-                Name: 'x-user-id',
-                Value: 'user_xxxxxxxxx',
-              },
-            ],
-          },
-        },
-      });
-
-      await ses.send(command);
+      // await sendWelcomeEmail({
+      //   email: user.email,
+      // });
     });
 
     return {
