@@ -1,7 +1,6 @@
-#:schema node_modules/wrangler/config-schema.json
-name = "<TBD>"
 main = "src/index.ts"
-compatibility_date = "<TBD>"
+name = "innkeeper-api"
+compatibility_date = "2023-12-01"
 
 # Automatically place your workloads in an optimal location to minimize latency.
 # If you are running back-end logic in a Worker, running it closer to your back-end infrastructure

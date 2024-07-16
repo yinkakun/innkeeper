@@ -1,5 +1,5 @@
 {
-  "ui": "stream",
+  "ui": "tui",
   "$schema": "https://turborepo.org/schema.json",
   "globalEnv": ["DATABASE_URL", "API_URL", "INNGEST_EVENT_KEY", "INNGEST_BASE_URL"],
   "globalPassThroughEnv": ["NODE_ENV", "npm_lifecycle_event"],

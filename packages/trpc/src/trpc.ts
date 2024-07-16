@@ -1,6 +1,7 @@
 import { ZodError } from 'zod';
 import superjson from 'superjson';
 import { initTRPC, TRPCError } from '@trpc/server';
+import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 
 /**
  * 1. CONTEXT
@@ -18,18 +19,8 @@ import { initTRPC, TRPCError } from '@trpc/server';
  * @link https://trpc.io/docs/context
  */
 
-interface Context {
-  event: unknown;
-  context: unknown;
-  session: {
-    id: string;
-  };
-}
-
-export const createContext = async ({ event, context }: Context) => {
+export const createContext = async ({ req }: FetchCreateContextFnOptions) => {
   return {
-    event,
-    context,
     session: {
       id: '',
     },

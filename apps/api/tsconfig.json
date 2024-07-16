@@ -21,7 +21,6 @@
 		"traceResolution": false,
 		"outDir": "",
 		"target": "esnext",
-		"module": "esnext",
 		"types": [
 			"@types/node",
 			"@types/service-worker-mock",
