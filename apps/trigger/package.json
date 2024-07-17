@@ -1,5 +1,5 @@
 {
-  "name": "@innkeeper/inngest",
+  "name": "@innkeeper/trigger",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -18,9 +18,8 @@
   "dependencies": {
     "@langchain/anthropic": "^0.2.3",
     "@langchain/community": "^0.2.18",
-    "await-to-js": "^3.0.0",
     "@innkeeper/db": "*",
-    "inngest": "^3.19.21",
+    "inngest": "^3.20.0",
     "langchain": "^0.2.9",
     "yarn": "^1.22.22",
     "zod": "^3.23.8"
@@ -33,7 +32,7 @@
     "prettier": "^3.3.1",
     "prettier-config": "*",
     "tsconfig": "*",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "prettier": "prettier-config"
 }

@@ -3,20 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": {
-    ".": {
-      "default": "./src/index.ts"
-    },
-    "./client": {
-      "default": "./src/client.ts"
-    },
-    "./schema": {
-      "default": "./src/schema.ts"
-    },
-    "./service": {
-      "default": "./src/service.ts"
-    }
-  },
+  "exports": "./src/index.ts",
   "scripts": {
     "build": "yarn with-env tsc",
     "lint": "eslint",
@@ -35,9 +22,10 @@
     "@paralleldrive/cuid2": "^2.2.2",
     "drizzle-orm": "^0.32.0",
     "drizzle-zod": "^0.5.1",
-    "postgres": "^3.3.5"
+    "postgres": "^3.4.4"
   },
   "devDependencies": {
+    "@libsql/sqlite3": "^0.3.1",
     "@types/chance": "^1.1.6",
     "chance": "^1.1.12",
     "dotenv-cli": "^7.3.0",
@@ -48,7 +36,7 @@
     "prettier-config": "*",
     "tsconfig": "*",
     "tsx": "^4.16.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "prettier": "prettier-config"
 }

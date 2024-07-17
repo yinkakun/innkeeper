@@ -1,0 +1,13 @@
+name = "innkeeper-api"
+compatibility_date = "2024-07-16"
+
+vars = { ENVIRONMENT = "development", TRIGGER_API_KEY = "api_key", TRIGGER_API_URL = "api_url", DATABASE_URL = "db_url" }
+# d1_databases = [
+#    { binding = "DB", database_name = "innkeeper", database_id = "DATABASE_ID" },
+# ]
+
+[env.production]
+vars = { ENVIRONMENT = "production", TRIGGER_API_KEY = "", TRIGGER_API_URL = "", DATABASE_URL = "" }
+# d1_databases = [
+#     { binding = "DB", database_name = "innkeeper_production", database_id = "PRODUCTION_DB_ID" },
+# ]

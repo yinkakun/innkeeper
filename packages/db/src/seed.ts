@@ -1,12 +1,20 @@
+import 'dotenv/config';
 import type { z } from 'zod';
-import { dbClient } from './client';
 import { Chance } from 'chance';
-import { usersTable } from './schema';
-import { createDbService } from './service';
-import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db/schema';
+import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import { usersTable, dbSchema, createDb } from '@innkeeper/db';
+import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db';
+
+const DATABASE_URL = process.env.DATABASE_URL;
+
+if (!DATABASE_URL) {
+  throw new Error('DATABASE_URL is required');
+}
 
 const chance = new Chance();
-const db = createDbService({ db: dbClient });
+const db = createDb(DATABASE_URL);
+const client = postgres(DATABASE_URL, { prepare: false });
 
 const createUser = async () => {
   const userData: z.infer<typeof CreateUserSchema> = {
@@ -63,7 +71,7 @@ const seedJournalEntries = async (users: z.infer<typeof UserSchema>[], count: nu
 
 async function seed() {
   console.log('Starting seeding...');
-  await dbClient.delete(usersTable);
+  await drizzle(client, { schema: dbSchema }).delete(usersTable);
 
   const users = await seedUsers(10).catch((error) => {
     console.error('Failed to seed users:', error);
@@ -86,7 +94,7 @@ async function seed() {
 
 seed()
   .then(() => {
-    console.log('Seeding complete');
+    console.info('Seeding complete');
     process.exit(0);
   })
   .catch((error) => {

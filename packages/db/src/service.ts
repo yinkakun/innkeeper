@@ -1,8 +1,8 @@
 import type { z } from 'zod';
 import { between, eq, and } from 'drizzle-orm';
-import type { DbClient } from '@innkeeper/db/client';
-import { promptsTable, journalEntriesTable, usersTable } from '@innkeeper/db/schema';
-import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema, CreateUserSchema } from '@innkeeper/db/schema';
+import type { DbClient } from '@innkeeper/db';
+import { promptsTable, journalEntriesTable, usersTable } from '@innkeeper/db';
+import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema, CreateUserSchema } from '@innkeeper/db';
 
 export const createDbService = ({ db }: { db: DbClient }) => {
   return {
@@ -138,3 +138,5 @@ export const createDbService = ({ db }: { db: DbClient }) => {
     },
   };
 };
+
+export type DbService = ReturnType<typeof createDbService>;

@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "name": "@innkeeper/api",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "types": "wrangler types",
+    "dev:trigger": "trigger.dev dev",
+    "deploy:trigger": "trigger.dev deploy",
+    "seed": "yarn with-env tsx ./src/seed.ts",
+    "dev": "wrangler dev --port 3000 src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts"
+  },
+  "dependencies": {
+    "hono": "^4.4.13",
+    "@innkeeper/db": "*",
+    "@innkeeper/trpc": "*",
+    "@hono/trpc-server": "^0.3.2",
+    "@trigger.dev/sdk": "3.0.0-beta.48"
+  },
+  "devDependencies": {
+    "tsx": "^4.16.2",
+    "drizzle-kit": "^0.22.7",
+    "@cloudflare/workers-types": "^4.20240529.0",
+    "typescript": "^5.5.2",
+    "wrangler": "^3.60.3"
+  }
+}
