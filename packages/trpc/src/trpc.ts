@@ -2,12 +2,11 @@ import { ZodError } from 'zod';
 import superjson from 'superjson';
 import { initTRPC, TRPCError } from '@trpc/server';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-import { drizzle } from 'drizzle-orm/d1';
 import type { HonoContext } from '@innkeeper/api';
 
 export const createContext = async (options: FetchCreateContextFnOptions, ctx: HonoContext) => {
   return {
-    db: drizzle(ctx.env.DB),
+    db: ctx.get('db'),
     configureTriggerClient: ctx.get('configureTriggerClient'),
     session: {
       id: 'session-id',

@@ -1,12 +1,12 @@
-import { relations, sql } from 'drizzle-orm';
-import { integer, sqliteTable, text, index, uniqueIndex } from 'drizzle-orm/sqlite-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { createId } from '@paralleldrive/cuid2';
 import { z } from 'zod';
+import { relations, sql } from 'drizzle-orm';
+import { createId } from '@paralleldrive/cuid2';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { integer, pgTable, text, timestamp, uniqueIndex, index, boolean } from 'drizzle-orm/pg-core';
 
 // Tables
 
-export const usersTable = sqliteTable(
+export const usersTable = pgTable(
   'users',
   {
     id: text('id').notNull().primaryKey(),
@@ -14,13 +14,17 @@ export const usersTable = sqliteTable(
     email: text('email').notNull(),
     promptHourUTC: integer('promptHourUTC').notNull(), // 0-23
     timezone: text('timezone').notNull(), // TODO: use enum
-    lastEntryTime: text('lastEntryTime'),
-    createdAt: text('createdAt')
+    lastEntryTime: timestamp('lastEntryTime', {
+      mode: 'string',
+    }),
+    createdAt: timestamp('createdAt')
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: text('updatedAt').$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
-    isPaused: integer('isPaused', { mode: 'boolean' }).default(false),
-    onboarded: integer('onboarded', { mode: 'boolean' }).notNull().default(false),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'string',
+    }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+    isPaused: boolean('isPaused').default(false),
+    completedOnboarding: boolean('completedOnboarding').notNull().default(false),
   },
   (table) => ({
     emailIndex: uniqueIndex('emailIndex').on(table.email),
@@ -29,7 +33,7 @@ export const usersTable = sqliteTable(
   }),
 );
 
-export const promptsTable = sqliteTable(
+export const promptsTable = pgTable(
   'prompts',
   {
     userId: text('userId')
@@ -38,17 +42,21 @@ export const promptsTable = sqliteTable(
     id: text('id').notNull().primaryKey().$default(createId),
     body: text('body').notNull(),
     title: text('title').notNull(),
-    createdAt: text('createdAt')
+    createdAt: timestamp('createdAt', {
+      mode: 'string',
+    })
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: text('updatedAt').$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'string',
+    }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
   },
   (table) => ({
     promptUserIdIndex: index('promptUserIdIndex').on(table.userId),
   }),
 );
 
-export const journalEntriesTable = sqliteTable(
+export const journalEntriesTable = pgTable(
   'journal_entries',
   {
     userId: text('userId')
@@ -59,11 +67,15 @@ export const journalEntriesTable = sqliteTable(
       .references(() => promptsTable.id, { onDelete: 'cascade' }),
     entry: text('entry').notNull(),
     id: text('id').notNull().primaryKey().$default(createId),
-    createdAt: text('createdAt')
+    createdAt: timestamp('createdAt', {
+      mode: 'string',
+    })
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: text('updatedAt').$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
-    isDeleted: integer('isDeleted', { mode: 'boolean' }).notNull().default(false),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'string',
+    }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+    isDeleted: boolean('isDeleted').notNull().default(false),
   },
   (table) => ({
     journalEntryUserIdIndex: index('journalEntriesUserIdIndex').on(table.userId, table.isDeleted),

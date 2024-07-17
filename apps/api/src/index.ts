@@ -1,22 +1,19 @@
 import { Hono, Context } from 'hono';
-import { drizzle } from 'drizzle-orm/d1';
-import type { DbClient } from '@innkeeper/db';
+import { createDb } from '@innkeeper/db';
 import { trpcServer } from '@hono/trpc-server';
+import { createMiddleware } from 'hono/factory';
 import { appRouter, createContext } from '@innkeeper/trpc';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 
-import { createMiddleware } from 'hono/factory';
-
 type Variables = {
-  db: DbClient;
+  db: ReturnType<typeof createDb>;
   configureTriggerClient: () => void;
 };
 
 // always update this type when you add new bindings and run `yarn types`
 type Bindings = {
-  DB: D1Database;
   ENVIRONMENT: string;
-  DATABASE_ID: string;
+  DATABASE_URL: string;
   TRIGGER_API_KEY: string;
   TRIGGER_API_URL: string;
 };
@@ -27,7 +24,8 @@ type HonoOptions = { Bindings: Bindings; Variables: Variables };
 const app = new Hono<HonoOptions>();
 
 const dbMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
-  ctx.set('db', drizzle(ctx.env.DB));
+  const db = createDb(ctx.env.DATABASE_URL);
+  ctx.set('db', db);
   await next();
 });
 

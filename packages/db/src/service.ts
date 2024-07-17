@@ -138,3 +138,5 @@ export const createDbService = ({ db }: { db: DbClient }) => {
     },
   };
 };
+
+export type DbService = ReturnType<typeof createDbService>;
