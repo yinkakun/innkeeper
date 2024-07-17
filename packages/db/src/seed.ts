@@ -1,15 +1,16 @@
 import type { z } from 'zod';
 import { Chance } from 'chance';
-import { usersTable } from './schema';
-import type { DbClient } from './client';
-import { createDbService } from './service';
-import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db/schema';
+import { usersTable } from '@innkeeper/db';
+import { DbSchema } from '@innkeeper/db';
+import { createDbService } from '@innkeeper/db';
+import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db';
 
+// TODO: Change to d1 http driver
 import { Database } from '@libsql/sqlite3';
 import { drizzle } from 'drizzle-orm/libsql';
 
 const chance = new Chance();
-const dbClient: DbClient = drizzle(new Database('sqlite.db'));
+const dbClient = drizzle(new Database('sqlite.db'), { schema: DbSchema });
 
 const db = createDbService({ db: dbClient });
 

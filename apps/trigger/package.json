@@ -1,5 +1,5 @@
 {
-  "name": "@innkeeper/inngest",
+  "name": "@innkeeper/trigger",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -18,7 +18,6 @@
   "dependencies": {
     "@langchain/anthropic": "^0.2.3",
     "@langchain/community": "^0.2.18",
-    "await-to-js": "^3.0.0",
     "@innkeeper/db": "*",
     "inngest": "^3.20.0",
     "langchain": "^0.2.9",

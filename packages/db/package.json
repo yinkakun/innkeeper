@@ -3,20 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": {
-    ".": {
-      "default": "./src/index.ts"
-    },
-    "./client": {
-      "default": "./src/client.ts"
-    },
-    "./schema": {
-      "default": "./src/schema.ts"
-    },
-    "./service": {
-      "default": "./src/service.ts"
-    }
-  },
+  "exports": "./src/index.ts",
   "scripts": {
     "build": "yarn with-env tsc",
     "lint": "eslint",

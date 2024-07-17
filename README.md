@@ -1,4 +1,4 @@
-# Turborepo starter
+# Innkeeper
 
 This is an official starter Turborepo.
 
@@ -79,3 +79,10 @@ Learn more about the power of Turborepo:
 - [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+
+## Todo
+
+- [x] export only schema from db
+- [x] initialize db in api, and trigger
+- [x] move seed to api and use drizzle http driver
+- [x] figure out how trigger will be configured in trpc package and hono api

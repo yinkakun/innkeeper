@@ -12,17 +12,15 @@ export const usersTable = sqliteTable(
     id: text('id').notNull().primaryKey(),
     name: text('name').notNull(),
     email: text('email').notNull(),
-    isPaused: integer('isPaused', { mode: 'boolean' }).default(sql`0`),
     promptHourUTC: integer('promptHourUTC').notNull(), // 0-23
     timezone: text('timezone').notNull(), // TODO: use enum
     lastEntryTime: text('lastEntryTime'),
     createdAt: text('createdAt')
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: text('updatedAt').$onUpdateFn(() => sql`now()`),
-    onboarded: integer('onboarded', { mode: 'boolean' })
-      .notNull()
-      .default(sql`0`),
+    updatedAt: text('updatedAt').$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+    isPaused: integer('isPaused', { mode: 'boolean' }).default(false),
+    onboarded: integer('onboarded', { mode: 'boolean' }).notNull().default(false),
   },
   (table) => ({
     emailIndex: uniqueIndex('emailIndex').on(table.email),
@@ -43,7 +41,7 @@ export const promptsTable = sqliteTable(
     createdAt: text('createdAt')
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: text('updatedAt').$onUpdateFn(() => sql`now()`),
+    updatedAt: text('updatedAt').$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
   },
   (table) => ({
     promptUserIdIndex: index('promptUserIdIndex').on(table.userId),
@@ -64,10 +62,8 @@ export const journalEntriesTable = sqliteTable(
     createdAt: text('createdAt')
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: text('updatedAt').$onUpdateFn(() => sql`now()`),
-    isDeleted: integer('isDeleted', { mode: 'boolean' })
-      .notNull()
-      .default(sql`0`),
+    updatedAt: text('updatedAt').$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+    isDeleted: integer('isDeleted', { mode: 'boolean' }).notNull().default(false),
   },
   (table) => ({
     journalEntryUserIdIndex: index('journalEntriesUserIdIndex').on(table.userId, table.isDeleted),

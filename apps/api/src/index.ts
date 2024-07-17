@@ -1,58 +1,69 @@
-import { Hono } from 'hono';
-import { serve } from 'inngest/hono';
+import { Hono, Context } from 'hono';
 import { drizzle } from 'drizzle-orm/d1';
-import { appRouter } from '@innkeeper/trpc';
+import type { DbClient } from '@innkeeper/db';
 import { trpcServer } from '@hono/trpc-server';
-import type { DbClient } from '@innkeeper/db/client';
+import { appRouter, createContext } from '@innkeeper/trpc';
+import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 
-import {
-  inngest,
-  sendPrompt,
-  dailyPromptsCron,
-  saveJournalEntry,
-  sendWelcomeEmail,
-  pauseInactiveUsersCron,
-  sendWeeklyInsightsCron,
-} from './inngest';
+import { createMiddleware } from 'hono/factory';
 
-export interface Env {
+type Variables = {
+  db: DbClient;
+  configureTriggerClient: () => void;
+};
+
+// always update this type when you add new bindings and run `yarn types`
+type Bindings = {
   DB: D1Database;
-  INNGEST_EVENT_KEY: string;
-}
+  ENVIRONMENT: string;
+  DATABASE_ID: string;
+  TRIGGER_API_KEY: string;
+  TRIGGER_API_URL: string;
+};
 
-const app = new Hono<{ Bindings: Env }>();
+export type HonoContext = Context<HonoOptions>;
+type HonoOptions = { Bindings: Bindings; Variables: Variables };
 
-app.get('/', (context) => {
-  return context.json({ message: 'Hello!' });
+const app = new Hono<HonoOptions>();
+
+const dbMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
+  ctx.set('db', drizzle(ctx.env.DB));
+  await next();
 });
+
+const triggerMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
+  ctx.set('configureTriggerClient', () => {
+    configureTriggerClient({
+      baseURL: ctx.env.TRIGGER_API_URL,
+      secretKey: ctx.env.TRIGGER_API_KEY,
+    });
+  });
+  await next();
+});
+
+app.use(dbMiddleware);
+app.use(triggerMiddleware);
 
 app.use(
   '/api/trpc/*',
   trpcServer({
     router: appRouter,
     endpoint: '/api/trpc',
-    createContext: (_options, context) => {
-      console.log('Incoming Context)', context);
-      return {
-        // var1: context.env.MY_VAR1,
-        // var2: context.req.header('X-VAR2'),
-      };
+    createContext: (options, ctx: HonoContext) => {
+      console.log('Incoming Context', ctx);
+      return createContext(options, ctx);
     },
   }),
 );
 
-app.on(
-  ['GET', 'PUT', 'POST'],
-  '/api/inngest',
-  serve({
-    client: inngest,
-    functions: [dailyPromptsCron, pauseInactiveUsersCron, saveJournalEntry, sendPrompt, sendWeeklyInsightsCron, sendWelcomeEmail],
-  }),
-);
+app.get('/', (context) => {
+  return context.json({ message: 'Hello World!' });
+});
 
 export default {
   fetch: app.fetch,
-  email: async (message, env, context) => {
-    console.log('Incoming)', env.INNGEST_EVENT_KEY);
+  email: async (message, env) => {
+    console.log('Incoming env)', env);
+    console.log('Incoming message)', message);
   },
-} satisfies ExportedHandler<Env>;
+} satisfies ExportedHandler<Bindings>;
