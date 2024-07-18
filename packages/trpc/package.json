@@ -9,12 +9,11 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "lint": "eslint .",
     "dev": "tsc --watch",
     "clean": "rm -rf .turbo node_modules",
-    "lint": "eslint .",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "with-env": "dotenv -e ../../.env --"
+    "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
     "@trpc/server": "npm:@trpc/server@next",

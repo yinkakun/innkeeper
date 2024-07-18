@@ -1,27 +1,17 @@
-import { inngest } from './client';
+import { schedules } from '@trigger.dev/sdk/v3';
 
-export const pauseInactiveUsersCron = inngest.createFunction(
-  {
-    id: 'pause-inactive-users',
-    name: 'Pause Inactive Users',
+export const pauseIdleUsers = schedules.task({
+  id: 'pause-idle-users',
+  run: async (payload) => {
+    console.log('Pausing idle users', payload);
   },
-  {
-    cron: '0 0 * * *', // every day
-  },
-  async ({ step }) => {
-    console.log('Pausing inactive users');
+});
 
-    // send email to inactive users if inactive for 3 days
-    await step.run('send-email-to-inactive-users', () => {
-      // await sendEmailToInactiveUsers
-    });
-
-    // wait for 2 days
-    await step.sleep('wait-for-2-days', '2d');
-
-    // pause inactive users if inactive for 5 days
-    await step.run('pause-users', () => {
-      // await pauseUsers
-    });
-  },
-);
+export const pauseIdleUsersSchedule = await schedules.create({
+  //The id of the scheduled task you want to attach to.
+  task: pauseIdleUsers.id,
+  //The schedule in CRON format.
+  cron: '0 0 * * *',
+  //this is required, it prevents you from creating duplicate schedules. It will update the schedule if it already exists.
+  deduplicationKey: 'pause-idle-users',
+});

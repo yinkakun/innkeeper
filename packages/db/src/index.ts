@@ -1,11 +1,10 @@
-import * as schema from './schema';
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
+import * as schema from './schema';
 import { createDbService } from './service';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 export * from './schema';
-export * from './service';
 export * from 'drizzle-orm/sql';
 export * as dbSchema from './schema';
 export { alias } from 'drizzle-orm/pg-core';
