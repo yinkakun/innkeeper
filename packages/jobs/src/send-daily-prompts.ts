@@ -1,6 +1,5 @@
 import { inngest } from './client';
-import { dbClient } from '@innkeeper/db/client';
-import { createDbService } from '@innkeeper/db/service';
+import { createDb } from '@innkeeper/db';
 import { Ollama } from '@langchain/community/llms/ollama';
 import type { GetEvents } from 'inngest';
 
@@ -27,7 +26,7 @@ import { ChatAnthropic } from '@langchain/anthropic';
 // https://logsnag.com/blog/handling-timezones-in-javascript-with-date-fns-tz
 // https://github.com/batuhanbilginn/background-jobs-nextjs13-inngest/blob/main/app/api/inngest/route.ts
 
-const db = createDbService({ db: dbClient });
+const db = createDb('');
 
 const DUMMY_DATA = {
   title: 'Dummy Prompt Title',

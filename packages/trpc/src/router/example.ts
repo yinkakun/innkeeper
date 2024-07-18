@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { helloWorldTask } from '@innkeeper/trigger';
+import { helloWorldTask } from '@innkeeper/jobs';
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 
 export const exampleRouter = createTRPCRouter({

@@ -1,8 +1,7 @@
 import { inngest } from './client';
-import { dbClient } from '@innkeeper/db/client';
-import { createDbService } from '@innkeeper/db/service';
+import { createDb } from '@innkeeper/db';
 
-const db = createDbService({ db: dbClient });
+const db = createDb('');
 
 export const saveJournalEntry = inngest.createFunction(
   {
