@@ -1,8 +1,9 @@
+import { createDb } from '@innkeeper/db';
 import type { TriggerConfig } from '@trigger.dev/sdk/v3';
 
 export const config: TriggerConfig = {
   project: 'proj_jtsbdjbbdmhwrdcqtzmi',
-  logLevel: 'log',
+  logLevel: 'debug', // TODO: Change to 'info' based on the environment
   retries: {
     enabledInDev: true,
     default: {
@@ -13,4 +14,5 @@ export const config: TriggerConfig = {
       maxTimeoutInMs: 10000,
     },
   },
+  triggerDirectories: ['./src'],
 };

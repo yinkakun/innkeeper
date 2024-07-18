@@ -1,16 +1,14 @@
 import { ZodError } from 'zod';
 import superjson from 'superjson';
+import type { HonoContext } from '@innkeeper/api';
 import { initTRPC, TRPCError } from '@trpc/server';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-import type { HonoContext } from '@innkeeper/api';
 
-export const createContext = async (options: FetchCreateContextFnOptions, ctx: HonoContext) => {
+export const createContext = (options: FetchCreateContextFnOptions, ctx: HonoContext) => {
   return {
     db: ctx.get('db'),
+    user: ctx.get('user'),
     configureTriggerClient: ctx.get('configureTriggerClient'),
-    session: {
-      id: 'session-id',
-    },
   };
 };
 
@@ -29,21 +27,15 @@ const t = initTRPC.context<typeof createContext>().create({
   },
 });
 
+export const createTRPCRouter = t.router;
+export const publicProcedure = t.procedure;
 export const createCallerFactory = t.createCallerFactory;
 
-export const createTRPCRouter = t.router;
-
-export const publicProcedure = t.procedure;
-
 const enforceAuth = t.middleware(({ ctx, next }) => {
-  if (!ctx.session.id) {
+  if (!ctx.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
-  return next({
-    ctx: {
-      session: ctx.session,
-    },
-  });
+  return next({ ctx: { user: ctx.user } });
 });
 
 export const protectedProcedure = t.procedure.use(enforceAuth);
