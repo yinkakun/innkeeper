@@ -1,9 +1,8 @@
-import { db } from '@innkeeper/db';
+// import { db } from '@innkeeper/db';
 import { logger, task, wait } from '@trigger.dev/sdk/v3';
 
 export const sendWelcomeEmail = task({
-  id: 'hello-world',
-
+  id: 'send-welcome-email',
   run: async (payload: unknown, { ctx }) => {
     logger.log('Hello, world!', { payload, ctx });
 

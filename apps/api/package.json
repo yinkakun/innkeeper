@@ -15,11 +15,11 @@
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
-    "@hono/trpc-server": "^0.3.2",
     "@innkeeper/db": "*",
     "@innkeeper/trpc": "*",
+    "@innkeeper/jobs": "*",
+    "@hono/trpc-server": "^0.3.2",
     "@supabase/supabase-js": "^2.44.4",
-    "@trigger.dev/sdk": "3.0.0-beta.50",
     "hono": "^4.4.13"
   },
   "devDependencies": {

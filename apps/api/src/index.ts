@@ -6,6 +6,7 @@ import { trpcServer } from '@hono/trpc-server';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 import { createClient } from '@supabase/supabase-js';
+import type { ForwardableEmailMessage } from './types';
 import { appRouter, createContext } from '@innkeeper/trpc';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 import type { User as SupabaseUser, SupabaseClient } from '@supabase/supabase-js';
@@ -13,7 +14,6 @@ import type { User as SupabaseUser, SupabaseClient } from '@supabase/supabase-js
 interface Variables {
   user: SupabaseUser | null;
   db: ReturnType<typeof createDb>;
-  configureTriggerClient: () => void;
 }
 
 // always update this when you run `yarn types` to update the environment variables
@@ -37,11 +37,9 @@ const dbMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
 
 // trigger.dev requires to manually configure the env vars since process.env is not available in cloudflare workers
 const triggerMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
-  ctx.set('configureTriggerClient', () => {
     configureTriggerClient({
       secretKey: ctx.env.TRIGGER_API_KEY,
     });
-  });
   await next();
 });
 
@@ -79,9 +77,13 @@ const authMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
   }
 });
 
-app.use(dbMiddleware);
-app.use(authMiddleware);
+// app.use(dbMiddleware);
+// app.use(authMiddleware);
 app.use(triggerMiddleware);
+
+app.get('/', (context) => {
+  return context.json({ message: 'Hello World!' });
+});
 
 app.use(
   '/api/trpc/*',
@@ -94,16 +96,14 @@ app.use(
   }),
 );
 
-app.get('/', (context) => {
-  return context.json({ message: 'Hello World!' });
-});
+
 
 export default {
   fetch: app.fetch,
-  email: async (message, env) => {
+  email: async (message: ForwardableEmailMessage, env: Bindings) => {
     console.log('Incoming env)', env);
     console.log('Incoming message)', message);
   },
-} satisfies ExportedHandler<Bindings> 
+} 
 
 

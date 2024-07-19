@@ -8,7 +8,6 @@ export const exampleRouter = createTRPCRouter({
     };
   }),
   getSecretMessage: protectedProcedure.query(async ({ ctx }) => {
-    ctx.configureTriggerClient();
     // await helloWorldTask.trigger({ message: '' });
     return 'you can now see this secret message!';
   }),

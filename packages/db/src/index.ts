@@ -16,9 +16,6 @@ export const createDb = (databaseUrl: string) => {
   return createDbService({ db: drizzle(client, { schema }) });
 };
 
-const getDatabaseUrl = () => {
-  if (!process.env.DATABASE_URL)  throw new Error('DATABASE_URL is required');
-  return process.env.DATABASE_URL;
-}
 
-export const db = createDb(getDatabaseUrl());
+
+export const db = createDb( process.env.DATABASE_URL ?? '');
