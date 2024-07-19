@@ -8,7 +8,6 @@ export const createContext = (options: FetchCreateContextFnOptions, ctx: HonoCon
   return {
     db: ctx.get('db'),
     user: ctx.get('user'),
-    configureTriggerClient: ctx.get('configureTriggerClient'),
   };
 };
 

@@ -2,12 +2,12 @@
   "private": true,
   "type": "module",
   "version": "0.0.0",
-  "name": "@innkeeper/jobs",
   "exports": "./src/index.ts",
+  "name": "@innkeeper/service",
   "scripts": {
     "build": "tsc",
     "lint": "eslint .",
-    "dev": "triggerdev dev",
+    "dev": "tsc --watch",
     "clean": "rm -rf .turbo node_modules",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "format": "prettier --check . --ignore-path ../../.gitignore"
@@ -26,7 +26,6 @@
     "eslint-config-custom": "*",
     "prettier": "^3.3.3",
     "prettier-config": "*",
-    "trigger.dev": "3.0.0-beta.50",
     "tsconfig": "*",
     "turbo": "^2.0.7",
     "typescript": "^5.5.3"

@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import { between, eq, and } from 'drizzle-orm';
+import { between, eq, and, lt } from 'drizzle-orm';
 import type { DbClient } from '@innkeeper/db';
 import { promptsTable, journalEntriesTable, usersTable } from '@innkeeper/db';
 import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema, CreateUserSchema } from '@innkeeper/db';
@@ -91,12 +91,12 @@ export const createDbService = ({ db }: { db: DbClient }) => {
       });
     },
 
-    async getUsersByLastJournalEntryTime({ days }: { days: number }) {
+    async getInactiveUsers({ days }: { days: number }) {
       const now = new Date();
       const start = new Date(now);
       start.setDate(start.getDate() - days);
       return db.query.usersTable.findMany({
-        where: and(between(usersTable.lastEntryTime, start.toISOString(), now.toISOString()), eq(usersTable.isPaused, false)),
+        where: and(eq(usersTable.isPaused, false), lt(usersTable.lastEntryTime, start.toISOString())),
       });
     },
 

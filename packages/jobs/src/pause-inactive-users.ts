@@ -1,5 +1,6 @@
 import { db } from '@innkeeper/db';
-import { schedules, task } from '@trigger.dev/sdk/v3';
+import { schedules, task, retry, logger } from '@trigger.dev/sdk/v3';
+import { send } from 'process';
 
 export const pauseIdleUsers = schedules.task({
   cron: '0 0 * * *',
@@ -7,24 +8,31 @@ export const pauseIdleUsers = schedules.task({
   run: async (payload) => {
     console.log('Pausing idle users', payload);
 
-    // get inactive users for 3 days
-    // const inactiveUsers3days = await db.getInactiveUsers({ days: 3 })
-    // if no inactive users, return { message: 'No inactive users to notify' }
+    const inactiveUsers3days = await retry.onThrow(
+      async () => {
+        return await db.getInactiveUsers({ days: 3 });
+      },
+      { maxAttempts: 3 },
+    );
 
-    // if inactive users, batchTrigger emailInactiveUser
-    // set notifiedInactivity to true
-    // await emailInactiveUser.batchTrigger(inactiveUsers3days.map(({ email }) => ({ payload: { email } })));
+    if (inactiveUsers3days.length === 0) {
+      logger.log('No inactive users to notify');
+    }
 
-    // get inactive users for 5 days, and notifiedInactivity is true
-    // const stillInactiveUsers = await db.getInactiveUsers({ days: 5, notifiedInactivity: true })
+    await emailInactiveUser.batchTrigger(inactiveUsers3days.map(({ email }) => ({ payload: { email } })));
 
-    // if no inactive users for 5 days, return { message: 'No inactive users to pause' }
+    const inactiveUsers5days = await retry.onThrow(
+      async () => {
+        return await db.getInactiveUsers({ days: 5 });
+      },
+      { maxAttempts: 3 },
+    );
 
-    // if 5 days inactive users, batchTrigger pauseUser
-    // set notifiedInactivity to false, and set isActive to false
-    // await pauseUser.batchTrigger(inactiveUsers3days.map(({ email }) => ({ payload: { email } })));
+    if (inactiveUsers5days.length === 0) {
+      logger.log('No inactive users to pause');
+    }
 
-    // return { message: 'Paused inactive users' }
+    await pauseUser.batchTrigger(inactiveUsers5days.map(({ id }) => ({ payload: { userId: id } })));
   },
 });
 
@@ -32,25 +40,21 @@ interface EmailInactiveUserPayload {
   email: string;
 }
 
-const emailInactiveUser = task({
+export const emailInactiveUser = task({
   id: 'send-email-to-inactive-user',
   run: async (payload: EmailInactiveUserPayload) => {
-    console.log('Sending email to inactive user', payload);
-
-    // send email to inactive user
-    // mark user as inactive
+    // TODO: send email to inactive user
+    // await email.inactiveUser({ email: payload.email });
   },
 });
 
 interface PauseUserPayload {
-  email: string;
+  userId: string;
 }
 
-const pauseUser = task({
+export const pauseUser = task({
   id: 'pause-user',
-  run: async (payload: PauseUserPayload) => {
-    console.log('Pausing user', payload);
-
-    // pause user
+  run: async ({ userId }: PauseUserPayload) => {
+    await db.pauseUser({ userId });
   },
 });
