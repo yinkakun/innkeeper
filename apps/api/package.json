@@ -7,8 +7,6 @@
   "scripts": {
     "lint": "eslint .",
     "types": "wrangler types",
-    "dev:trigger": "trigger.dev dev",
-    "deploy:trigger": "trigger.dev deploy",
     "seed": "yarn with-env tsx ./src/seed.ts",
     "dev": "wrangler dev --port 3000 src/index.ts",
     "deploy": "wrangler deploy --minify src/index.ts",
@@ -18,6 +16,7 @@
     "@innkeeper/db": "*",
     "@innkeeper/trpc": "*",
     "@innkeeper/jobs": "*",
+    "@innkeeper/service": "*",
     "@hono/trpc-server": "^0.3.2",
     "@supabase/supabase-js": "^2.44.4",
     "hono": "^4.4.13"

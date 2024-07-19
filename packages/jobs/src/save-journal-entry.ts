@@ -1,4 +1,4 @@
-import { db } from '@innkeeper/db';
+import { db } from '@innkeeper/service';
 import { logger, task, wait } from '@trigger.dev/sdk/v3';
 
 export const saveJournalEntry = task({

@@ -1,5 +1,5 @@
 export const email = {
-  inActiveUser: async (payload: { email: string }) => {
-    // send email
+  inactiveUser: async (payload: { email: string }) => {
+    // TODO: send email to inactive user
   },
 };

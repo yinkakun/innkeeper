@@ -13,6 +13,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
+    "postgres": "^3.4.4",
     "@innkeeper/db": "*",
     "@langchain/anthropic": "^0.2.6",
     "@langchain/community": "^0.2.19",

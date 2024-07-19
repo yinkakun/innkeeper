@@ -1,6 +1,5 @@
-import { db } from '@innkeeper/db';
+import { email, db } from '@innkeeper/service';
 import { schedules, task, retry, logger } from '@trigger.dev/sdk/v3';
-import { send } from 'process';
 
 export const pauseIdleUsers = schedules.task({
   cron: '0 0 * * *',
@@ -43,8 +42,7 @@ interface EmailInactiveUserPayload {
 export const emailInactiveUser = task({
   id: 'send-email-to-inactive-user',
   run: async (payload: EmailInactiveUserPayload) => {
-    // TODO: send email to inactive user
-    // await email.inactiveUser({ email: payload.email });
+    await email.inactiveUser({ email: payload.email });
   },
 });
 

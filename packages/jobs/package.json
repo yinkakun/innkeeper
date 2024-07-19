@@ -8,16 +8,14 @@
     "build": "tsc",
     "lint": "eslint .",
     "dev": "triggerdev dev",
+    "deploy": "trigger.dev deploy",
     "clean": "rm -rf .turbo node_modules",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
     "@innkeeper/db": "*",
-    "@langchain/anthropic": "^0.2.6",
-    "@langchain/community": "^0.2.19",
-    "langchain": "^0.2.10",
-    "zod": "^3.23.8"
+    "@innkeeper/service": "*"
   },
   "devDependencies": {
     "@types/node": "^20.14.11",

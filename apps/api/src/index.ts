@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { getCookie } from 'hono/cookie';
-import { createDb } from '@innkeeper/db';
+import { createDb } from '@innkeeper/service';
 import { trpcServer } from '@hono/trpc-server';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';

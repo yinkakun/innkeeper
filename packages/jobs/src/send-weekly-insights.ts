@@ -1,1 +1,1 @@
-import { db } from '@innkeeper/db';
+import { db } from '@innkeeper/service';

@@ -3,6 +3,6 @@
   "compilerOptions": {
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
-  "include": ["src", "src/seed.ts"],
+  "include": ["src", "src/seed.ts", "../service/src/db.ts"],
   "exclude": ["node_modules"]
 }
