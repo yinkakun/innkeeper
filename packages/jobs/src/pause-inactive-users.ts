@@ -1,8 +1,8 @@
-import { db } from './db';
+import { db } from '@innkeeper/db';
 import { schedules, task } from '@trigger.dev/sdk/v3';
 
 export const pauseIdleUsers = schedules.task({
-  // cron: '0 0 * * *',
+  cron: '0 0 * * *',
   id: 'pause-idle-users',
   run: async (payload) => {
     console.log('Pausing idle users', payload);

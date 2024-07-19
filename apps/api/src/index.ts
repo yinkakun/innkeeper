@@ -10,9 +10,6 @@ import { appRouter, createContext } from '@innkeeper/trpc';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 import type { User as SupabaseUser, SupabaseClient } from '@supabase/supabase-js';
 
-
-
-
 interface Variables {
   user: SupabaseUser | null;
   db: ReturnType<typeof createDb>;

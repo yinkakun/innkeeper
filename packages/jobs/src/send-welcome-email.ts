@@ -1,4 +1,4 @@
-import { db } from './db';
+import { db } from '@innkeeper/db';
 import { logger, task, wait } from '@trigger.dev/sdk/v3';
 
 export const sendWelcomeEmail = task({
