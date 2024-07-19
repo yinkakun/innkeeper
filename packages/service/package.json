@@ -6,7 +6,7 @@
   "name": "@innkeeper/service",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint .",
+    "lint": "eslint",
     "dev": "tsc --watch",
     "clean": "rm -rf .turbo node_modules",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
