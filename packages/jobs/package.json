@@ -12,22 +12,23 @@
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
-    "zod": "^3.23.8",
     "@innkeeper/db": "*",
-    "langchain": "^0.2.9",
-    "@langchain/anthropic": "^0.2.3",
-    "@langchain/community": "^0.2.18"
+    "@langchain/anthropic": "^0.2.6",
+    "@langchain/community": "^0.2.19",
+    "langchain": "^0.2.10",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "trigger.dev": "3.0.0-beta.26",
-    "@types/node": "^20.14.10",
+    "@types/node": "^20.14.11",
     "dotenv-cli": "^7.3.0",
-    "eslint": "^9.5.0",
+    "eslint": "^9.7.0",
     "eslint-config-custom": "*",
-    "prettier": "^3.3.1",
+    "prettier": "^3.3.3",
     "prettier-config": "*",
+    "trigger.dev": "3.0.0-beta.50",
     "tsconfig": "*",
-    "typescript": "^5.5.2"
+    "turbo": "^2.0.7",
+    "typescript": "^5.5.3"
   },
   "prettier": "prettier-config"
 }
