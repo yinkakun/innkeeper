@@ -26,7 +26,10 @@ interface Bindings {
 }
 
 export type HonoContext = Context<HonoOptions>;
-interface HonoOptions { Bindings: Bindings; Variables: Variables }
+interface HonoOptions {
+  Bindings: Bindings;
+  Variables: Variables;
+}
 const app = new Hono<HonoOptions>();
 
 const dbMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
@@ -37,9 +40,9 @@ const dbMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
 
 // trigger.dev requires to manually configure the env vars since process.env is not available in cloudflare workers
 const triggerMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
-    configureTriggerClient({
-      secretKey: ctx.env.TRIGGER_API_KEY,
-    });
+  configureTriggerClient({
+    secretKey: ctx.env.TRIGGER_API_KEY,
+  });
   await next();
 });
 
@@ -51,7 +54,7 @@ interface GetAuthenticatedUser {
 
 const getUser = async ({ accessToken, refreshToken, supabase }: GetAuthenticatedUser): Promise<SupabaseUser> => {
   const userResponse = await supabase.auth.getUser(accessToken);
-  if (!userResponse.error ) return userResponse.data.user;
+  if (!userResponse.error) return userResponse.data.user;
 
   // if the access token is invalid, try to refresh the session
   if (!refreshToken) throw new Error('No refresh token available');
@@ -67,14 +70,16 @@ const authMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
   const refreshToken = getCookie(ctx, 'refresh_token');
   const supabase = createClient(ctx.env.SUPABASE_URL, ctx.env.SUPABASE_SERVICE_ROLE_KEY);
 
-  try {
-    const user = await getUser({ supabase, accessToken, refreshToken });
-    ctx.set('user', user);
-    await next();
-  } catch (error) {
-    console.error('Error authenticating user', error);
-    throw new HTTPException(401, { message: 'Unauthorized' });
-  }
+  await getUser({ supabase, accessToken, refreshToken })
+    .then((user) => {
+      ctx.set('user', user);
+    })
+    .catch((error) => {
+      console.error('Error authenticating user', error);
+      throw new HTTPException(401, { message: 'Unauthorized' });
+    });
+
+  await next();
 });
 
 // app.use(dbMiddleware);
@@ -96,14 +101,10 @@ app.use(
   }),
 );
 
-
-
 export default {
   fetch: app.fetch,
   email: async (message: ForwardableEmailMessage, env: Bindings) => {
     console.log('Incoming env)', env);
     console.log('Incoming message)', message);
   },
-} 
-
-
+};

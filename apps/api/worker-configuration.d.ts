@@ -2,13 +2,9 @@
 // by running `wrangler types`
 
 interface Env {
-	ENVIRONMENT: string;
-	DATABASE_URL: string;
-	TRIGGER_API_KEY: string;
-	SUPABASE_SERVICE_ROLE_KEY: string;
-	SUPABASE_URL: string;
+  ENVIRONMENT: string;
+  DATABASE_URL: string;
+  TRIGGER_API_KEY: string;
+  SUPABASE_SERVICE_ROLE_KEY: string;
+  SUPABASE_URL: string;
 }
-
-
-
-

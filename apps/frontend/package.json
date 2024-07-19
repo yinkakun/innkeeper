@@ -30,11 +30,12 @@
     "eslint-config-custom": "*",
     "postcss": "^8.4.39",
     "prettier": "^3.3.3",
+    "prettier-config": "*",
+    "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwind-config": "*",
     "tailwindcss": "3.4.6",
     "tsconfig": "*",
     "typescript": "^5.5.3",
     "vite": "^5.3.4"
-  },
-  "prettier": "prettier-config"
+  }
 }

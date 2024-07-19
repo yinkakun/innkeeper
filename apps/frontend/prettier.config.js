@@ -1,10 +1,9 @@
 /** @typedef  {import("prettier").Config} PrettierConfig */
 
+import baseConfig from 'prettier-config';
+
 /** @type { PrettierConfig  } */
 export default {
-  semi: true,
-  tabWidth: 2,
-  printWidth: 140,
-  singleQuote: true,
-  trailingComma: 'all',
+  ...baseConfig,
+  plugins: ['prettier-plugin-tailwindcss'],
 };
