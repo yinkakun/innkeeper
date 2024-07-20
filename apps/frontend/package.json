@@ -4,13 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "yarn with-env vite",
-    "build": "tsc && yarn with-env vite build",
     "lint": "eslint",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "dev": "yarn vite",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "with-env": "dotenv -e ../../.env --"
+    "build": "tsc && yarn vite build",
+    "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.51.9",

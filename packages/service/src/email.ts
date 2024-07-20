@@ -19,7 +19,7 @@ const CreateSendEmailSchema = z.object({
   replyToAddress: z.string().email(),
 });
 
-const createSendEmail = (emailConfig: z.infer<typeof CreateSendEmailSchema>) => {
+export const createSendEmail = (emailConfig: Record<string, unknown>) => {
   const config = CreateSendEmailSchema.parse(emailConfig);
 
   const ses = new SESv2Client({
@@ -99,9 +99,9 @@ const createSendEmail = (emailConfig: z.infer<typeof CreateSendEmailSchema>) => 
 };
 
 export const email = createSendEmail({
-  region: 'us-west-2',
-  accessKeyId: 'accessKeyId',
-  secretAccessKey: 'secretAccess',
-  fromAddress: 'innkeeper@acme.com',
-  replyToAddress: 'innkeepee@acme.com',
+  region: process.env.AWS_REGION,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  fromAddress: process.env.EMAIL_FROM_ADDRESS,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  replyToAddress: process.env.EMAIL_REPLY_TO_ADDRESS,
 });

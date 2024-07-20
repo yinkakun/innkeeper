@@ -149,13 +149,13 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
 
 export type DbService = ReturnType<typeof createDbService>;
 
-// Disable prefetch as it is not supported for supabase "Transaction" pool mode
+// supabase: disable prefetch as it is not supported for "transaction" pool mode
 export const createDb = (databaseUrl?: string) => {
-  // if (!databaseUrl) {
-  //   throw new Error('DATABASE_URL is required');
-  // }
-  const client = postgres('', { prepare: false });
+  if (!databaseUrl) {
+    throw new Error('DB_URL is required');
+  }
+  const client = postgres(databaseUrl, { prepare: false });
   return createDbService({ db: drizzle(client, { schema }) });
 };
 
-export const db = createDb(process.env.DATABASE_URL ?? '');
+export const db = createDb(process.env.DB_URL ?? '');

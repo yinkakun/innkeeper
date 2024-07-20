@@ -7,7 +7,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { usersTable, schema } from '@innkeeper/db';
 import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db';
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.DB_URL;
 
 if (!DATABASE_URL) {
   throw new Error('DATABASE_URL is required');

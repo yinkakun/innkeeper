@@ -82,7 +82,4 @@ Learn more about the power of Turborepo:
 
 ## Todo
 
-- [x] export only schema from db
-- [x] initialize db in api, and trigger
-- [x] move seed to api and use drizzle http driver
-- [x] figure out how trigger will be configured in trpc package and hono api
+[] localize .env and remove all with-env

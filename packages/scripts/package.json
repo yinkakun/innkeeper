@@ -8,7 +8,8 @@
     "lint": "eslint",
     "dev": "tsc --watch",
     "clean": "rm -rf .turbo node_modules",
-    "seed": "yarn with-env tsx ./src/seed.ts",
+    "seed": "yarn tsx ./src/seed.ts",
+    "verify-email-identity": "yarn tsx ./src/verify-email-identity.ts",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
