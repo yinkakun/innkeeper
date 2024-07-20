@@ -1,1 +1,5 @@
-INNGEST_EVENT_KEY="your_ingest_event_key"
+DB_URL=""
+SUPABASE_URL=""
+TRIGGER_API_KEY=""
+ENVIRONMENT="development"
+SUPABASE_SERVICE_ROLE_KEY=""

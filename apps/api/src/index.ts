@@ -18,8 +18,8 @@ interface Variables {
 
 // always update this when you run `yarn types` to update the environment variables
 interface Bindings {
+  DB_URL: string;
   ENVIRONMENT: string;
-  DATABASE_URL: string;
   SUPABASE_URL: string;
   TRIGGER_API_KEY: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
@@ -33,7 +33,7 @@ interface HonoOptions {
 const app = new Hono<HonoOptions>();
 
 const dbMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
-  const db = createDb(ctx.env.DATABASE_URL);
+  const db = createDb(ctx.env.DB_URL);
   ctx.set('db', db);
   await next();
 });
