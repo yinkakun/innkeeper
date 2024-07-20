@@ -157,5 +157,3 @@ export const createDb = (databaseUrl?: string) => {
   const client = postgres(databaseUrl, { prepare: false });
   return createDbService({ db: drizzle(client, { schema }) });
 };
-
-export const db = createDb(process.env.DB_URL ?? '');

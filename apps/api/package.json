@@ -7,7 +7,6 @@
   "scripts": {
     "lint": "eslint .",
     "types": "wrangler types",
-    "seed": "yarn with-env tsx ./src/seed.ts",
     "dev": "wrangler dev --port 3000 src/index.ts",
     "deploy": "wrangler deploy --minify src/index.ts",
     "format": "prettier --check . --ignore-path ../../.gitignore"

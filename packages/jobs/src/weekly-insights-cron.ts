@@ -1,5 +1,7 @@
-import { db, email } from '@innkeeper/service';
+import { createDb } from '@innkeeper/service';
 import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
+import { email } from './email';
+export const db = createDb(process.env.DB_URL);
 
 export const weeklyInsightsCron = schedules.task({
   // Every Sunday at midnight

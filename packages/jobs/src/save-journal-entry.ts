@@ -1,5 +1,7 @@
-import { db } from '@innkeeper/service';
+import { createDb } from '@innkeeper/service';
 import { logger, task, retry, AbortTaskRunError } from '@trigger.dev/sdk/v3';
+
+export const db = createDb(process.env.DB_URL);
 
 interface JournalEntryPayload {
   entry: string;

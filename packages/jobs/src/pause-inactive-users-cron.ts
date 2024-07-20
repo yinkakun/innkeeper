@@ -1,5 +1,8 @@
-import { email, db } from '@innkeeper/service';
+import { createDb } from '@innkeeper/service';
+import { email } from './email';
 import { schedules, task, retry, logger } from '@trigger.dev/sdk/v3';
+
+export const db = createDb(process.env.DB_URL);
 
 export const pauseIdleUsersCron = schedules.task({
   // Every day at midnight

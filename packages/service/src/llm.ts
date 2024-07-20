@@ -16,7 +16,6 @@
 //   baseURL: 'xxx',
 // });
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/sesv2/command/SendEmailCommand/
 // https://logsnag.com/blog/handling-timezones-in-javascript-with-date-fns-tz
 // https://github.com/batuhanbilginn/background-jobs-nextjs13-inngest/blob/main/app/api/inngest/route.ts
 

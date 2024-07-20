@@ -82,9 +82,9 @@ const authMiddleware = createMiddleware<HonoOptions>(async (ctx, next) => {
   await next();
 });
 
-// app.use(dbMiddleware);
 // app.use(authMiddleware);
 app.use(triggerMiddleware);
+app.use(dbMiddleware);
 
 app.get('/', (context) => {
   return context.json({ message: 'Hello World!' });
