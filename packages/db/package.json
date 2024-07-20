@@ -11,7 +11,6 @@
     "with-env": "dotenv -e ../../.env --",
     "clean": "rm -rf .turbo node_modules",
     "push": "yarn with-env drizzle-kit push",
-    "seed": "yarn with-env tsx ./src/seed.ts",
     "studio": "yarn with-env drizzle-kit studio",
     "migrate": "yarn with-env drizzle-kit migrate",
     "generate": "yarn with-env drizzle-kit generate",
@@ -34,7 +33,6 @@
     "prettier": "^3.3.3",
     "prettier-config": "*",
     "tsconfig": "*",
-    "tsx": "^4.16.2",
     "typescript": "^5.5.3"
   },
   "prettier": "prettier-config"

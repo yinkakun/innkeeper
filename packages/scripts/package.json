@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "name": "@innkeeper/scripts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint",
+    "dev": "tsc --watch",
+    "clean": "rm -rf .turbo node_modules",
+    "seed": "yarn with-env tsx ./src/seed.ts",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "format": "prettier --check . --ignore-path ../../.gitignore"
+  },
+  "dependencies": {
+    "zod": "^3.23.8",
+    "@innkeeper/db": "*",
+    "@innkeeper/service": "*",
+    "@aws-sdk/client-sesv2": "^3.616.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "dotenv-cli": "^7.3.0",
+    "eslint": "^9.7.0",
+    "eslint-config-custom": "*",
+    "prettier": "^3.3.3",
+    "prettier-config": "*",
+    "tsconfig": "*",
+    "turbo": "^2.0.7",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3"
+  },
+  "prettier": "prettier-config"
+}
