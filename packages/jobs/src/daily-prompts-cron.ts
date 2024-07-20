@@ -1,4 +1,4 @@
-import { db, ai, email } from '@innkeeper/service';
+import { db, email, llm } from '@innkeeper/service';
 import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
 
 export const sendDailyPromptsCron = schedules.task({
@@ -36,7 +36,7 @@ interface SendPromptPayload {
 export const sendPrompt = task({
   id: 'send-prompt',
   run: async (payload: SendPromptPayload) => {
-    const prompt = await retry.onThrow(async () => ai.generatePrompt({ userId: payload.userId }), { maxAttempts: 3 });
-    await email.prompt({ email: payload.email, name: payload.name, prompt });
+    // const prompt = await retry.onThrow(async () => llm.generatePrompt({ userId: payload.userId }), { maxAttempts: 3 });
+    // await email.prompt({ email: payload.email, name: payload.name, prompt });
   },
 });

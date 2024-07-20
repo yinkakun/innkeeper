@@ -1,5 +1,5 @@
-import { Ollama } from '@langchain/community/llms/ollama';
-import { ChatAnthropic } from '@langchain/anthropic';
+// import { Ollama } from '@langchain/community/llms/ollama';
+// import { ChatAnthropic } from '@langchain/anthropic';
 
 // const ollama = new Ollama({
 //   baseUrl: 'http://localhost:11434', // Default value
@@ -20,7 +20,7 @@ import { ChatAnthropic } from '@langchain/anthropic';
 // https://logsnag.com/blog/handling-timezones-in-javascript-with-date-fns-tz
 // https://github.com/batuhanbilginn/background-jobs-nextjs13-inngest/blob/main/app/api/inngest/route.ts
 
-export const ai = {
+export const llm = {
   generateInsights: async (payload: { userId: string }) => {
     // TODO: generate insights for the user
     return 'Insights';

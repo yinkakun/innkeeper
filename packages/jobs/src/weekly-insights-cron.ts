@@ -1,4 +1,4 @@
-import { db, ai, email } from '@innkeeper/service';
+import { db, email } from '@innkeeper/service';
 import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
 
 export const weeklyInsightsCron = schedules.task({
@@ -36,7 +36,7 @@ interface GenerateAndSendInsightsPayload {
 export const generateAndSendInsights = task({
   id: 'generate-and-send-insights',
   run: async (payload: GenerateAndSendInsightsPayload) => {
-    const insights = await retry.onThrow(async () => await ai.generateInsights({ userId: payload.userId }), { maxAttempts: 3 });
-    await email.weeklyInsights({ email: payload.email, name: payload.name, insights });
+    // const insights = await retry.onThrow(async () => await llm.generateInsights({ userId: payload.userId }), { maxAttempts: 3 });
+    // await email.weeklyInsights({ email: payload.email, name: payload.name, insights });
   },
 });

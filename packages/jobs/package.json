@@ -3,28 +3,30 @@
   "type": "module",
   "version": "0.0.0",
   "name": "@innkeeper/jobs",
-  "exports": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint",
-    "dev": "npx trigger.dev@beta dev",
-    "deploy": "npx trigger.dev@beta deploy",
+    "dev": "triggerdev dev",
     "clean": "rm -rf .turbo node_modules",
+    "deploy": "npx trigger.dev@beta deploy",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
-    "@innkeeper/db": "*",
-    "@innkeeper/service": "*",
-    "@trigger.dev/sdk": "3.0.0-beta.50"
+    "@innkeeper/service": "*"
   },
   "devDependencies": {
+    "@trigger.dev/sdk": "3.0.0-beta.50",
     "@types/node": "^20.14.11",
     "dotenv-cli": "^7.3.0",
     "eslint": "^9.7.0",
     "eslint-config-custom": "*",
     "prettier": "^3.3.3",
     "prettier-config": "*",
+    "trigger.dev": "3.0.0-beta.50",
     "tsconfig": "*",
     "turbo": "^2.0.7",
     "typescript": "^5.5.3"
