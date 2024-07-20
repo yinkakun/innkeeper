@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { tasks } from '@trigger.dev/sdk/v3';
+import type { sendWelcomeEmail } from '@innkeeper/jobs';
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 
 export const exampleRouter = createTRPCRouter({
@@ -8,7 +10,10 @@ export const exampleRouter = createTRPCRouter({
     };
   }),
   getSecretMessage: protectedProcedure.query(async ({ ctx }) => {
-    // await helloWorldTask.trigger({ message: '' });
+    await tasks.trigger<typeof sendWelcomeEmail>('send-welcome-email', {
+      name: '',
+      email: '',
+    });
     return 'you can now see this secret message!';
   }),
 });

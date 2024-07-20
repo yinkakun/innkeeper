@@ -2,6 +2,7 @@ import { db, ai, email } from '@innkeeper/service';
 import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
 
 export const sendDailyPromptsCron = schedules.task({
+  // Every hour
   cron: '0 * * * *',
   id: 'send-daily-prompts',
   run: async () => {

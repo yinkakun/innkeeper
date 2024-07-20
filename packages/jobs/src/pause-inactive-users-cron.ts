@@ -2,6 +2,7 @@ import { email, db } from '@innkeeper/service';
 import { schedules, task, retry, logger } from '@trigger.dev/sdk/v3';
 
 export const pauseIdleUsersCron = schedules.task({
+  // Every day at midnight
   cron: '0 0 * * *',
   id: 'pause-idle-users',
   run: async (payload) => {

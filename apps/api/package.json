@@ -13,13 +13,13 @@
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
+    "hono": "^4.4.13",
     "@innkeeper/db": "*",
     "@innkeeper/trpc": "*",
     "@innkeeper/jobs": "*",
     "@innkeeper/service": "*",
     "@hono/trpc-server": "^0.3.2",
-    "@supabase/supabase-js": "^2.44.4",
-    "hono": "^4.4.13"
+    "@supabase/supabase-js": "^2.44.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240718.0",
