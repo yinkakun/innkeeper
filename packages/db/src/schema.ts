@@ -13,7 +13,7 @@ export const usersTable = pgTable(
     name: text('name').notNull(),
     email: text('email').notNull(),
     promptHourUTC: integer('promptHourUTC').notNull(), // 0-23
-    timezone: text('timezone').notNull(), // TODO: use enum
+    timezone: text('timezone').notNull(), // TODO: maybe use enum?
     lastEntryTime: timestamp('lastEntryTime', {
       mode: 'string',
     }),

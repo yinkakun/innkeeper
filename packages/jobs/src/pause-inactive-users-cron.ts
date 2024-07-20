@@ -1,7 +1,7 @@
 import { email, db } from '@innkeeper/service';
 import { schedules, task, retry, logger } from '@trigger.dev/sdk/v3';
 
-export const pauseIdleUsers = schedules.task({
+export const pauseIdleUsersCron = schedules.task({
   cron: '0 0 * * *',
   id: 'pause-idle-users',
   run: async (payload) => {
@@ -18,7 +18,7 @@ export const pauseIdleUsers = schedules.task({
       logger.log('No inactive users to notify');
     }
 
-    await emailInactiveUser.batchTrigger(inactiveUsers3days.map(({ email }) => ({ payload: { email } })));
+    await emailInactiveUser.batchTrigger(inactiveUsers3days.map(({ email, name }) => ({ payload: { email, name } })));
 
     const inactiveUsers5days = await retry.onThrow(
       async () => {
@@ -36,13 +36,14 @@ export const pauseIdleUsers = schedules.task({
 });
 
 interface EmailInactiveUserPayload {
+  name: string;
   email: string;
 }
 
 export const emailInactiveUser = task({
-  id: 'send-email-to-inactive-user',
+  id: 'email-inactive-user',
   run: async (payload: EmailInactiveUserPayload) => {
-    await email.inactiveUser({ email: payload.email });
+    await email.inactiveUser({ email: payload.email, name: payload.name });
   },
 });
 

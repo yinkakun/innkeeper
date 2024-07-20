@@ -65,6 +65,12 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
       return deletedUser;
     },
 
+    async getUsers() {
+      return db.query.usersTable.findMany({
+        where: and(eq(usersTable.isPaused, false)),
+      });
+    },
+
     async getUserById({ userId }: { userId: string }) {
       return db.query.usersTable.findFirst({
         where: eq(usersTable.id, userId),
