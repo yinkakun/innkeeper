@@ -1,3 +1,4 @@
+import { z } from 'zod';
 export const email = {
   inactiveUser: async (payload: { name: string; email: string }) => {
     // TODO: send email to inactive user
@@ -12,3 +13,5 @@ export const email = {
     // TODO: send daily prompt
   },
 };
+
+// interface SendEmailOptions {}
