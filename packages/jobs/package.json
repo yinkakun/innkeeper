@@ -7,8 +7,8 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint",
-    "dev": "triggerdev dev",
-    "deploy": "trigger.dev deploy",
+    "dev": "npx trigger.dev@beta dev",
+    "deploy": "npx trigger.dev@beta deploy",
     "clean": "rm -rf .turbo node_modules",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "format": "prettier --check . --ignore-path ../../.gitignore"
