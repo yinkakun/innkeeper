@@ -80,4 +80,11 @@ Learn more about the power of Turborepo:
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
 
-## Todo
+## Design
+
+Use a calming color palette (soft blues, greens, or earth tones)
+Implement a clean, minimalist design to reduce distractions
+Use ample white space to create a sense of calm and focus
+Incorporate subtle animations for transitions and feedback
+Ensure the design is responsive for seamless use on desktop and mobile devices
+Use icons and visual cues to make navigation intuitive

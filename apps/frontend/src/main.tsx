@@ -1,16 +1,14 @@
 import './main.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { App } from './app';
-import { Route, Router, RootRoute, NotFoundRoute, RouterProvider } from '@tanstack/react-router';
+import { Providers } from './providers';
+import { Route, Router, NotFoundRoute, RouterProvider, createRootRoute } from '@tanstack/react-router';
 
 import { Index } from './pages';
 import { NotFound } from './pages/not-found';
-import { CreateArticle } from './pages/articles/create';
-import { SearchArticles } from './pages/articles/search';
+import { Journal } from './pages/journal';
 
-//  create the root route
-const rootRoute = new RootRoute();
+const rootRoute = createRootRoute();
 
 // create other routes
 const indexRoute = new Route({
@@ -19,15 +17,9 @@ const indexRoute = new Route({
   getParentRoute: () => rootRoute,
 });
 
-const createArticleRoute = new Route({
-  path: 'articles/create',
-  component: CreateArticle,
-  getParentRoute: () => rootRoute,
-});
-
-const searchArticleRoute = new Route({
-  path: 'articles/search',
-  component: SearchArticles,
+const journalROute = new Route({
+  path: 'journal',
+  component: Journal,
   getParentRoute: () => rootRoute,
 });
 
@@ -37,7 +29,7 @@ const notFoundRoute = new NotFoundRoute({
 });
 
 //  build the route tree
-const routeTree = rootRoute.addChildren([indexRoute, createArticleRoute, searchArticleRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, journalROute]);
 
 const router = new Router({
   routeTree,
@@ -52,8 +44,8 @@ declare module '@tanstack/react-router' {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App>
+    <Providers>
       <RouterProvider router={router} />
-    </App>
+    </Providers>
   </React.StrictMode>,
 );

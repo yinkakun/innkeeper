@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint .",
     "types": "wrangler types",
-    "dev": "wrangler dev --port 3000 src/index.ts",
+    "dev": "wrangler dev --log-level debug --port 3000 src/index.ts",
     "deploy": "wrangler deploy --minify src/index.ts",
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
