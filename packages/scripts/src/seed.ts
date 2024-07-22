@@ -2,19 +2,19 @@ import 'dotenv/config';
 import type { z } from 'zod';
 import { Chance } from 'chance';
 import postgres from 'postgres';
-import { createDb } from '@innkeeper/service';
+import { initDbService } from '@innkeeper/service';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { usersTable, schema } from '@innkeeper/db';
 import type { CreateUserSchema, CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db';
 
-const DATABASE_URL = process.env.DB_URL;
+const DATABASE_URL = process.env.DATABASE_URL;
 
 if (!DATABASE_URL) {
   throw new Error('DATABASE_URL is required');
 }
 
 const chance = new Chance();
-const db = createDb(DATABASE_URL);
+const db = initDbService(DATABASE_URL);
 const client = postgres(DATABASE_URL, { prepare: false });
 
 const createUser = async () => {

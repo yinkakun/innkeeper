@@ -4,23 +4,21 @@ import { createId } from '@paralleldrive/cuid2';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { integer, pgTable, text, timestamp, uniqueIndex, index, boolean } from 'drizzle-orm/pg-core';
 
-// Tables
-
 export const usersTable = pgTable(
   'users',
   {
+    name: text('name'),
     id: text('id').notNull().primaryKey(),
-    name: text('name').notNull(),
-    email: text('email').notNull(),
-    promptHourUTC: integer('promptHourUTC').notNull(), // 0-23
-    timezone: text('timezone').notNull(), // TODO: maybe use enum?
+    email: text('email').notNull().unique(),
+    promptHourUTC: integer('promptHourUTC'), // 0-23
+    timezone: text('timezone'), // TODO: maybe use enum?
     lastEntryTime: timestamp('lastEntryTime', {
       mode: 'string',
     }),
-    createdAt: timestamp('createdAt')
+    createdAt: timestamp('created_at')
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: timestamp('updatedAt', {
+    updatedAt: timestamp('updated_at', {
       mode: 'string',
     }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
     isPaused: boolean('isPaused').default(false),
@@ -32,6 +30,34 @@ export const usersTable = pgTable(
     lastEntryTimeIndex: index('lastEntryTimeIndex').on(table.lastEntryTime, table.isPaused),
   }),
 );
+
+export const sessionsTable = pgTable('sessions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => usersTable.id),
+  expiresAt: timestamp('expires_at', {
+    mode: 'date',
+    withTimezone: true,
+  }).notNull(),
+});
+
+export const emailVerificationTable = pgTable('email_verification', {
+  id: text('id').primaryKey().$default(createId),
+  userId: text('user_id')
+    .notNull()
+    .references(() => usersTable.id),
+  email: text('email').notNull(),
+  code: text('code').notNull(),
+  createdAt: timestamp('created_at', {
+    mode: 'string',
+  })
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  expiresAt: timestamp('expires_at', {
+    mode: 'string',
+  }).notNull(),
+});
 
 export const promptsTable = pgTable(
   'prompts',
@@ -83,8 +109,6 @@ export const journalEntriesTable = pgTable(
   }),
 );
 
-// Relations
-
 export const userRelations = relations(usersTable, ({ many }) => ({
   prompts: many(promptsTable),
   journalEntries: many(journalEntriesTable),
@@ -100,20 +124,15 @@ export const journalEntryRelations = relations(journalEntriesTable, ({ one }) =>
   prompt: one(promptsTable, { fields: [journalEntriesTable.promptId], references: [promptsTable.id] }),
 }));
 
-// Schemas
-
 export const UserSchema = createSelectSchema(usersTable);
 export const PromptSchema = createSelectSchema(promptsTable);
 export const JournalEntrySchema = createSelectSchema(journalEntriesTable);
 
-export const CreateUserSchema = createInsertSchema(usersTable, {
+export const UpdateUserSchema = createInsertSchema(usersTable, {
   email: z.string().email().min(1).max(255),
-  promptHourUTC: z.number().int().min(0).max(23),
-}).omit({
-  lastEntryTime: true,
-});
-
-export const UpdateUserSchema = CreateUserSchema.omit({ createdAt: true, updatedAt: true }).required({ id: true });
+})
+  .omit({ createdAt: true, updatedAt: true, lastEntryTime: true })
+  .required({ id: true });
 
 export const CreatePromptSchema = createInsertSchema(promptsTable, {}).omit({
   id: true,

@@ -2,14 +2,17 @@ import type { z } from 'zod';
 import postgres from 'postgres';
 import { eq, and, lt } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { promptsTable, journalEntriesTable, usersTable, schema } from '@innkeeper/db';
-import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema, CreateUserSchema } from '@innkeeper/db';
+import { generateRandomString, alphabet } from 'oslo/crypto';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { TimeSpan, createDate, isWithinExpirationDate } from 'oslo';
+import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
+import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema } from '@innkeeper/db';
+import { promptsTable, journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, schema } from '@innkeeper/db';
 
 export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> }) => {
   return {
-    async createUser({ id, name, email, promptHourUTC, timezone }: z.infer<typeof CreateUserSchema>) {
-      const [newUser] = await db.insert(usersTable).values({ id, name, email, promptHourUTC, timezone }).returning();
+    async createUser({ id, email }: { id: string; email: string }) {
+      const [newUser] = await db.insert(usersTable).values({ id, email }).returning();
       return newUser;
     },
 
@@ -35,6 +38,41 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
         .where(eq(usersTable.id, id))
         .returning();
       return updatedUser;
+    },
+
+    async generateEmailOtpCode({ userId, email }: { userId: string; email: string }) {
+      const code = generateRandomString(6, alphabet('0-9'));
+      const expiresAt = createDate(new TimeSpan(15, 'm')); // 15 minutes
+      await db.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId)).returning();
+      await db.insert(emailVerificationTable).values({
+        code,
+        email,
+        userId,
+        expiresAt: expiresAt.toISOString(),
+      });
+      return code;
+    },
+
+    async verifyEmailOtpCode({ userId, code }: { userId: string; code: string }) {
+      return db.transaction(async (tx) => {
+        const emailVerification = await tx.query.emailVerificationTable.findFirst({
+          where: and(eq(emailVerificationTable.userId, userId)),
+        });
+
+        if (!emailVerification || !isWithinExpirationDate(new Date(emailVerification.expiresAt))) {
+          return false;
+        }
+
+        // TODO: investigate why  crypto.subtle.timingSafeEqual is not working
+        // const isValid = crypto.subtle.timingSafeEqual(Buffer.from(code), Buffer.from(verifiedUserEmail.code));
+        const isValid = code === emailVerification.code;
+
+        if (isValid) {
+          await tx.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId));
+        }
+
+        return isValid;
+      });
     },
 
     async createPrompt({ title, body, userId }: z.infer<typeof CreatePromptSchema>) {
@@ -149,11 +187,22 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
 
 export type DbService = ReturnType<typeof createDbService>;
 
-// supabase: disable prefetch as it is not supported for "transaction" pool mode
-export const createDb = (databaseUrl?: string) => {
+export const initDbService = (databaseUrl?: string) => {
   if (!databaseUrl) {
-    throw new Error('DB_URL is required');
+    throw new Error('DATABASE_URL is required');
   }
+  // supabase: disable prefetch as it is not supported for "transaction" pool mode
+  // https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-drizzle
   const client = postgres(databaseUrl, { prepare: false });
   return createDbService({ db: drizzle(client, { schema }) });
+};
+
+export const initLuciaDbAdapter = (databaseUrl?: string) => {
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL is required');
+  }
+  // supabase: disable prefetch as it is not supported for "transaction" pool mode
+  // https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-drizzle
+  const client = postgres(databaseUrl, { prepare: false });
+  return new DrizzlePostgreSQLAdapter(drizzle(client, { schema }), sessionsTable, usersTable);
 };

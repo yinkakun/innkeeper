@@ -2,7 +2,7 @@
   "ui": "stream",
   "$schema": "https://turborepo.org/schema.json",
   "globalEnv": [
-    "DB_URL",
+    "DATABASE_URL",
     "API_URL",
     "AWS_REGION",
     "AWS_ACCESS_KEY_ID",

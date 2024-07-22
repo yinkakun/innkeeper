@@ -1,8 +1,6 @@
-import { createDb, llm } from '@innkeeper/service';
 import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
-import { email } from './email';
-
-export const db = createDb(process.env.DB_URL);
+import { email } from './lib/email';
+import { db } from './lib/db';
 
 export const sendDailyPromptsCron = schedules.task({
   // Every hour

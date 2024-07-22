@@ -88,3 +88,9 @@ Use ample white space to create a sense of calm and focus
 Incorporate subtle animations for transitions and feedback
 Ensure the design is responsive for seamless use on desktop and mobile devices
 Use icons and visual cues to make navigation intuitive
+
+## Todo
+
+- [ ] Create a simple homepage for olopo with Astro, add terms and condition
+- [ ] Request production access for Google Auth
+- [ ] Request production access for AWS SES

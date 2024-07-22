@@ -1,4 +1,4 @@
-import { createSendEmail, createDb } from '@innkeeper/service';
+import { createSendEmail, initDbService } from '@innkeeper/service';
 
 export const email = createSendEmail({
   region: process.env.AWS_REGION,
@@ -7,5 +7,3 @@ export const email = createSendEmail({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   replyToAddress: process.env.EMAIL_REPLY_TO_ADDRESS,
 });
-
-export const db = createDb(process.env.DB_URL);
