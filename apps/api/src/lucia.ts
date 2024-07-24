@@ -2,7 +2,17 @@ import { Lucia } from 'lucia';
 import { Google } from 'arctic';
 import { initLuciaDbAdapter } from '@innkeeper/service';
 
-export const google = new Google('client_id', 'client_secret', 'redirect_uri');
+interface initGoogle {
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+}
+
+export const initGoogle = ({ clientId, clientSecret, redirectUri }: initGoogle) => {
+  return new Google(clientId, clientSecret, redirectUri);
+};
+
+export const google = new Google('client_id', 'client_secret', 'localhost:3000/auth/google/callback');
 
 export const initLucia = ({ databaseUrl, secure }: { databaseUrl: string; secure?: boolean }) => {
   const db = initLuciaDbAdapter(databaseUrl);

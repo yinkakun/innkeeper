@@ -1,3 +1,4 @@
+import ky from 'ky';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { csrf } from 'hono/csrf';
@@ -13,7 +14,7 @@ import { appRouter, createContext } from '@innkeeper/trpc';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 import { generateState, generateCodeVerifier } from 'arctic';
 import { z } from 'zod';
-import { initLucia, google } from './lucia';
+import { initLucia, google, initGoogle } from './lucia';
 import { OAuth2RequestError, ArcticFetchError } from 'arctic';
 import type { User, Session } from 'lucia';
 import { generateIdFromEntropySize } from 'lucia';
@@ -112,6 +113,10 @@ app.get('/auth/google', (c) => {
   return c.redirect(url.toString());
 });
 
+interface UserInfo {
+  email: string;
+}
+
 app.get('/auth/google/callback', async (c) => {
   const code = c.req.query('code');
   const state = c.req.query('state');
@@ -132,12 +137,21 @@ app.get('/auth/google/callback', async (c) => {
     }
   });
 
+  if (!tokens) {
+    throw new HTTPException(500, { message: 'Failed to fetch tokens' });
+  }
+
   const lucia = initLucia({ databaseUrl: c.env.DATABASE_URL, secure: c.env.ENVIRONMENT !== 'development' });
 
-  // use tokens.access_token to fetch user email
-  const userEmail = 'user@email.com';
+  const userInfo = await ky
+    .get('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokens.accessToken.toString()}` },
+    })
+    .json<UserInfo>();
 
-  const existingUser = await c.get('db').getUserByEmail({ email: userEmail });
+  console.log('User Info:', userInfo);
+
+  const existingUser = await c.get('db').getUserByEmail({ email: userInfo.email });
 
   // if existing user, create a session and redirect to the dashboard
   if (existingUser) {
@@ -150,7 +164,7 @@ app.get('/auth/google/callback', async (c) => {
   }
 
   const userId = generateIdFromEntropySize(10);
-  const user = await c.get('db').createUser({ id: userId, email: userEmail });
+  const user = await c.get('db').createUser({ id: userId, email: userInfo.email });
   const session = await lucia.createSession(user.id, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
   c.header('Set-Cookie', sessionCookie.serialize(), {
