@@ -10,14 +10,14 @@ interface LayoutProps {
 export const AppLayout: React.FC<LayoutProps> = ({ children, className }) => {
   return (
     <div className={cn('flex min-h-[100dvh] flex-col bg-neutral-100')}>
-      <header className="absolute left-1/2 top-8 -translate-x-1/2 rounded-[15px] border border-neutral-200 bg-transparent backdrop-blur-lg">
+      <header className="absolute left-1/2 top-10 -translate-x-1/2 rounded-[15px] border border-neutral-200 bg-transparent backdrop-blur-lg">
         <nav className="grid grid-cols-3 gap-1 p-0.5">
           <Link to="/journal" className="flex w-full">
             {({ isActive }) => {
               return (
                 <span
                   className={cn(
-                    'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-2 text-neutral-800 hover:text-neutral-900',
+                    'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-1 text-neutral-800 hover:text-neutral-900',
                     {
                       'border-neutral-200 bg-neutral-100': isActive,
                     },
@@ -33,7 +33,7 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, className }) => {
               return (
                 <span
                   className={cn(
-                    'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-2 text-neutral-800 hover:text-neutral-900',
+                    'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-1 text-neutral-800 hover:text-neutral-900',
                     {
                       'border-neutral-200 bg-neutral-100': isActive,
                     },
@@ -49,7 +49,7 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, className }) => {
               return (
                 <span
                   className={cn(
-                    'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-2 text-neutral-800 hover:text-neutral-900',
+                    'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-1 text-neutral-800 hover:text-neutral-900',
                     {
                       'border-neutral-200 bg-neutral-100': isActive,
                     },
