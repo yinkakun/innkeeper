@@ -10,7 +10,7 @@ export const Login = () => {
         <p className="max-w-[70%] text-center text-neutral-700">Start using 💌 Innkeeper to for shadow work journaling</p>
 
         <a
-          target='_blank'
+          target="_blank"
           href="/auth/google/callback"
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-1.5 text-center text-sm font-normal text-neutral-800"
         >
@@ -19,7 +19,6 @@ export const Login = () => {
         </a>
 
         <p>OR</p>
-      
 
         <div className="flex w-full flex-col gap-2">
           <input
@@ -27,13 +26,20 @@ export const Login = () => {
             className="h-8 rounded-lg border border-neutral-500 border-opacity-40 bg-neutral-100 bg-transparent px-2 py-1 text-xs placeholder:text-neutral-500"
             placeholder="Enter email"
           />
-          <button className="w-full rounded-lg hover-bg-orange-600 duration-200 bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50">
+          <button className="hover-bg-orange-600 w-full rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200">
             Send OTP
           </button>
         </div>
 
         <span className="max-w-[90%] text-xs text-neutral-600">
-          By continuing, you agree to Olopo Studio's <a href="#" className='underline'>Terms of Service</a> and acknowledge their <a href="#" className='underline'>Privacy Policy</a>
+          By continuing, you agree to Olopo Studio's{' '}
+          <a href="#" className="underline">
+            Terms of Service
+          </a>{' '}
+          and acknowledge their{' '}
+          <a href="#" className="underline">
+            Privacy Policy
+          </a>
         </span>
       </div>
     </Layout>

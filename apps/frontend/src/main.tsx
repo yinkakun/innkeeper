@@ -11,6 +11,7 @@ import { Journal } from '@/pages/journal';
 import { Insights } from '@/pages/insights';
 import { Login } from '@/pages/login';
 import { Settings } from '@/pages/settings';
+import { Onboarding } from '@/pages/onboarding';
 
 import type { TrpcClient } from '@/lib/trpc';
 import { trpc, trpcClient } from '@/lib/trpc';
@@ -33,6 +34,12 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
 const indexRoute = createRoute({
   path: '/',
   component: Index,
+  getParentRoute: () => rootRoute,
+});
+
+const onboardingRoute = createRoute({
+  path: 'onboarding',
+  component: Onboarding,
   getParentRoute: () => rootRoute,
 });
 
@@ -61,7 +68,7 @@ const loginRoute = createRoute({
 });
 
 //  build the route tree
-const routeTree = rootRoute.addChildren([indexRoute, journalRoute, loginRoute, insightsRoute, settingsRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, onboardingRoute, journalRoute, loginRoute, insightsRoute, settingsRoute]);
 
 export const queryClient = new QueryClient({});
 
