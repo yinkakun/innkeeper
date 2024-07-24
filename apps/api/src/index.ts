@@ -2,6 +2,7 @@ import ky from 'ky';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { csrf } from 'hono/csrf';
+import { decode } from 'hono/jwt';
 import { logger } from 'hono/logger';
 import { getCookie, setCookie } from 'hono/cookie';
 import { prettyJSON } from 'hono/pretty-json';
@@ -14,10 +15,11 @@ import { appRouter, createContext } from '@innkeeper/trpc';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 import { generateState, generateCodeVerifier } from 'arctic';
 import { z } from 'zod';
-import { initLucia, google, initGoogle } from './lucia';
+import { initLucia, initGoogle } from './lucia';
 import { OAuth2RequestError, ArcticFetchError } from 'arctic';
 import type { User, Session } from 'lucia';
 import { generateIdFromEntropySize } from 'lucia';
+import { parse } from 'hono/utils/cookie';
 
 interface Variables {
   db: ReturnType<typeof initDbService>;
@@ -27,9 +29,11 @@ interface Variables {
 
 // always update this when you run `yarn types` to update the environment variables
 interface Bindings {
-  DATABASE_URL: string;
   ENVIRONMENT: string;
+  DATABASE_URL: string;
   TRIGGER_API_KEY: string;
+  GOOGLE_CLIENT_ID: string;
+  G00GLE_CLIENT_SECRET: string;
 }
 
 export type HonoContext = Context<HonoOptions>;
@@ -94,6 +98,11 @@ app.get('/', (ctx) => {
 app.get('/auth/google', (c) => {
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
+  const google = initGoogle({
+    clientId: c.env.GOOGLE_CLIENT_ID,
+    clientSecret: c.env.G00GLE_CLIENT_SECRET,
+    redirectUri: `http://localhost:3000/auth/google/callback`,
+  });
   const url = google.createAuthorizationURL(state, codeVerifier, ['email']);
 
   setCookie(c, 'google_oauth_state', state, {
@@ -121,6 +130,12 @@ app.get('/auth/google/callback', async (c) => {
   const code = c.req.query('code');
   const state = c.req.query('state');
 
+  const google = initGoogle({
+    clientId: c.env.GOOGLE_CLIENT_ID,
+    clientSecret: c.env.G00GLE_CLIENT_SECRET,
+    redirectUri: `http://localhost:3000/auth/google/callback`,
+  });
+
   const storedState = getCookie(c, 'google_oauth_state');
   const storedCodeVerifier = getCookie(c, 'google_code_verifier');
 
@@ -143,15 +158,20 @@ app.get('/auth/google/callback', async (c) => {
 
   const lucia = initLucia({ databaseUrl: c.env.DATABASE_URL, secure: c.env.ENVIRONMENT !== 'development' });
 
-  const userInfo = await ky
-    .get('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: { Authorization: `Bearer ${tokens.accessToken.toString()}` },
-    })
-    .json<UserInfo>();
+  console.log('🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊🍊', tokens.idToken);
 
-  console.log('User Info:', userInfo);
+  const email = decode(tokens.idToken()).payload.email! as string;
+  console.log('Decoded:', email);
 
-  const existingUser = await c.get('db').getUserByEmail({ email: userInfo.email });
+  // const userInfo = await ky
+  //   .get('https://www.googleapis.com/auth/userinfo.emai', {
+  //     headers: { Authorization: `Bearer ${tokens.accessToken()}` },
+  //   })
+  //   .json<UserInfo>();
+
+  // console.log('User Info:', userInfo);
+
+  const existingUser = await c.get('db').getUserByEmail({ email: email });
 
   // if existing user, create a session and redirect to the dashboard
   if (existingUser) {
@@ -160,28 +180,40 @@ app.get('/auth/google/callback', async (c) => {
     c.header('Set-Cookie', sessionCookie.serialize(), {
       append: true,
     });
-    return c.redirect('/dashboard');
+
+    const isUserOnboarded = await c.get('db').isUserOnboarded({ userId: existingUser.id });
+
+    if (isUserOnboarded) {
+      return c.redirect('http://localhost:5173/journal');
+    }
+    return c.redirect('http://localhost:5173/onboarding');
   }
 
   const userId = generateIdFromEntropySize(10);
-  const user = await c.get('db').createUser({ id: userId, email: userInfo.email });
+  const user = await c.get('db').createUser({ id: userId, email });
   const session = await lucia.createSession(user.id, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
   c.header('Set-Cookie', sessionCookie.serialize(), {
     append: true,
   });
-  return c.redirect('/onboarding');
+  return c.redirect('http://localhost:5173/onboarding');
 });
 
 const emailOtpSchema = z.object({
   email: z.string().email(),
 });
 
-// For both sign up and sign in
 // TODO: rate limit endpoint
 app.post('/auth/email-otp', async (c) => {
-  const body = await c.req.parseBody();
-  const { email } = emailOtpSchema.parse(body);
+  const json = await c.req.json();
+  console.log('Body:', json);
+  const parsedJson = emailOtpSchema.safeParse(json);
+  if (!parsedJson.success) {
+    throw new HTTPException(400, { message: JSON.stringify(parsedJson.error.flatten().fieldErrors) });
+  }
+
+  const { email } = parsedJson.data;
+
   const existingUser = await c.get('db').getUserByEmail({ email });
 
   if (existingUser) {
@@ -216,27 +248,37 @@ app.post('/auth/email-otp', async (c) => {
 
 const verifyEmailOtpSchema = z.object({
   email: z.string().email(),
-  code: z.number().max(6).min(6),
+  code: z.string().length(6),
 });
 
-app.post('/auth/verify-email-otp', async (c) => {
-  const body = await c.req.parseBody();
-  const { email, code } = verifyEmailOtpSchema.parse(body);
+app.post('auth/verify-email-otp', async (c) => {
+  const json = await c.req.json();
+  const parsedJson = verifyEmailOtpSchema.safeParse(json);
+
+  if (!parsedJson.success) {
+    throw new HTTPException(400, { message: JSON.stringify(parsedJson.error.flatten().fieldErrors) });
+  }
+
+  const { email, code } = parsedJson.data;
 
   if (!code || !email) {
     throw new HTTPException(400, { message: 'Invalid request' });
   }
 
   const user = await c.get('db').getUserByEmail({ email });
+
   if (!user) {
     throw new HTTPException(400, { message: 'User not found' });
   }
 
-  const isValidCode = await c.get('db').verifyEmailOtpCode({ userId: user.id, code: code.toString() });
+  const { isValidCode, cause } = await c.get('db').verifyEmailOtpCode({ userId: user.id, code: code.toString() });
+  console.log('Cause:', cause);
 
   if (!isValidCode) {
-    throw new HTTPException(400, { message: 'Invalid code' });
+    throw new HTTPException(400, { message: cause });
   }
+
+  const isUserOnboarded = await c.get('db').isUserOnboarded({ userId: user.id });
 
   const lucia = initLucia({ databaseUrl: c.env.DATABASE_URL, secure: c.env.ENVIRONMENT !== 'development' });
 
@@ -250,7 +292,7 @@ app.post('/auth/verify-email-otp', async (c) => {
   c.set('user', user);
   c.set('session', session);
 
-  return c.json({ success: true });
+  return c.json({ success: true, onboarded: isUserOnboarded });
 });
 
 app.post('/logout', authMiddleware, async (c) => {

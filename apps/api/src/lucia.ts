@@ -12,8 +12,6 @@ export const initGoogle = ({ clientId, clientSecret, redirectUri }: initGoogle) 
   return new Google(clientId, clientSecret, redirectUri);
 };
 
-export const google = new Google('client_id', 'client_secret', 'localhost:3000/auth/google/callback');
-
 export const initLucia = ({ databaseUrl, secure }: { databaseUrl: string; secure?: boolean }) => {
   const db = initLuciaDbAdapter(databaseUrl);
   return new Lucia(db, {

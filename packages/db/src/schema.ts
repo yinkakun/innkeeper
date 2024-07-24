@@ -15,11 +15,15 @@ export const usersTable = pgTable(
     lastEntryTime: timestamp('lastEntryTime', {
       mode: 'string',
     }),
-    createdAt: timestamp('created_at')
+    createdAt: timestamp('created_at', {
+      mode: 'string',
+      withTimezone: true,
+    })
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
     updatedAt: timestamp('updated_at', {
       mode: 'string',
+      withTimezone: true,
     }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
     isPaused: boolean('isPaused').default(false),
     completedOnboarding: boolean('completedOnboarding').notNull().default(false),
@@ -51,11 +55,13 @@ export const emailVerificationTable = pgTable('email_verification', {
   code: text('code').notNull(),
   createdAt: timestamp('created_at', {
     mode: 'string',
+    withTimezone: true,
   })
     .notNull()
     .default(sql`(CURRENT_TIMESTAMP)`),
   expiresAt: timestamp('expires_at', {
     mode: 'string',
+    withTimezone: true,
   }).notNull(),
 });
 
@@ -70,11 +76,13 @@ export const promptsTable = pgTable(
     title: text('title').notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'string',
+      withTimezone: true,
     })
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
     updatedAt: timestamp('updatedAt', {
       mode: 'string',
+      withTimezone: true,
     }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
   },
   (table) => ({
@@ -95,11 +103,13 @@ export const journalEntriesTable = pgTable(
     id: text('id').notNull().primaryKey().$default(createId),
     createdAt: timestamp('createdAt', {
       mode: 'string',
+      withTimezone: true,
     })
       .notNull()
       .default(sql`(CURRENT_TIMESTAMP)`),
     updatedAt: timestamp('updatedAt', {
       mode: 'string',
+      withTimezone: true,
     }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
     isDeleted: boolean('isDeleted').notNull().default(false),
   },

@@ -40,6 +40,13 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
       return updatedUser;
     },
 
+    async isUserOnboarded({ userId }: { userId: string }) {
+      const user = await db.query.usersTable.findFirst({
+        where: eq(usersTable.id, userId),
+      });
+      return user?.completedOnboarding ?? false;
+    },
+
     async generateEmailOtpCode({ userId, email }: { userId: string; email: string }) {
       const code = generateRandomString(6, alphabet('0-9'));
       const expiresAt = createDate(new TimeSpan(15, 'm')); // 15 minutes
@@ -59,19 +66,35 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
           where: and(eq(emailVerificationTable.userId, userId)),
         });
 
-        if (!emailVerification || !isWithinExpirationDate(new Date(emailVerification.expiresAt))) {
-          return false;
+        if (!emailVerification) {
+          return {
+            isValidCode: false,
+            cause: 'User not found',
+          };
+        }
+
+        if (!isWithinExpirationDate(new Date(emailVerification.expiresAt))) {
+          return {
+            isValidCode: false,
+            cause: 'Code expired',
+          };
         }
 
         // TODO: investigate why  crypto.subtle.timingSafeEqual is not working
         // const isValid = crypto.subtle.timingSafeEqual(Buffer.from(code), Buffer.from(verifiedUserEmail.code));
         const isValid = code === emailVerification.code;
+        if (!isValid) {
+          return {
+            isValidCode: false,
+            cause: 'Invalid code',
+          };
+        }
 
         if (isValid) {
           await tx.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId));
         }
 
-        return isValid;
+        return { isValidCode: isValid };
       });
     },
 
