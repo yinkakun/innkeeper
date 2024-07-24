@@ -1,25 +1,23 @@
-import ky from 'ky';
+import { z } from 'zod';
 import { Hono } from 'hono';
-import type { Context } from 'hono';
 import { csrf } from 'hono/csrf';
 import { decode } from 'hono/jwt';
+import type { Context } from 'hono';
 import { logger } from 'hono/logger';
-import { getCookie, setCookie } from 'hono/cookie';
+import type { User, Session } from 'lucia';
 import { prettyJSON } from 'hono/pretty-json';
-import { initDbService } from '@innkeeper/service';
 import { trpcServer } from '@hono/trpc-server';
 import { createMiddleware } from 'hono/factory';
+import { initLucia, initGoogle } from './lucia';
+import { generateIdFromEntropySize } from 'lucia';
+import { initDbService } from '@innkeeper/service';
+import { getCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 import type { ForwardableEmailMessage } from './types';
 import { appRouter, createContext } from '@innkeeper/trpc';
-import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 import { generateState, generateCodeVerifier } from 'arctic';
-import { z } from 'zod';
-import { initLucia, initGoogle } from './lucia';
 import { OAuth2RequestError, ArcticFetchError } from 'arctic';
-import type { User, Session } from 'lucia';
-import { generateIdFromEntropySize } from 'lucia';
-import { parse } from 'hono/utils/cookie';
+import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 
 interface Variables {
   db: ReturnType<typeof initDbService>;
@@ -122,10 +120,6 @@ app.get('/auth/google', (c) => {
   return c.redirect(url.toString());
 });
 
-interface UserInfo {
-  email: string;
-}
-
 app.get('/auth/google/callback', async (c) => {
   const code = c.req.query('code');
   const state = c.req.query('state');
@@ -162,14 +156,6 @@ app.get('/auth/google/callback', async (c) => {
 
   const email = decode(tokens.idToken()).payload.email! as string;
   console.log('Decoded:', email);
-
-  // const userInfo = await ky
-  //   .get('https://www.googleapis.com/auth/userinfo.emai', {
-  //     headers: { Authorization: `Bearer ${tokens.accessToken()}` },
-  //   })
-  //   .json<UserInfo>();
-
-  // console.log('User Info:', userInfo);
 
   const existingUser = await c.get('db').getUserByEmail({ email: email });
 
