@@ -8,7 +8,9 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { Index } from '@/pages';
 import { NotFound } from '@/pages/not-found';
 import { Journal } from '@/pages/journal';
+import { Insights } from '@/pages/insights';
 import { Login } from '@/pages/login';
+import { Settings } from '@/pages/settings';
 
 import type { TrpcClient } from '@/lib/trpc';
 import { trpc, trpcClient } from '@/lib/trpc';
@@ -40,6 +42,18 @@ const journalRoute = createRoute({
   getParentRoute: () => rootRoute,
 });
 
+const insightsRoute = createRoute({
+  path: 'insights',
+  component: Insights,
+  getParentRoute: () => rootRoute,
+});
+
+const settingsRoute = createRoute({
+  path: 'settings',
+  component: Settings,
+  getParentRoute: () => rootRoute,
+});
+
 const loginRoute = createRoute({
   path: 'login',
   component: Login,
@@ -47,7 +61,7 @@ const loginRoute = createRoute({
 });
 
 //  build the route tree
-const routeTree = rootRoute.addChildren([indexRoute, journalRoute, loginRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, journalRoute, loginRoute, insightsRoute, settingsRoute]);
 
 export const queryClient = new QueryClient({});
 
