@@ -12,8 +12,10 @@ export const authRouter = createTRPCRouter({
         email: input.email,
         userId: existingUser.id,
       });
-      console.log('OTP (existing user):', otp);
-      // await sendWelcomeEmail(input.email, otp);
+      await ctx.sendEmail.otp({
+        otp,
+        to: input.email,
+      });
       return { success: true };
     }
 
@@ -25,8 +27,10 @@ export const authRouter = createTRPCRouter({
       userId: newUser.id,
     });
 
-    // TODO: await sendAuthOtp(input.email, otp);
-    console.log('New User Verification code:', otp);
+    await ctx.sendEmail.otp({
+      otp,
+      to: input.email,
+    });
 
     return { success: true };
   }),

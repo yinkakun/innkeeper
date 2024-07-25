@@ -1,5 +1,5 @@
 import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
-import { emailSender, db } from '../service';
+import { sendEmail, db } from '../lib';
 
 export const sendDailyPromptsCron = schedules.task({
   // Every hour

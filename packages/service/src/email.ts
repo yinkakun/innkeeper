@@ -2,19 +2,39 @@ import ky from 'ky';
 import { z } from 'zod';
 import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 
-const EmailSchema = z.object({
+const sendEmailOptions = z.object({
+  to: z.string(),
+  senderUsername: z.string().optional(),
+  replyToUsername: z.string().optional(),
+});
+
+const withName = sendEmailOptions.extend({
+  name: z.string(),
+});
+
+const insightsOptions = withName.extend({
+  insights: z.string(),
+});
+
+const promptOptions = withName.extend({
+  prompt: z.string(),
+});
+
+const otpOptions = sendEmailOptions.extend({
+  otp: z.string(),
+});
+
+const emailSchema = sendEmailOptions.extend({
   body: z.object({
     html: z.string().optional(),
     text: z.string().optional(),
   }),
   subject: z.string(),
-  to: z.array(z.string().email()).nonempty(),
   headers: z.array(z.object({ name: z.string(), value: z.string() })).optional(),
 });
 
 const baseConfigSchema = z.object({
-  fromAddress: z.string().email(),
-  replyToAddress: z.string().email(),
+  emailDomain: z.string(), // domain name for the email sender eg. example.com
 });
 
 const sesConfigSchema = baseConfigSchema.extend({
@@ -25,17 +45,20 @@ const sesConfigSchema = baseConfigSchema.extend({
 });
 
 const plunkConfigSchema = baseConfigSchema.extend({
-  provider: z.literal('plunk'),
   apiKey: z.string(),
+  provider: z.literal('plunk'),
 });
 
 const sendEmailConfigSchema = z.discriminatedUnion('provider', [sesConfigSchema, plunkConfigSchema]);
 
-export const createEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchema>) => {
+export const initEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchema>) => {
   const config = sendEmailConfigSchema.parse(emailConfig);
+  const noReplyEmailAddress = `noreply@${config.emailDomain}`;
 
-  const sendEmail = async (emailData: z.infer<typeof EmailSchema>) => {
-    const email = EmailSchema.parse(emailData);
+  const emailAddress = (username: string) => `${username}@${config.emailDomain}`;
+
+  const sendEmail = async (emailData: z.infer<typeof emailSchema>) => {
+    const email = emailSchema.parse(emailData);
 
     if (config.provider === 'aws') {
       const sendWithSes = new SESv2Client({
@@ -60,9 +83,9 @@ export const createEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSch
             })),
           },
         },
-        FromEmailAddress: config.fromAddress,
-        Destination: { ToAddresses: email.to },
-        ReplyToAddresses: config.replyToAddress ? [config.replyToAddress] : undefined,
+        Destination: { ToAddresses: [email.to] },
+        FromEmailAddress: email.senderUsername ? emailAddress(email.senderUsername) : noReplyEmailAddress,
+        ReplyToAddresses: [email.replyToUsername ? emailAddress(email.replyToUsername) : noReplyEmailAddress],
       });
 
       return sendWithSes.send(command).catch((error) => {
@@ -78,9 +101,9 @@ export const createEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSch
         to: email.to,
         subject: email.subject,
         headers: email.headers,
-        from: config.fromAddress,
-        replyTo: config.replyToAddress,
         body: email.body.html || email.body.text,
+        from: email.senderUsername ? emailAddress(email.senderUsername) : noReplyEmailAddress,
+        replyTo: email.replyToUsername ? emailAddress(email.replyToUsername) : noReplyEmailAddress,
       };
 
       return ky
@@ -99,39 +122,48 @@ export const createEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSch
   };
 
   return {
-    inactiveUser: async (payload: { name: string; email: string }) => {
+    alertInactiveUser: async (payload: z.infer<typeof withName>) => {
       return sendEmail({
-        to: [payload.email],
+        to: payload.to,
         subject: 'We miss you!',
         body: {
           text: `Hey ${payload.name}, we miss you!`,
         },
       });
     },
-    welcomeMessage: async (payload: { name: string; email: string }) => {
+    welcome: async (payload: z.infer<typeof withName>) => {
       return sendEmail({
-        to: [payload.email],
+        to: payload.to,
         subject: 'Welcome!',
         body: {
           text: `Hey ${payload.name}, welcome to Innkeeper!`,
         },
       });
     },
-    weeklyInsights: async (payload: { name: string; email: string; insights: string }) => {
+    insights: async (payload: z.infer<typeof insightsOptions>) => {
       return sendEmail({
-        to: [payload.email],
+        to: payload.to,
         subject: 'Weekly Insights',
         body: {
           text: `Hey ${payload.name}, here are your weekly insights: ${payload.insights}`,
         },
       });
     },
-    dailyPrompt: async (payload: { name: string; email: string; prompt: string }) => {
+    prompt: async (payload: z.infer<typeof promptOptions>) => {
       return sendEmail({
-        to: [payload.email],
+        to: payload.to,
         subject: 'Daily Prompt',
         body: {
           text: `Hey ${payload.name}, here is your daily prompt: ${payload.prompt}`,
+        },
+      });
+    },
+    otp: async (payload: z.infer<typeof otpOptions>) => {
+      return sendEmail({
+        to: payload.to,
+        subject: 'Auth OTP',
+        body: {
+          text: `Your OTP is: ${payload.otp}`,
         },
       });
     },

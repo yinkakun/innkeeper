@@ -11,6 +11,7 @@ export const createContext = (_options: FetchCreateContextFnOptions, ctx: HonoCo
     user: ctx.get('user'),
     lucia: ctx.get('lucia'),
     session: ctx.get('session'),
+    sendEmail: ctx.get('sendEmail'),
   };
 };
 

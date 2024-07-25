@@ -18,6 +18,7 @@
   "dependencies": {
     "@innkeeper/db": "*",
     "@innkeeper/jobs": "*",
+    "@innkeeper/service": "*",
     "@paralleldrive/cuid2": "^2.2.2",
     "@trpc/server": "npm:@trpc/server@next",
     "drizzle-orm": "^0.32.0",

@@ -4,12 +4,12 @@ name = "innkeeper-api"
 compatibility_date = "2024-07-12"
 compatibility_flags = ["nodejs_als"]
 
-vars = { ENVIRONMENT = "development", TRIGGER_API_KEY = "", DATABASE_URL = "", GOOGLE_CLIENT_ID = "", G00GLE_CLIENT_SECRET = "", API_URL = "http://localhost:3000", APP_URL = "http://localhost:5173" }
+vars = { ENVIRONMENT = "development", TRIGGER_API_KEY = "", DATABASE_URL = "", GOOGLE_CLIENT_ID = "", G00GLE_CLIENT_SECRET = "", API_URL = "http://localhost:3000", APP_URL = "http://localhost:5173", PLUNK_API_KEY = "sk_", EMAIL_DOMAIN = "olopo.studio" }
 
 [env.staging]
-vars = { ENVIRONMENT = "staging", TRIGGER_API_KEY = "", DATABASE_URL = "", GOOGLE_CLIENT_ID = "", G00GLE_CLIENT_SECRET = "", API_URL = "", APP_URL = "" }
+vars = { ENVIRONMENT = "staging", TRIGGER_API_KEY = "", DATABASE_URL = "", GOOGLE_CLIENT_ID = "", G00GLE_CLIENT_SECRET = "", API_URL = "", APP_URL = "", PLUNK_API_KEY = "", EMAIL_DOMAIN = "" }
 route = { pattern = "innkeeper-staging-api.olopo.studio", custom_domain = true }
 
 [env.production]
-vars = { ENVIRONMENT = "production", TRIGGER_API_KEY = "", DATABASE_URL = "", GOOGLE_CLIENT_ID = "", G00GLE_CLIENT_SECRET = "", API_URL = "", APP_URL = "" }
+vars = { ENVIRONMENT = "production", TRIGGER_API_KEY = "", DATABASE_URL = "", GOOGLE_CLIENT_ID = "", G00GLE_CLIENT_SECRET = "", API_URL = "", APP_URL = "", PLUNK_API_KEY = "", EMAIL_DOMAIN = "" }
 # route = { pattern = "api.innkeeper.app", custom_domain = true }

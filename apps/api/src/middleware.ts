@@ -1,13 +1,25 @@
 import { z } from 'zod';
-import { initLucia } from './auth';
-import { HonoOptions } from './app';
+import { initLucia } from './lib';
+import { HonoOptions } from './context';
 import { getCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { zValidator } from '@hono/zod-validator';
 import { initDbService } from '@innkeeper/service';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
+import { initEmailSender } from '@innkeeper/service';
 
+// TODO: Implement validation middleware
 // export const validationMiddleware = createMiddleware<HonoOptions>(async (c, next) => {});
+
+export const emailMiddleware = createMiddleware<HonoOptions>(async (c, next) => {
+  const sendEmail = initEmailSender({
+    provider: 'plunk',
+    emailDomain: c.env.EMAIL_DOMAIN,
+    apiKey: c.env.PLUNK_API_KEY,
+  });
+  c.set('sendEmail', sendEmail);
+  await next();
+});
 
 export const authMiddleware = createMiddleware<HonoOptions>(async (c, next) => {
   const lucia = initLucia({ databaseUrl: c.env.DATABASE_URL, environment: c.env.ENVIRONMENT });
