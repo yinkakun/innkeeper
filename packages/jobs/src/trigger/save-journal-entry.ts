@@ -1,4 +1,4 @@
-import { email, db } from '../service';
+import { emailSender, db } from '../service';
 import { logger, task, retry, AbortTaskRunError } from '@trigger.dev/sdk/v3';
 
 interface JournalEntryPayload {

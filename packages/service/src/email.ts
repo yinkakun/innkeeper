@@ -31,7 +31,7 @@ const plunkConfigSchema = baseConfigSchema.extend({
 
 const sendEmailConfigSchema = z.discriminatedUnion('provider', [sesConfigSchema, plunkConfigSchema]);
 
-export const createSendEmail = (emailConfig: z.infer<typeof sendEmailConfigSchema>) => {
+export const createEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchema>) => {
   const config = sendEmailConfigSchema.parse(emailConfig);
 
   const sendEmail = async (emailData: z.infer<typeof EmailSchema>) => {

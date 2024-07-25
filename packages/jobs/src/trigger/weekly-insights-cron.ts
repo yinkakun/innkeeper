@@ -1,5 +1,5 @@
 import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
-import { email, db } from '../service';
+import { emailSender, db } from '../service';
 
 export const weeklyInsightsCron = schedules.task({
   // Every Sunday at midnight

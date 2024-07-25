@@ -1,5 +1,5 @@
 import { task } from '@trigger.dev/sdk/v3';
-import { email } from '../service';
+import { emailSender } from '../service';
 
 interface SendWelcomeEmailPayload {
   name: string;
@@ -9,6 +9,6 @@ interface SendWelcomeEmailPayload {
 export const sendWelcomeEmail = task({
   id: 'send-welcome-email',
   run: async (payload: SendWelcomeEmailPayload) => {
-    await email.welcomeMessage({ name: payload.name, email: payload.email });
+    await emailSender.welcomeMessage({ name: payload.name, email: payload.email });
   },
 });
