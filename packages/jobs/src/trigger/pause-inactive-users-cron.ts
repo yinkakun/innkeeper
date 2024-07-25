@@ -1,5 +1,4 @@
-import { db } from '../db';
-import { email } from '../email';
+import { email, db } from '../service';
 import { schedules, task, retry, logger } from '@trigger.dev/sdk/v3';
 
 export const pauseIdleUsersCron = schedules.task({

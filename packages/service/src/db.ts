@@ -1,11 +1,10 @@
 import type { z } from 'zod';
-
+import { authenticator } from 'otplib';
+import { addMinutes, formatISO } from 'date-fns';
 import postgres from 'postgres';
 import { eq, and, lt } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { generateRandomString, alphabet } from 'oslo/crypto';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { TimeSpan, createDate, isWithinExpirationDate } from 'oslo';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema } from '@innkeeper/db';
 import { promptsTable, journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, schema } from '@innkeeper/db';
@@ -49,41 +48,42 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
     },
 
     async generateEmailOtpCode({ userId, email }: { userId: string; email: string }) {
-      const code = generateRandomString(6, alphabet('0-9'));
-      const expiresAt = createDate(new TimeSpan(15, 'm')); // 15 minutes
-      await db.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId)).returning();
+      const secret = authenticator.generateSecret();
+      const otp = authenticator.generate(secret);
+      const expiresAt = addMinutes(new Date(), 15);
+
+      await db.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId));
       await db.insert(emailVerificationTable).values({
-        code,
+        code: otp,
         email,
         userId,
-        expiresAt: expiresAt.toISOString(),
+        secret,
+        expiresAt: formatISO(expiresAt),
       });
-      return code;
+      return otp;
     },
 
     async verifyEmailOtpCode({ userId, code }: { userId: string; code: string }) {
       return db.transaction(async (tx) => {
-        const emailVerification = await tx.query.emailVerificationTable.findFirst({
+        const verificationEntry = await tx.query.emailVerificationTable.findFirst({
           where: and(eq(emailVerificationTable.userId, userId)),
         });
 
-        if (!emailVerification) {
+        if (!verificationEntry) {
           return {
             isValidCode: false,
             cause: 'User not found',
           };
         }
 
-        if (!isWithinExpirationDate(new Date(emailVerification.expiresAt))) {
-          return {
-            isValidCode: false,
-            cause: 'Code expired',
-          };
+        const { secret, expiresAt } = verificationEntry;
+
+        if (new Date() > new Date(expiresAt)) {
+          return { isValidCode: false, cause: 'Code expired' };
         }
 
-        // TODO: investigate why  crypto.subtle.timingSafeEqual is not working
-        // const isValid = crypto.subtle.timingSafeEqual(Buffer.from(code), Buffer.from(verifiedUserEmail.code));
-        const isValid = code === emailVerification.code;
+        const isValid = authenticator.verify({ token: code, secret });
+
         if (!isValid) {
           return {
             isValidCode: false,
@@ -91,11 +91,9 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
           };
         }
 
-        if (isValid) {
-          await tx.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId));
-        }
+        await tx.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId));
 
-        return { isValidCode: isValid };
+        return { isValidCode: true };
       });
     },
 

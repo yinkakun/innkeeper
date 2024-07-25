@@ -53,6 +53,7 @@ export const emailVerificationTable = pgTable('email_verification', {
     .references(() => usersTable.id),
   email: text('email').notNull(),
   code: text('code').notNull(),
+  secret: text('secret').notNull(),
   createdAt: timestamp('created_at', {
     mode: 'string',
     withTimezone: true,
