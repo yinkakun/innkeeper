@@ -13,7 +13,7 @@
     "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:monorepo": "npx sherif",
-    "postinstall": "yarn lint:monorepo",
+    "postinstall": "yarn lint:monorepo --fix",
     "typecheck": "turbo typecheck"
   },
   "prettier": "prettier-config",

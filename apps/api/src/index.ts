@@ -39,6 +39,7 @@ app.use(
 export default {
   fetch: app.fetch,
   email: async (message: EmailMessage, env: Bindings) => {
+    // TODO: trigger incoming email task
     console.log('Incoming env)', env);
     console.log('Incoming message)', message);
   },

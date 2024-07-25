@@ -8,7 +8,7 @@ vars = { ENVIRONMENT = "development", TRIGGER_API_KEY = "", DATABASE_URL = "", G
 
 [env.staging]
 vars = { ENVIRONMENT = "staging", TRIGGER_API_KEY = "", DATABASE_URL = "", GOOGLE_CLIENT_ID = "", G00GLE_CLIENT_SECRET = "", API_URL = "", APP_URL = "", PLUNK_API_KEY = "", EMAIL_DOMAIN = "" }
-route = { pattern = "innkeeper-staging-api.olopo.studio", custom_domain = true }
+route = { pattern = "innkeeper-api-staging.olopo.studio", custom_domain = true }
 
 [env.production]
 vars = { ENVIRONMENT = "production", TRIGGER_API_KEY = "", DATABASE_URL = "", GOOGLE_CLIENT_ID = "", G00GLE_CLIENT_SECRET = "", API_URL = "", APP_URL = "", PLUNK_API_KEY = "", EMAIL_DOMAIN = "" }
