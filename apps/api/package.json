@@ -13,10 +13,12 @@
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.2",
+    "@hono/zod-validator": "^0.2.2",
     "@innkeeper/db": "*",
     "@innkeeper/jobs": "*",
     "@innkeeper/service": "*",
     "@innkeeper/trpc": "*",
+    "@paralleldrive/cuid2": "^2.2.2",
     "@supabase/supabase-js": "^2.44.4",
     "arctic": "^2.0.0-next.5",
     "hono": "^4.4.13",

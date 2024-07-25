@@ -6,8 +6,10 @@ import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 
 export const createContext = (_options: FetchCreateContextFnOptions, ctx: HonoContext) => {
   return {
+    hono: ctx,
     db: ctx.get('db'),
     user: ctx.get('user'),
+    lucia: ctx.get('lucia'),
     session: ctx.get('session'),
   };
 };

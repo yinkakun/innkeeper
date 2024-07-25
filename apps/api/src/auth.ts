@@ -3,21 +3,21 @@ import { Google } from 'arctic';
 import { initLuciaDbAdapter } from '@innkeeper/service';
 
 interface initGoogle {
+  apiUrl: string;
   clientId: string;
   clientSecret: string;
-  redirectUri: string;
 }
 
-export const initGoogle = ({ clientId, clientSecret, redirectUri }: initGoogle) => {
-  return new Google(clientId, clientSecret, redirectUri);
+export const initGoogle = ({ clientId, clientSecret, apiUrl }: initGoogle) => {
+  return new Google(clientId, clientSecret, `${apiUrl}/auth/google/callback`);
 };
 
-export const initLucia = ({ databaseUrl, secure }: { databaseUrl: string; secure?: boolean }) => {
+export const initLucia = ({ databaseUrl, environment }: { databaseUrl: string; environment?: string }) => {
   const db = initLuciaDbAdapter(databaseUrl);
   return new Lucia(db, {
     sessionCookie: {
       attributes: {
-        secure: secure ?? false, // set to `true` when using HTTPS
+        secure: environment !== 'development',
       },
     },
     getUserAttributes: (attributes) => ({

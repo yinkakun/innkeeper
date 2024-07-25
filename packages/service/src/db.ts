@@ -71,29 +71,29 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
 
         if (!verificationEntry) {
           return {
-            isValidCode: false,
-            cause: 'User not found',
+            isValid: false,
+            reason: 'User not found',
           };
         }
 
         const { secret, expiresAt } = verificationEntry;
 
         if (new Date() > new Date(expiresAt)) {
-          return { isValidCode: false, cause: 'Code expired' };
+          return { isValid: false, reason: 'Code expired' };
         }
 
         const isValid = authenticator.verify({ token: code, secret });
 
         if (!isValid) {
           return {
-            isValidCode: false,
-            cause: 'Invalid code',
+            isValid: false,
+            reason: 'Invalid code',
           };
         }
 
         await tx.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId));
 
-        return { isValidCode: true };
+        return { isValid: true };
       });
     },
 

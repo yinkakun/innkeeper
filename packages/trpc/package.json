@@ -18,8 +18,10 @@
   "dependencies": {
     "@innkeeper/db": "*",
     "@innkeeper/jobs": "*",
+    "@paralleldrive/cuid2": "^2.2.2",
     "@trpc/server": "npm:@trpc/server@next",
     "drizzle-orm": "^0.32.0",
+    "hono": "^4.5.1",
     "superjson": "2.2.1",
     "zod": "^3.23.8"
   },
