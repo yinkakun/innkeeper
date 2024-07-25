@@ -17,7 +17,7 @@
     "eslint-config-custom": "*",
     "prettier": "^3.3.3",
     "prettier-config": "*",
-    "tailwindcss": "3.4.6",
+    "tailwindcss": "3.4.7",
     "tsconfig": "*",
     "typescript": "^5.5.3"
   },
