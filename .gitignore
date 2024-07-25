@@ -28,6 +28,7 @@ lerna-debug.log*
 .env
 *.local
 .dev.vars
+.staging.vars
 
 # vite
 dist
