@@ -1,3 +1,4 @@
+import ky from 'ky';
 import { z } from 'zod';
 import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 
@@ -11,51 +12,90 @@ const EmailSchema = z.object({
   headers: z.array(z.object({ name: z.string(), value: z.string() })).optional(),
 });
 
-const CreateSendEmailSchema = z.object({
-  region: z.string(),
-  accessKeyId: z.string(),
-  secretAccessKey: z.string(),
+const baseConfigSchema = z.object({
   fromAddress: z.string().email(),
   replyToAddress: z.string().email(),
 });
 
-export const createSendEmail = (emailConfig: Record<string, unknown>) => {
-  const config = CreateSendEmailSchema.parse(emailConfig);
+const sesConfigSchema = baseConfigSchema.extend({
+  provider: z.literal('aws'),
+  region: z.string(),
+  accessKeyId: z.string(),
+  secretAccessKey: z.string(),
+});
 
-  const ses = new SESv2Client({
-    region: config.region,
-    credentials: {
-      accessKeyId: config.accessKeyId,
-      secretAccessKey: config.secretAccessKey,
-    },
-  });
+const plunkConfigSchema = baseConfigSchema.extend({
+  provider: z.literal('plunk'),
+  apiKey: z.string(),
+});
+
+const sendEmailConfigSchema = z.discriminatedUnion('provider', [sesConfigSchema, plunkConfigSchema]);
+
+export const createSendEmail = (emailConfig: Record<string, unknown>) => {
+  const config = sendEmailConfigSchema.parse(emailConfig);
 
   const sendEmail = async (emailData: z.infer<typeof EmailSchema>) => {
     const email = EmailSchema.parse(emailData);
 
-    const command = new SendEmailCommand({
-      Content: {
-        Simple: {
-          Body: {
-            Text: email.body.text ? { Data: email.body.text } : undefined,
-            Html: email.body.html ? { Data: email.body.html } : undefined,
-          },
-          Subject: { Data: email.subject },
-          Headers: email.headers?.map(({ name, value }) => ({
-            Name: name,
-            Value: value,
-          })),
+    if (config.provider === 'aws') {
+      const sendWithSes = new SESv2Client({
+        region: config.region,
+        credentials: {
+          accessKeyId: config.accessKeyId,
+          secretAccessKey: config.secretAccessKey,
         },
-      },
-      FromEmailAddress: config.fromAddress,
-      Destination: { ToAddresses: email.to },
-      ReplyToAddresses: config.replyToAddress ? [config.replyToAddress] : undefined,
-    });
+      });
 
-    return ses.send(command).catch((error) => {
-      console.error('error:', error);
-      throw new Error('Failed to send email');
-    });
+      const command = new SendEmailCommand({
+        Content: {
+          Simple: {
+            Body: {
+              Text: email.body.text ? { Data: email.body.text } : undefined,
+              Html: email.body.html ? { Data: email.body.html } : undefined,
+            },
+            Subject: { Data: email.subject },
+            Headers: email.headers?.map(({ name, value }) => ({
+              Name: name,
+              Value: value,
+            })),
+          },
+        },
+        FromEmailAddress: config.fromAddress,
+        Destination: { ToAddresses: email.to },
+        ReplyToAddresses: config.replyToAddress ? [config.replyToAddress] : undefined,
+      });
+
+      return sendWithSes.send(command).catch((error) => {
+        console.error('error:', error);
+        throw new Error('Failed to send email');
+      });
+    }
+
+    if (config.provider === 'plunk') {
+      const plunkApiUrl = 'https://api.useplunk.com/v1/send';
+
+      const plunkPayload = {
+        to: email.to,
+        subject: email.subject,
+        headers: email.headers,
+        from: config.fromAddress,
+        replyTo: config.replyToAddress,
+        body: email.body.html || email.body.text,
+      };
+
+      return ky
+        .post(plunkApiUrl, {
+          json: plunkPayload,
+          headers: {
+            Authorization: `Bearer ${config.apiKey}`,
+          },
+        })
+        .json()
+        .catch((error) => {
+          console.error('Plunk API error:', error);
+          throw new Error('Failed to send email with Plunk');
+        });
+    }
   };
 
   return {
