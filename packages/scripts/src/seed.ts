@@ -15,7 +15,7 @@ if (!DATABASE_URL) {
 
 const chance = new Chance();
 const db = initDbService(DATABASE_URL);
-const client = postgres(DATABASE_URL, { prepare: false });
+const connection = postgres(DATABASE_URL, { prepare: false });
 
 const CreateUserSchema = z.object({
   id: z.string(),
@@ -80,7 +80,7 @@ const seedJournalEntries = async (users: z.infer<typeof UserSchema>[], count: nu
 
 async function seed() {
   console.log('Starting seeding...');
-  await drizzle(client, { schema: schema }).delete(usersTable);
+  await drizzle(connection, { schema: schema }).delete(usersTable);
 
   const users = await seedUsers(10).catch((error) => {
     console.error('Failed to seed users:', error);

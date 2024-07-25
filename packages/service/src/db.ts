@@ -215,8 +215,8 @@ export const initDbService = (databaseUrl?: string) => {
   }
   // supabase: disable prefetch as it is not supported for "transaction" pool mode
   // https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-drizzle
-  const client = postgres(databaseUrl, { prepare: false });
-  return createDbService({ db: drizzle(client, { schema }) });
+  const connection = postgres(databaseUrl, { prepare: false });
+  return createDbService({ db: drizzle(connection, { schema }) });
 };
 
 export const initLuciaDbAdapter = (databaseUrl?: string) => {
@@ -225,6 +225,6 @@ export const initLuciaDbAdapter = (databaseUrl?: string) => {
   }
   // supabase: disable prefetch as it is not supported for "transaction" pool mode
   // https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-drizzle
-  const client = postgres(databaseUrl, { prepare: false });
-  return new DrizzlePostgreSQLAdapter(drizzle(client, { schema }), sessionsTable, usersTable);
+  const connection = postgres(databaseUrl, { prepare: false });
+  return new DrizzlePostgreSQLAdapter(drizzle(connection, { schema }), sessionsTable, usersTable);
 };
