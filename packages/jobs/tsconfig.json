@@ -1,6 +1,7 @@
 {
   "extends": "tsconfig/base.json",
   "compilerOptions": {
+    "target": "esnext",
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
   "include": ["src", "trigger.config.ts"],

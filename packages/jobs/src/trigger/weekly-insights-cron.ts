@@ -1,6 +1,6 @@
 import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
-import { email } from './lib/email';
-import { db } from './lib/db';
+import { email } from '../email';
+import { db } from '../db';
 
 export const weeklyInsightsCron = schedules.task({
   // Every Sunday at midnight
@@ -18,8 +18,8 @@ export const weeklyInsightsCron = schedules.task({
       users.map(({ email, id, name }) => ({
         payload: {
           email,
-          name,
           userId: id,
+          name: name ?? '',
         },
       })),
     );

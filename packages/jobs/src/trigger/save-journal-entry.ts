@@ -1,4 +1,4 @@
-import { db } from './lib/db';
+import { db } from '../db';
 import { logger, task, retry, AbortTaskRunError } from '@trigger.dev/sdk/v3';
 
 interface JournalEntryPayload {

@@ -1,5 +1,3 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
 import { Layout } from '@/components/layout';
 import { Link } from '@tanstack/react-router';
 

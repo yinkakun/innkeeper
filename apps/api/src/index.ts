@@ -142,7 +142,7 @@ app.get('/auth/google/callback', async (c) => {
       throw new HTTPException(400, { message: error.message });
     }
     if (error instanceof ArcticFetchError) {
-      throw new HTTPException(500, { message: 'Failed to fetch tokens', cause: error.cause });
+      throw new HTTPException(500, { message: 'Failed to fetch tokens' });
     }
   });
 
@@ -177,6 +177,9 @@ app.get('/auth/google/callback', async (c) => {
 
   const userId = generateIdFromEntropySize(10);
   const user = await c.get('db').createUser({ id: userId, email });
+  if (!user) {
+    throw new HTTPException(500, { message: 'Failed to create user' });
+  }
   const session = await lucia.createSession(user.id, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
   c.header('Set-Cookie', sessionCookie.serialize(), {
@@ -218,6 +221,9 @@ app.post('/auth/email-otp', async (c) => {
   // create user
   const userId = generateIdFromEntropySize(10);
   const newUser = await c.get('db').createUser({ id: userId, email });
+  if (!newUser) {
+    throw new HTTPException(500, { message: 'Failed to create user' });
+  }
   const verificationCode = await c.get('db').generateEmailOtpCode({
     email,
     userId: newUser.id,

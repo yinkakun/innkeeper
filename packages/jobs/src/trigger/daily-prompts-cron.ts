@@ -1,6 +1,6 @@
 import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
-import { email } from './lib/email';
-import { db } from './lib/db';
+import { email } from '../email';
+import { db } from '../db';
 
 export const sendDailyPromptsCron = schedules.task({
   // Every hour
@@ -18,8 +18,8 @@ export const sendDailyPromptsCron = schedules.task({
       users.map(({ email, id, name }) => ({
         payload: {
           email,
-          name,
           userId: id,
+          name: name ?? '',
         },
       })),
     );

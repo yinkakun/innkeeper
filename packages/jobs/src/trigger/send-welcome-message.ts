@@ -1,5 +1,5 @@
 import { task } from '@trigger.dev/sdk/v3';
-import { email } from './lib/email';
+import { email } from '../email';
 
 interface SendWelcomeEmailPayload {
   name: string;

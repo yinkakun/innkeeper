@@ -1,5 +1,5 @@
-import { db } from './lib/db';
-import { email } from './lib/email';
+import { db } from '../db';
+import { email } from '../email';
 import { schedules, task, retry, logger } from '@trigger.dev/sdk/v3';
 
 export const pauseIdleUsersCron = schedules.task({
@@ -20,7 +20,7 @@ export const pauseIdleUsersCron = schedules.task({
       logger.log('No inactive users to notify');
     }
 
-    await emailInactiveUser.batchTrigger(inactiveUsers3days.map(({ email, name }) => ({ payload: { email, name } })));
+    await emailInactiveUser.batchTrigger(inactiveUsers3days.map(({ email, name }) => ({ payload: { email, name: name ?? '' } })));
 
     const inactiveUsers5days = await retry.onThrow(
       async () => {

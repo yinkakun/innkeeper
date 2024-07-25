@@ -13,6 +13,6 @@ export const config: TriggerConfig = {
       maxTimeoutInMs: 10000,
     },
   },
-  triggerDirectories: ['./src'],
+  triggerDirectories: ['./src/trigger'],
   dependenciesToBundle: ['@innkeeper/service', '@innkeeper/db'],
 };
