@@ -13,7 +13,7 @@ import type { ReadableStream } from 'web-streams-polyfill';
 import { authMiddleware, dbMiddleware, triggerMiddleware, emailMiddleware } from './middleware';
 import { HTTPException } from 'hono/http-exception';
 export type { HonoContext } from './context';
-import crypto from 'node:crypto';
+import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 
 const app = new Hono<HonoOptions>();
 
@@ -61,6 +61,9 @@ app.use(
 export default {
   fetch: app.fetch,
   email: async (message: EmailMessage, env: Bindings) => {
+    configureTriggerClient({
+      secretKey: env.TRIGGER_API_KEY,
+    });
     // TODO: trigger incoming email task
     await tasks.trigger<typeof saveJournalEntry>('save-journal-entry', {
       message: message,
