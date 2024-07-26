@@ -64,7 +64,6 @@ export default {
     configureTriggerClient({
       secretKey: env.TRIGGER_API_KEY,
     });
-    // TODO: trigger incoming email task
     await tasks.trigger<typeof saveJournalEntry>('save-journal-entry', {
       message: message,
     });
