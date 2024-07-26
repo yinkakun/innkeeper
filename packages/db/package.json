@@ -9,6 +9,7 @@
     "lint": "eslint",
     "dev": "yarn tsc --watch",
     "db:check": "drizzle-kit check",
+    "db:seed": "yarn tsx ./src/seed.ts",
     "clean": "rm -rf .turbo node_modules",
     "db:push": "yarn drizzle-kit push",
     "db:studio": "yarn drizzle-kit studio",
@@ -20,9 +21,10 @@
   "dependencies": {
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@paralleldrive/cuid2": "^2.2.2",
-    "drizzle-orm": "^0.32.0",
+    "drizzle-orm": "^0.32.1",
     "drizzle-zod": "^0.5.1",
-    "postgres": "^3.4.4"
+    "postgres": "^3.4.4",
+    "tsx": "^4.16.2"
   },
   "devDependencies": {
     "@types/chance": "^1.1.6",

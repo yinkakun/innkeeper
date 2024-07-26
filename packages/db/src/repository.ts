@@ -9,7 +9,7 @@ import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema } from '@innkeeper/db';
 import { promptsTable, journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, schema } from '@innkeeper/db';
 
-export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> }) => {
+export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schema> }) => {
   return {
     async createUser({ id, email }: { id: string; email: string }) {
       const [newUser] = await db.insert(usersTable).values({ id, email }).returning();
@@ -207,16 +207,16 @@ export const createDbService = ({ db }: { db: PostgresJsDatabase<typeof schema> 
   };
 };
 
-export type DbService = ReturnType<typeof createDbService>;
+export type DbRepository = ReturnType<typeof createDbRepository>;
 
-export const initDbService = (databaseUrl?: string) => {
+export const initDbRepository = (databaseUrl?: string) => {
   if (!databaseUrl) {
     throw new Error('DATABASE_URL is required');
   }
   // supabase: disable prefetch as it is not supported for "transaction" pool mode
   // https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-drizzle
   const connection = postgres(databaseUrl, { prepare: false });
-  return createDbService({ db: drizzle(connection, { schema }) });
+  return createDbRepository({ db: drizzle(connection, { schema }) });
 };
 
 export const initLuciaDbAdapter = (databaseUrl?: string) => {

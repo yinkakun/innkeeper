@@ -8,16 +8,12 @@
     "lint": "eslint",
     "dev": "tsc --watch",
     "clean": "rm -rf .turbo node_modules",
-    "seed": "yarn tsx ./src/seed.ts",
-    "migrate": "yarn tsx ./src/migrate.ts",
     "verify-email-identity": "yarn tsx ./src/verify-email-identity.ts",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.620.0",
-    "@innkeeper/db": "*",
-    "@innkeeper/service": "*",
     "drizzle-orm": "^0.32.1",
     "zod": "^3.23.8"
   },

@@ -4,7 +4,7 @@ import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { trpcServer } from '@hono/trpc-server';
 import { authRouter } from './routes/auth';
-import { HonoOptions, Bindings, HonoContext } from './context';
+import type { HonoOptions, Bindings, HonoContext } from './context';
 import { appRouter, createContext } from '@innkeeper/trpc';
 import type { ReadableStream } from 'web-streams-polyfill';
 import { authMiddleware, dbMiddleware, triggerMiddleware } from './middleware';

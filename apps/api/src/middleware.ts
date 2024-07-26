@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { initLucia } from './lib';
-import { HonoOptions } from './context';
+import type { HonoOptions } from './context';
 import { getCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { zValidator } from '@hono/zod-validator';
-import { initDbService } from '@innkeeper/service';
+import { initDbRepository } from '@innkeeper/db';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 import { initEmailSender } from '@innkeeper/service';
 
@@ -51,7 +51,7 @@ export const authMiddleware = createMiddleware<HonoOptions>(async (c, next) => {
 });
 
 export const dbMiddleware = createMiddleware<HonoOptions>(async (c, next) => {
-  const db = initDbService(c.env.DATABASE_URL);
+  const db = initDbRepository(c.env.DATABASE_URL);
   c.set('db', db);
   await next();
 });

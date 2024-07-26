@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { decode } from 'hono/jwt';
 import { initGoogle } from '../lib';
-import { HonoOptions } from '../context';
+import type { HonoOptions } from '../context';
 import { createId } from '@paralleldrive/cuid2';
 import { getCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
@@ -63,10 +63,6 @@ authRouter.get('/google/callback', async (c) => {
     }
     throw error;
   });
-
-  if (!tokens) {
-    throw new HTTPException(500, { message: 'Failed to fetch tokens' });
-  }
 
   const email = decode(tokens.idToken()).payload.email! as string;
   const existingUser = await c.get('db').getUserByEmail({ email: email });

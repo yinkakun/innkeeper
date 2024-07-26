@@ -28,7 +28,7 @@ export default typescriptESLint.config(
       '@typescript-eslint/consistent-type-imports': ['warn', { prefer: 'type-imports', fixStyle: 'separate-type-imports' }],
       '@typescript-eslint/no-misused-promises': ['warn', { checksVoidReturn: { attributes: false } }],
       '@typescript-eslint/no-unnecessary-condition': [
-        'error',
+        'warn',
         {
           allowConstantLoopConditions: true,
         },

@@ -1,6 +1,6 @@
 import { Lucia } from 'lucia';
 import { Google } from 'arctic';
-import { initLuciaDbAdapter } from '@innkeeper/service';
+import { initLuciaDbAdapter } from '@innkeeper/db';
 
 interface initGoogle {
   apiUrl: string;

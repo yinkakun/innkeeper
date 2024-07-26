@@ -2,10 +2,9 @@ import 'dotenv/config';
 import { z } from 'zod';
 import { Chance } from 'chance';
 import postgres from 'postgres';
-import { initDbService } from '@innkeeper/service';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { usersTable, schema } from '@innkeeper/db';
-import type { CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from '@innkeeper/db';
+import { usersTable, schema, initDbRepository } from './index';
+import type { CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from './schema';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -14,7 +13,7 @@ if (!DATABASE_URL) {
 }
 
 const chance = new Chance();
-const db = initDbService(DATABASE_URL);
+const db = initDbRepository(DATABASE_URL);
 const connection = postgres(DATABASE_URL, { prepare: false });
 
 const CreateUserSchema = z.object({

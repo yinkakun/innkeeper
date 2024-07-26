@@ -21,7 +21,7 @@
     "@innkeeper/service": "*",
     "@paralleldrive/cuid2": "^2.2.2",
     "@trpc/server": "npm:@trpc/server@next",
-    "drizzle-orm": "^0.32.0",
+    "drizzle-orm": "^0.32.1",
     "hono": "^4.5.1",
     "superjson": "2.2.1",
     "zod": "^3.23.8"

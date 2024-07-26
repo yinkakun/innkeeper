@@ -5,7 +5,7 @@
   "name": "@innkeeper/api",
   "exports": "./src/index.ts",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint",
     "types": "wrangler types",
     "dev": "wrangler dev --port 3000 src/index.ts",
     "deploy": "wrangler deploy --minify src/index.ts",

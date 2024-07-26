@@ -1,12 +1,13 @@
 import type { Context } from 'hono';
 import type { User, Session, Lucia } from 'lucia';
-import { initDbService, initEmailSender } from '@innkeeper/service';
+import type { initDbRepository } from '@innkeeper/db';
+import type { initEmailSender } from '@innkeeper/service';
 
 interface Variables {
   lucia: Lucia;
   user: User | null;
   session: Session | null;
-  db: ReturnType<typeof initDbService>;
+  db: ReturnType<typeof initDbRepository>;
   sendEmail: ReturnType<typeof initEmailSender>;
 }
 

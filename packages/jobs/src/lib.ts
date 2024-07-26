@@ -1,8 +1,8 @@
-import { initEmailSender, initDbService } from '@innkeeper/service';
+import { initDbRepository } from '@innkeeper/db';
+import { initEmailSender } from '@innkeeper/service';
 
 // TODO: use zod to validate the environment variables
-
-export const db = initDbService(process.env.DATABASE_URL);
+export const db = initDbRepository(process.env.DATABASE_URL);
 
 export const sendEmail = initEmailSender({
   provider: 'plunk',

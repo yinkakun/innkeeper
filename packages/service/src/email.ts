@@ -101,7 +101,7 @@ export const initEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchem
         to: email.to,
         subject: email.subject,
         headers: email.headers,
-        body: email.body.html || email.body.text,
+        body: email.body.html ?? email.body.text,
         from: email.senderUsername ? emailAddress(email.senderUsername) : noReplyEmailAddress,
         replyTo: email.replyToUsername ? emailAddress(email.replyToUsername) : noReplyEmailAddress,
       };
