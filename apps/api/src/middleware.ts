@@ -6,7 +6,7 @@ import { createMiddleware } from 'hono/factory';
 import { zValidator } from '@hono/zod-validator';
 import { initDbRepository } from '@innkeeper/db';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
-import { initEmailSender } from '@innkeeper/service';
+import { initEmailSender } from '@innkeeper/services';
 
 // TODO: Implement validation middleware
 // export const validationMiddleware = createMiddleware<HonoOptions>(async (c, next) => {});

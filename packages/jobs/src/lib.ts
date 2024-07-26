@@ -1,5 +1,5 @@
 import { initDbRepository } from '@innkeeper/db';
-import { initEmailSender } from '@innkeeper/service';
+import { initEmailSender } from '@innkeeper/services';
 
 // TODO: use zod to validate the environment variables
 export const db = initDbRepository(process.env.DATABASE_URL);

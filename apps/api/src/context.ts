@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import type { User, Session, Lucia } from 'lucia';
 import type { initDbRepository } from '@innkeeper/db';
-import type { initEmailSender } from '@innkeeper/service';
+import type { initEmailSender } from '@innkeeper/services';
 
 interface Variables {
   lucia: Lucia;

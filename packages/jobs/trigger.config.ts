@@ -14,5 +14,5 @@ export const config: TriggerConfig = {
     },
   },
   triggerDirectories: ['./src/trigger'],
-  dependenciesToBundle: ['@innkeeper/service', '@innkeeper/db', '@lucia-auth/adapter-drizzle', 'ky'],
+  dependenciesToBundle: ['@innkeeper/services', '@innkeeper/db', '@lucia-auth/adapter-drizzle', 'ky'],
 };

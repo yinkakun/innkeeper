@@ -16,7 +16,7 @@
     "@hono/zod-validator": "^0.2.2",
     "@innkeeper/db": "*",
     "@innkeeper/jobs": "*",
-    "@innkeeper/service": "*",
+    "@innkeeper/services": "*",
     "@innkeeper/trpc": "*",
     "@paralleldrive/cuid2": "^2.2.2",
     "@supabase/supabase-js": "^2.44.4",
