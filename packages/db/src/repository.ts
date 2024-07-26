@@ -1,5 +1,4 @@
 import type { z } from 'zod';
-import { authenticator } from 'otplib';
 import { addMinutes, formatISO } from 'date-fns';
 import postgres from 'postgres';
 import { eq, and, lt } from 'drizzle-orm';
@@ -8,6 +7,7 @@ import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema } from '@innkeeper/db';
 import { promptsTable, journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, schema } from '@innkeeper/db';
+import { TOTP, Secret } from 'otpauth';
 
 export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schema> }) => {
   return {
@@ -48,16 +48,16 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
     },
 
     async generateEmailOtpCode({ userId, email }: { userId: string; email: string }) {
-      const secret = authenticator.generateSecret();
-      const otp = authenticator.generate(secret);
       const expiresAt = addMinutes(new Date(), 15);
+      const secret = new Secret({ size: 20 }).base32;
+      const otp = new TOTP({ secret: secret, digits: 6, period: 30 }).generate();
 
       await db.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId));
       await db.insert(emailVerificationTable).values({
         code: otp,
         email,
         userId,
-        secret,
+        secret: secret,
         expiresAt: formatISO(expiresAt),
       });
       return otp;
@@ -82,7 +82,7 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
           return { isValid: false, reason: 'Code expired' };
         }
 
-        const isValid = authenticator.verify({ token: code, secret });
+        const isValid = new TOTP({ secret: secret, digits: 6, period: 30 }).validate({ token: code });
 
         if (!isValid) {
           return {

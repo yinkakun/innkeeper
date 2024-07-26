@@ -5,6 +5,7 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 
 export const createContext = (_options: FetchCreateContextFnOptions, ctx: HonoContext) => {
+  ctx.text('🌓🌓🌓🌓');
   return {
     hono: ctx,
     db: ctx.get('db'),

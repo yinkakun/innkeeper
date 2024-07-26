@@ -1,33 +1,51 @@
 import { Hono } from 'hono';
 import { csrf } from 'hono/csrf';
+import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { trpcServer } from '@hono/trpc-server';
 import { authRouter } from './routes/auth';
-import { tasks } from "@trigger.dev/sdk/v3";
-import { saveJournalEntry} from '@innkeeper/jobs'
+import { tasks } from '@trigger.dev/sdk/v3';
+import { saveJournalEntry } from '@innkeeper/jobs';
 import type { HonoOptions, Bindings, HonoContext } from './context';
 import { appRouter, createContext } from '@innkeeper/trpc';
 import type { ReadableStream } from 'web-streams-polyfill';
-import { authMiddleware, dbMiddleware, triggerMiddleware } from './middleware';
-
+import { authMiddleware, dbMiddleware, triggerMiddleware, emailMiddleware } from './middleware';
+import { HTTPException } from 'hono/http-exception';
 export type { HonoContext } from './context';
+import crypto from 'node:crypto';
 
 const app = new Hono<HonoOptions>();
+
+app.onError((err, c) => {
+  if (err instanceof HTTPException) {
+    // Get the custom response
+    c.text('🌓🌓🌓🌓🌓🌓🌓🌓🌓');
+    console.log('🔥🔥🔥🔥🔥🔥');
+    return err.getResponse();
+
+    const res = new Response(err.message);
+  }
+  c.text('🍃🍃🍃🍃🍃🍃🍃🍃🍃', {});
+
+  throw err;
+});
 
 app.use(csrf());
 app.use(logger());
 app.use(prettyJSON());
 app.use(dbMiddleware);
 app.use(authMiddleware);
+app.use(emailMiddleware);
 app.use(triggerMiddleware);
+
+app.use('/trpc/*', cors());
 
 app.route('/auth', authRouter);
 
 app.get('/', (ctx) => {
   return ctx.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-
 
 app.use(
   '/trpc/*',
@@ -44,9 +62,9 @@ export default {
   fetch: app.fetch,
   email: async (message: EmailMessage, env: Bindings) => {
     // TODO: trigger incoming email task
-    await tasks.trigger<typeof saveJournalEntry>("save-journal-entry", {
-      message: message
-    })
+    await tasks.trigger<typeof saveJournalEntry>('save-journal-entry', {
+      message: message,
+    });
   },
 };
 

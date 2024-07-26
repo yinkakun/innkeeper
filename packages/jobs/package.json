@@ -16,17 +16,17 @@
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
-    "@innkeeper/services": "*"
+    "@innkeeper/services": "*",
+    "dotenv-cli": "^7.4.2"
   },
   "devDependencies": {
-    "@trigger.dev/sdk": "3.0.0-beta.50",
+    "@trigger.dev/sdk": "3.0.0-beta.51",
     "@types/node": "^20.14.11",
     "dotenv-cli": "^7.3.0",
     "eslint": "^9.7.0",
     "eslint-config-custom": "*",
     "prettier": "^3.3.3",
     "prettier-config": "*",
-    "trigger.dev": "3.0.0-beta.50",
     "tsconfig": "*",
     "turbo": "^2.0.7",
     "typescript": "^5.5.3"

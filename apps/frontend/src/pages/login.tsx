@@ -1,7 +1,13 @@
 import { Layout } from '@/components/layout';
 import googleLogo from '@/assets/google-logo.svg';
+import { trpc } from '@/lib/trpc';
+import { motion, AnimatePresence } from 'framer-motion';
+import { OTPInput, SlotProps } from 'input-otp';
 
 export const Login = () => {
+  const step = 'email'; // email | otp | verify
+  const requestOtpMutation = trpc.login.requestEmailOtp.useMutation();
+
   return (
     <Layout className="flex items-center justify-center">
       <div className="flex max-w-sm flex-col items-center gap-4 rounded-3xl border border-neutral-200 border-opacity-40 bg-neutral-50 p-8 text-center">
@@ -20,16 +26,32 @@ export const Login = () => {
 
         <p>OR</p>
 
-        <div className="flex w-full flex-col gap-2">
-          <input
-            type="email"
-            className="h-8 rounded-lg border border-neutral-500 border-opacity-40 bg-neutral-100 bg-transparent px-2 py-1 text-xs placeholder:text-neutral-500"
-            placeholder="Enter email"
-          />
-          <button className="hover-bg-orange-600 w-full rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200">
-            Send OTP
-          </button>
-        </div>
+        {step === 'email' ? (
+          <div className="flex w-full flex-col gap-2">
+            <input
+              type="email"
+              className="h-8 rounded-lg border border-neutral-500 border-opacity-40 bg-neutral-100 bg-transparent px-2 py-1 text-xs placeholder:text-neutral-500"
+              placeholder="Enter email"
+            />
+            <button
+              onClick={() => requestOtpMutation.mutate({ email: 'yinkakun@gmail.com' })}
+              className="hover-bg-orange-600 w-full rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200"
+            >
+              {requestOtpMutation.isPending ? 'Sending OTP...' : 'Send OTP'}
+            </button>
+          </div>
+        ) : (
+          <div>
+            <p>Enter the code generated from the link sent to [user]@[email].com</p>
+
+            <div className="flex w-full flex-col gap-2">
+              <input type="email" className="rounded-lg border py-1" placeholder="Enter OTP" />
+              <button className="w-full rounded-lg bg-stone-950 py-1 text-stone-50">Verify OTP</button>
+            </div>
+
+            <div>Not seeing the email in your inbox? [Try sending again.]</div>
+          </div>
+        )}
 
         <span className="max-w-[90%] text-xs text-neutral-600">
           By continuing, you agree to Olopo Studio's{' '}
@@ -43,35 +65,5 @@ export const Login = () => {
         </span>
       </div>
     </Layout>
-  );
-};
-
-const EnterEmail = () => {
-  return (
-    <div className="flex w-full flex-col gap-2">
-      <input
-        type="email"
-        className="h-8 rounded-lg border border-neutral-500 border-opacity-40 bg-neutral-100 bg-transparent px-2 py-1 text-xs placeholder:text-neutral-500"
-        placeholder="Enter email"
-      />
-      <button className="w-full rounded-lg border border-orange-500 bg-orange-500 py-1 text-sm font-medium text-neutral-50">
-        Send OTP
-      </button>
-    </div>
-  );
-};
-
-const EnterVerificationCode = () => {
-  return (
-    <div>
-      <p>Enter the code generated from the link sent to [user]@[email].com</p>
-
-      <div className="flex w-full flex-col gap-2">
-        <input type="email" className="rounded-lg border py-1" placeholder="Enter OTP" />
-        <button className="w-full rounded-lg bg-stone-950 py-1 text-stone-50">Verify OTP</button>
-      </div>
-
-      <div>Not seeing the email in your inbox? [Try sending again.]</div>
-    </div>
   );
 };

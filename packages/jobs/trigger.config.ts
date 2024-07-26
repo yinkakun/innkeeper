@@ -14,5 +14,18 @@ export const config: TriggerConfig = {
     },
   },
   triggerDirectories: ['./src/trigger'],
+  additionalPackages: [
+    'ky@latest',
+    'otpauth@latest',
+    'date-fns@latest',
+    'postgres@latest',
+    'langchain@latest',
+    'drizzle-zod@latest',
+    'drizzle-orm@latest',
+    '@paralleldrive/cuid2@latest',
+    '@langchain/anthropic@latest',
+    '@langchain/community@latest',
+    '@aws-sdk/client-sesv2@latest',
+  ],
   dependenciesToBundle: ['@innkeeper/services', '@innkeeper/db', '@lucia-auth/adapter-drizzle', 'ky'],
 };
