@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint",
-    "dev": "triggerdev dev",
+    "dev": "npx trigger.dev@beta dev",
     "clean": "rm -rf .turbo node_modules",
     "deploy": "npx trigger.dev@beta deploy",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
