@@ -12,7 +12,6 @@ import { authMiddleware, dbMiddleware, triggerMiddleware } from './middleware';
 export type { HonoContext } from './context';
 
 const app = new Hono<HonoOptions>();
-app.route('/auth', authRouter);
 
 app.use(csrf());
 app.use(logger());
@@ -21,9 +20,12 @@ app.use(dbMiddleware);
 app.use(authMiddleware);
 app.use(triggerMiddleware);
 
+app.route('/auth', authRouter);
+
 app.get('/', (ctx) => {
   return ctx.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
 
 app.use(
   '/trpc/*',
