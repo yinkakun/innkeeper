@@ -51,7 +51,8 @@ const RootStepper: React.FC<StepperProps> = ({ children, className }) => {
     <motion.div
       layout
       style={{ height: height || 'auto' }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      // transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      transition={{ ease: 'easeInOut', duration: 0.2 }}
       className={cn('w-full', className)}
     >
       <AnimatePresence mode="wait">

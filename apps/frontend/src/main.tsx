@@ -12,6 +12,7 @@ import { Insights } from '@/pages/insights';
 import { Login } from '@/pages/login';
 import { Settings } from '@/pages/settings';
 import { Onboarding } from '@/pages/onboarding';
+import { PageLoading } from '@/components/page-loading';
 
 import type { TrpcClient } from '@/lib/trpc';
 import { trpc, trpcClient } from '@/lib/trpc';
@@ -47,7 +48,7 @@ const onboardingRoute = createRoute({
   path: 'onboarding',
   component: Onboarding,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => <div>Loading...</div>,
+  pendingComponent: () => <PageLoading />,
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
@@ -67,7 +68,7 @@ const journalRoute = createRoute({
   path: 'journal',
   component: Journal,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => <div>Loading...</div>,
+  pendingComponent: () => <PageLoading />,
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
@@ -87,6 +88,7 @@ const insightsRoute = createRoute({
   path: 'insights',
   component: Insights,
   getParentRoute: () => rootRoute,
+  pendingComponent: () => <PageLoading />,
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
@@ -105,6 +107,7 @@ const settingsRoute = createRoute({
   path: 'settings',
   component: Settings,
   getParentRoute: () => rootRoute,
+  pendingComponent: () => <PageLoading />,
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });

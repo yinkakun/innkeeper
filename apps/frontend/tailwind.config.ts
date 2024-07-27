@@ -78,6 +78,6 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
     },
-    plugins: [require('tailwindcss-animate')],
+    plugins: [require('tailwindcss-react-aria-components'), require('tailwindcss-animate')],
   },
 } satisfies Config;

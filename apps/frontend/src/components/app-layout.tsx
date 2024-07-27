@@ -1,6 +1,8 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Link } from '@tanstack/react-router';
+import { DotPattern } from './dot-pattern';
+import { GlobeSimple, User, EnvelopeSimple } from '@phosphor-icons/react';
 
 interface LayoutProps {
   className?: string;
@@ -9,73 +11,80 @@ interface LayoutProps {
 
 export const AppLayout: React.FC<LayoutProps> = ({ children, className }) => {
   return (
-    <div className={cn('flex min-h-[100dvh] flex-col bg-neutral-100')}>
-      <header className="absolute left-1/2 top-10 -translate-x-1/2 rounded-[15px] border border-neutral-200 bg-transparent backdrop-blur-lg">
-        <nav className="grid grid-cols-3 gap-1 p-0.5">
-          <Link to="/journal" className="flex w-full">
-            {({ isActive }) => {
-              return (
-                <span
-                  className={cn(
-                    'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-1 text-neutral-800 hover:text-neutral-900',
-                    {
-                      'border-neutral-200 bg-neutral-100': isActive,
-                    },
-                  )}
-                >
-                  Journal
-                </span>
-              );
-            }}
-          </Link>
-          <Link to="/insights" className="flex w-full">
-            {({ isActive }) => {
-              return (
-                <span
-                  className={cn(
-                    'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-1 text-neutral-800 hover:text-neutral-900',
-                    {
-                      'border-neutral-200 bg-neutral-100': isActive,
-                    },
-                  )}
-                >
-                  Insights
-                </span>
-              );
-            }}
-          </Link>
-          <Link to="/settings" className="flex w-full">
-            {({ isActive }) => {
-              return (
-                <span
-                  className={cn(
-                    'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-1 text-neutral-800 hover:text-neutral-900',
-                    {
-                      'border-neutral-200 bg-neutral-100': isActive,
-                    },
-                  )}
-                >
-                  Settings
-                </span>
-              );
-            }}
-          </Link>
-        </nav>
-      </header>
-
-      <main className={cn('mx-auto flex h-full w-full max-w-screen-md grow flex-col px-8 py-5', className)}>
-        <div className="flex h-full w-full grow flex-col gap-6 rounded-3xl border border-neutral-200 border-opacity-70 bg-white p-8 pt-20">
-          {children}
+    <div className={cn('flex min-h-[100dvh] flex-col overflow-hidden bg-neutral-100')}>
+      <DotPattern className="z-0 opacity-30" />
+      <div className={cn('z-10 mx-auto flex h-full w-full max-w-screen-md grow flex-col px-8 py-5')}>
+        <div className="flex h-full w-full grow flex-col gap-6 rounded-3xl border border-gray-100 bg-white p-8 pt-5 shadow-md shadow-slate-100">
+          <Header />
+          <main className={cn('flex flex-col overflow-hidden', className)}>{children}</main>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
 
-//  <div className="flex flex-col gap-2 rounded-lg border border-neutral-300 border-opacity-50 p-4" key={i}>
-//    <span className="text-sm">Date: Saturday August 12th, 2021</span>
-//    <span>
-//      Prompt Lorem ipsum dolor sit amet consectetur, adipisicing elit. Obcaecati provident perspiciatis magni voluptates velit cumque,
-//      deleniti voluptate minima consequuntur beatae.
-//    </span>
-//  </div>;
+const Header = () => {
+  return (
+    <header className="mx-auto max-w-md rounded-[15px] border border-neutral-200 bg-white backdrop-blur-lg">
+      <nav className="grid grid-cols-3 gap-x-1 p-0.5">
+        <Link to="/journal" className="flex w-full">
+          {({ isActive }) => {
+            return (
+              <span
+                className={cn(
+                  'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-1 text-neutral-800 hover:text-neutral-900',
+                  {
+                    'border-neutral-200 bg-neutral-100': isActive,
+                  },
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <EnvelopeSimple size={20} weight="light" />
+                  <span className="text-sm">Journal</span>
+                </div>
+              </span>
+            );
+          }}
+        </Link>
+        <Link to="/insights" className="flex w-full">
+          {({ isActive }) => {
+            return (
+              <span
+                className={cn(
+                  'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-1 text-neutral-800 hover:text-neutral-900',
+                  {
+                    'border-neutral-200 bg-neutral-100': isActive,
+                  },
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <GlobeSimple size={20} weight="light" />
+                  <span className="text-sm">Insights</span>
+                </div>
+              </span>
+            );
+          }}
+        </Link>
+        <Link to="/settings" className="flex w-full">
+          {({ isActive }) => {
+            return (
+              <span
+                className={cn(
+                  'w-full rounded-[13px] border border-transparent border-opacity-50 bg-transparent px-8 py-1 text-neutral-800 hover:text-neutral-900',
+                  {
+                    'border-neutral-200 bg-neutral-100': isActive,
+                  },
+                )}
+              >
+                <div className="flex shrink-0 items-center gap-2">
+                  <User size={24} weight="light" />
+                  <span className="text-sm">Settings</span>
+                </div>
+              </span>
+            );
+          }}
+        </Link>
+      </nav>
+    </header>
+  );
+};
