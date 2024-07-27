@@ -9,6 +9,12 @@ import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema } f
 import { promptsTable, journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, schema } from '@innkeeper/db';
 import { TOTP, Secret } from 'otpauth';
 
+// const totp = new TOTP({
+//   digits: 6,
+//   period: 30,
+//   secret: 'super_secret', // TODO: replace with a secret
+// });
+
 export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schema> }) => {
   return {
     async createUser({ id, email }: { id: string; email: string }) {
@@ -50,7 +56,11 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
     async generateEmailOtpCode({ userId, email }: { userId: string; email: string }) {
       const expiresAt = addMinutes(new Date(), 15);
       const secret = new Secret({ size: 20 }).base32;
-      const otp = new TOTP({ secret: secret, digits: 6, period: 30 }).generate();
+      const otp = new TOTP({
+        secret: secret,
+        digits: 6,
+        period: 15 * 60, // 15 minutes
+      }).generate();
 
       await db.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId));
       await db.insert(emailVerificationTable).values({
@@ -82,9 +92,10 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
           return { isValid: false, reason: 'Code expired' };
         }
 
-        const isValid = new TOTP({ secret: secret, digits: 6, period: 30 }).validate({ token: code });
+        const totp = new TOTP({ secret: secret, period: 15 * 60 });
+        const isValid = totp.validate({ token: code, window: 1 });
 
-        if (!isValid) {
+        if (isValid === null) {
           return {
             isValid: false,
             reason: 'Invalid code',
@@ -92,7 +103,6 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
         }
 
         await tx.delete(emailVerificationTable).where(eq(emailVerificationTable.userId, userId));
-
         return { isValid: true };
       });
     },
