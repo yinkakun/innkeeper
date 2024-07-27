@@ -91,3 +91,10 @@ authRouter.get('/google/callback', async (c) => {
   });
   return c.redirect(`${c.env.APP_URL}/onboarding`);
 });
+authRouter.get('/status', (c) => {
+  const session = c.get('session');
+  if (!session) {
+    return c.json({ authenticated: false });
+  }
+  return c.json({ authenticated: true });
+});

@@ -11,25 +11,11 @@ import type { HonoOptions, Bindings, HonoContext } from './context';
 import { appRouter, createContext } from '@innkeeper/trpc';
 import type { ReadableStream } from 'web-streams-polyfill';
 import { authMiddleware, dbMiddleware, triggerMiddleware, emailMiddleware } from './middleware';
-import { HTTPException } from 'hono/http-exception';
 export type { HonoContext } from './context';
+import PostalMime from 'postal-mime';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 
 const app = new Hono<HonoOptions>();
-
-app.onError((err, c) => {
-  if (err instanceof HTTPException) {
-    // Get the custom response
-    c.text('🌓🌓🌓🌓🌓🌓🌓🌓🌓');
-    console.log('🔥🔥🔥🔥🔥🔥');
-    return err.getResponse();
-
-    const res = new Response(err.message);
-  }
-  c.text('🍃🍃🍃🍃🍃🍃🍃🍃🍃', {});
-
-  throw err;
-});
 
 app.use(csrf());
 app.use(logger());
@@ -39,7 +25,13 @@ app.use(authMiddleware);
 app.use(emailMiddleware);
 app.use(triggerMiddleware);
 
-app.use('/trpc/*', cors());
+app.use(
+  '/trpc/*',
+  cors({
+    credentials: true,
+    origin: (ctx) => ctx,
+  }),
+);
 
 app.route('/auth', authRouter);
 
@@ -64,8 +56,10 @@ export default {
     configureTriggerClient({
       secretKey: env.TRIGGER_API_KEY,
     });
+    const parser = new PostalMime();
+    const email = await parser.parse(message.raw);
     await tasks.trigger<typeof saveJournalEntry>('save-journal-entry', {
-      message: message,
+      email: email,
     });
   },
 };

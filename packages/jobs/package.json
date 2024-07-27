@@ -25,6 +25,7 @@
     "dotenv-cli": "^7.3.0",
     "eslint": "^9.7.0",
     "eslint-config-custom": "*",
+    "postal-mime": "^2.2.6",
     "prettier": "^3.3.3",
     "prettier-config": "*",
     "tsconfig": "*",

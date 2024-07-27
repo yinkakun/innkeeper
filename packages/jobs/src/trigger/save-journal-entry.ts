@@ -1,17 +1,14 @@
 import { sendEmail, db } from '../lib';
 import { logger, task, retry, AbortTaskRunError } from '@trigger.dev/sdk/v3';
-
+import { Email } from 'postal-mime';
 interface JournalEntryPayload {
-  // entry: string;
-  // promptId: string;
-  message: any;
+  email: Email;
 }
 
 export const saveJournalEntry = task({
   id: 'save-journal-entry',
-  run: async ({ message }: JournalEntryPayload) => {
-    console.log('Saving Journal Entry');
-    console.log(JSON.stringify(message, null, 2));
+  run: async ({ email }: JournalEntryPayload) => {
+    logger.info('Saving Journal Entry 🔥');
     // const user = await retry.onThrow(
     //   async () => {
     //     return await db.getUserByPromptId({ promptId });
@@ -26,9 +23,6 @@ export const saveJournalEntry = task({
 
     // await db.createJournalEntry({ entry, promptId, userId: user.user.id });
 
-    return {
-      data: message,
-      message: 'Journal Entry Saved',
-    };
+    return { email };
   },
 });

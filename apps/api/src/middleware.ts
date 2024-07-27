@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { initLucia } from './lib';
 import type { HonoOptions } from './context';
-import { getCookie } from 'hono/cookie';
+import { getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { zValidator } from '@hono/zod-validator';
 import { initDbRepository } from '@innkeeper/db';

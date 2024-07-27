@@ -12,6 +12,7 @@ export const trpcClient = trpc.createClient({
     httpBatchLink({
       transformer: superjson,
       url: `${API_URL}/trpc`,
+      fetch: (input, init) => fetch(input, { ...init, credentials: 'include' }),
     }),
     loggerLink({
       enabled: (opts) => process.env.NODE_ENV === 'development' || (opts.direction === 'down' && opts.result instanceof Error),

@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter, Outlet, createRoute, createRootRouteWithContext } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
-
+import { redirect } from '@tanstack/react-router';
 import { Index } from '@/pages';
 import { NotFound } from '@/pages/not-found';
 import { Journal } from '@/pages/journal';
@@ -17,6 +17,7 @@ import type { TrpcClient } from '@/lib/trpc';
 import { trpc, trpcClient } from '@/lib/trpc';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { createTRPCQueryUtils } from '@trpc/react-query';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcClient: TrpcClient }>()({
   component: () => (
@@ -30,34 +31,9 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
   notFoundComponent: NotFound,
 });
 
-// create other routes
 const indexRoute = createRoute({
   path: '/',
   component: Index,
-  getParentRoute: () => rootRoute,
-});
-
-const onboardingRoute = createRoute({
-  path: 'onboarding',
-  component: Onboarding,
-  getParentRoute: () => rootRoute,
-});
-
-const journalRoute = createRoute({
-  path: 'journal',
-  component: Journal,
-  getParentRoute: () => rootRoute,
-});
-
-const insightsRoute = createRoute({
-  path: 'insights',
-  component: Insights,
-  getParentRoute: () => rootRoute,
-});
-
-const settingsRoute = createRoute({
-  path: 'settings',
-  component: Settings,
   getParentRoute: () => rootRoute,
 });
 
@@ -67,7 +43,82 @@ const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
 });
 
-//  build the route tree
+const onboardingRoute = createRoute({
+  path: 'onboarding',
+  component: Onboarding,
+  getParentRoute: () => rootRoute,
+  pendingComponent: () => <div>Loading...</div>,
+  beforeLoad: async ({ context }) => {
+    const { queryClient, trpcClient } = context;
+    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
+    await clientUtils.login.status.fetch().catch((err) => {
+      console.log('err', err);
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      });
+    });
+  },
+});
+
+const journalRoute = createRoute({
+  path: 'journal',
+  component: Journal,
+  getParentRoute: () => rootRoute,
+  pendingComponent: () => <div>Loading...</div>,
+  beforeLoad: async ({ context }) => {
+    const { queryClient, trpcClient } = context;
+    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
+    await clientUtils.login.status.fetch().catch((err) => {
+      console.log('err', err);
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      });
+    });
+  },
+});
+
+const insightsRoute = createRoute({
+  path: 'insights',
+  component: Insights,
+  getParentRoute: () => rootRoute,
+  beforeLoad: async ({ context }) => {
+    const { queryClient, trpcClient } = context;
+    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
+    await clientUtils.login.status.fetch().catch((err) => {
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      });
+    });
+  },
+});
+
+const settingsRoute = createRoute({
+  path: 'settings',
+  component: Settings,
+  getParentRoute: () => rootRoute,
+  beforeLoad: async ({ context }) => {
+    const { queryClient, trpcClient } = context;
+    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
+    await clientUtils.login.status.fetch().catch((err) => {
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      });
+    });
+  },
+});
+
 const routeTree = rootRoute.addChildren([indexRoute, onboardingRoute, journalRoute, loginRoute, insightsRoute, settingsRoute]);
 
 export const queryClient = new QueryClient({});
@@ -90,8 +141,6 @@ declare module '@tanstack/react-router' {
 }
 
 const $root = document.getElementById('root');
-
-console.log('root', $root);
 
 if ($root && !$root.innerHTML) {
   const root = ReactDOM.createRoot($root);

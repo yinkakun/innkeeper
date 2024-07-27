@@ -1,12 +1,11 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createId } from '@paralleldrive/cuid2';
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 
 export const authRouter = createTRPCRouter({
   requestEmailOtp: publicProcedure.input(z.object({ email: z.string().email() })).mutation(async ({ input, ctx }) => {
-  try {
-      const existingUser = await ctx.db.getUserByEmail({ email: input.email });
+    const existingUser = await ctx.db.getUserByEmail({ email: input.email });
 
     if (existingUser) {
       const otp = await ctx.db.generateEmailOtpCode({
@@ -18,7 +17,7 @@ export const authRouter = createTRPCRouter({
         to: input.email,
       });
       return { success: true };
-    } 
+    }
 
     const newUser = await ctx.db.createUser({ id: `user_${createId()}`, email: input.email });
     if (!newUser) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create user' });
@@ -34,10 +33,6 @@ export const authRouter = createTRPCRouter({
     });
 
     return { success: true };
-  } catch (error) {
-    console.error(error);
-    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to send email OTP' });
-  }
   }),
   verifyEmailOtp: publicProcedure.input(z.object({ email: z.string().email(), otp: z.string() })).mutation(async ({ input, ctx }) => {
     const user = await ctx.db.getUserByEmail({ email: input.email });
@@ -68,5 +63,9 @@ export const authRouter = createTRPCRouter({
     });
 
     return { success: true };
+  }),
+  status: publicProcedure.query(async ({ ctx }) => {
+    if (!ctx.session) throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+    return { session: ctx.session, user: ctx.user };
   }),
 });

@@ -1,42 +1,42 @@
-// import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
-// import { sendEmail, db } from '../lib';
+import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
+import { sendEmail, db } from '../lib';
 
-// export const weeklyInsightsCron = schedules.task({
-//   // Every Sunday at midnight
-//   cron: '0 0 * * 0',
-//   id: 'weekly-insights',
-//   run: async () => {
-//     logger.log('Generating weekly insights');
-//     const users = await retry.onThrow(async () => await db.getUsers(), { maxAttempts: 3 });
+export const weeklyInsightsCron = schedules.task({
+  // Every Sunday at midnight
+  cron: '0 0 * * 0',
+  id: 'weekly-insights',
+  run: async () => {
+    logger.log('Generating weekly insights');
+    const users = await retry.onThrow(async () => await db.getUsers(), { maxAttempts: 3 });
 
-//     if (users.length === 0) {
-//       return { message: 'No users found' };
-//     }
+    if (users.length === 0) {
+      return { message: 'No users found' };
+    }
 
-//     await generateAndSendInsights.batchTrigger(
-//       users.map(({ email, id, name }) => ({
-//         payload: {
-//           email,
-//           userId: id,
-//           name: name ?? '',
-//         },
-//       })),
-//     );
+    await generateAndSendInsights.batchTrigger(
+      users.map(({ email, id, name }) => ({
+        payload: {
+          email,
+          userId: id,
+          name: name ?? '',
+        },
+      })),
+    );
 
-//     return { message: 'Weekly insights sent' };
-//   },
-// });
+    return { message: 'Weekly insights sent' };
+  },
+});
 
-// interface GenerateAndSendInsightsPayload {
-//   name: string;
-//   email: string;
-//   userId: string;
-// }
+interface GenerateAndSendInsightsPayload {
+  name: string;
+  email: string;
+  userId: string;
+}
 
-// export const generateAndSendInsights = task({
-//   id: 'generate-and-send-insights',
-//   run: async (payload: GenerateAndSendInsightsPayload) => {
-//     // const insights = await retry.onThrow(async () => await llm.generateInsights({ userId: payload.userId }), { maxAttempts: 3 });
-//     // await email.weeklyInsights({ email: payload.email, name: payload.name, insights });
-//   },
-// });
+export const generateAndSendInsights = task({
+  id: 'generate-and-send-insights',
+  run: async (payload: GenerateAndSendInsightsPayload) => {
+    // const insights = await retry.onThrow(async () => await llm.generateInsights({ userId: payload.userId }), { maxAttempts: 3 });
+    // await email.weeklyInsights({ email: payload.email, name: payload.name, insights });
+  },
+});
