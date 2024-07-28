@@ -1,8 +1,7 @@
-import { task, retry, logger, schedules } from '@trigger.dev/sdk/v3';
+import { task, retry, schedules } from '@trigger.dev/sdk/v3';
 import { sendEmail, db, llm } from '../lib';
-import Anthropic from '@anthropic-ai/sdk';
 import { getHours } from 'date-fns';
-import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 
 const PERIOD_TO_HOUR = {
   morning: 8, // 8 AM
@@ -53,7 +52,7 @@ export const sendDailyPromptsCron = schedules.task({
 });
 
 interface SendPromptPayload {
-  // email: string;
+  email: string;
   promptTone: string;
   primaryGoal: string;
 }
@@ -61,7 +60,7 @@ interface SendPromptPayload {
 export const sendPrompt = task({
   id: 'send-prompt',
   run: async (payload: SendPromptPayload) => {
-    const journalPrompt = await retry.onThrow(
+    const response = await retry.onThrow(
       async () => {
         return await llm.generatePrompt({
           goal: payload.primaryGoal,
@@ -71,6 +70,19 @@ export const sendPrompt = task({
       { maxAttempts: 3 },
     );
 
-    return { message: 'Prompt sent', prompt: journalPrompt };
+    const prompt = response?.content[0]?.type === 'text' ? response.content[0].text : '';
+
+    await retry.onThrow(
+      async () => {
+        await sendEmail.prompt({
+          prompt,
+          to: payload.email,
+          senderUsername: 'innkeeper',
+        });
+      },
+      { maxAttempts: 3 },
+    );
+
+    return { message: 'Prompt sent', prompt: prompt };
   },
 });

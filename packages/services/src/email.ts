@@ -16,9 +16,11 @@ const insightsOptions = withName.extend({
   insights: z.string(),
 });
 
-const promptOptions = withName.extend({
-  prompt: z.string(),
-});
+const promptOptions = withName
+  .extend({
+    prompt: z.string(),
+  })
+  .omit({ name: true });
 
 const otpOptions = sendEmailOptions.extend({
   otp: z.string(),
@@ -145,25 +147,27 @@ export const initEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchem
         to: payload.to,
         subject: 'Weekly Insights',
         body: {
-          text: `Hey ${payload.name}, here are your weekly insights: ${payload.insights}`,
+          text: `${payload.insights}`,
         },
       });
     },
-    prompt: async (payload: z.infer<typeof promptOptions>) => {
+    prompt: async ({ prompt, to, replyToUsername, senderUsername }: z.infer<typeof promptOptions>) => {
       return sendEmail({
-        to: payload.to,
+        to: to,
         subject: 'Daily Prompt',
+        senderUsername,
+        replyToUsername,
         body: {
-          text: `Hey ${payload.name}, here is your daily prompt: ${payload.prompt}`,
+          text: `${prompt}`,
         },
       });
     },
     otp: async (payload: z.infer<typeof otpOptions>) => {
       return sendEmail({
         to: payload.to,
-        subject: 'Auth OTP',
+        subject: 'Login OTP',
         body: {
-          text: `Your OTP is: ${payload.otp}`,
+          text: `Your Login OTP is: ${payload.otp}`,
         },
       });
     },

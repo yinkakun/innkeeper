@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { SHADOW_WORK_SYSTEM_PROMPT, createShadowWorkUserPrompt } from './prompts';
+import { SHADOW_WORK_SYSTEM_PROMPT, createShadowWorkUserPrompt } from './llm-prompts';
 
 type Model = Anthropic;
 
