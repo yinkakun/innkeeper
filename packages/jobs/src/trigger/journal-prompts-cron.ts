@@ -36,11 +36,10 @@ export const sendDailyPromptsCron = schedules.task({
     const usersToPrompt = users.filter(({ timezone, promptPeriod }) => shouldSendPrompt(timezone, promptPeriod));
 
     await sendPrompt.batchTrigger(
-      usersToPrompt.map(({ email, id, name, primaryGoal, promptTone }) => ({
+      usersToPrompt.map(({ email, id, primaryGoal, promptTone }) => ({
         payload: {
           email,
           userId: id,
-          name: name ?? '',
           promptTone: promptTone ?? '',
           primaryGoal: primaryGoal ?? '',
         },
@@ -53,6 +52,7 @@ export const sendDailyPromptsCron = schedules.task({
 
 interface SendPromptPayload {
   email: string;
+  userId: string;
   promptTone: string;
   primaryGoal: string;
 }
@@ -70,14 +70,19 @@ export const sendPrompt = task({
       { maxAttempts: 3 },
     );
 
-    const prompt = response?.content[0]?.type === 'text' ? response.content[0].text : '';
+    const prompt = response.content[0]?.type === 'text' ? response.content[0].text : '';
+
+    await db.createJournalEntry({
+      prompt,
+      userId: payload.userId,
+    });
 
     await retry.onThrow(
       async () => {
         await sendEmail.prompt({
           prompt,
           to: payload.email,
-          senderUsername: 'innkeeper',
+          senderUsername: 'innkeeper-staging',
         });
       },
       { maxAttempts: 3 },

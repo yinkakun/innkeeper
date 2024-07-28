@@ -36,15 +36,7 @@ export const Journal = () => {
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.3 }}
             >
-              <JournalEntries
-                id={id}
-                key={id}
-                entry={entry}
-                prompt={prompt.body}
-                promptId={prompt.id}
-                updatedAt={updatedAt}
-                createdAt={createdAt}
-              />
+              <JournalEntries id={id} key={id} entry={entry ?? ''} prompt={prompt ?? ''} updatedAt={updatedAt} createdAt={createdAt} />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -132,7 +124,6 @@ interface JournalEntryProps {
   prompt?: string;
   createdAt: string;
   updatedAt: string | null;
-  promptId: string;
 }
 
 const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry, createdAt, id, updatedAt }) => {
@@ -152,7 +143,6 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry, createdAt,
     updateMutation.mutate(
       {
         id,
-        promptId: '',
         entry: data.entry,
       },
       {

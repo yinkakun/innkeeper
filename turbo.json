@@ -1,7 +1,16 @@
 {
   "ui": "stream",
   "$schema": "https://turborepo.org/schema.json",
-  "globalEnv": ["DATABASE_URL", "API_URL", "AWS_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "EMAIL_DOMAIN", "PLUNK_API_KEY"],
+  "globalEnv": [
+    "DATABASE_URL",
+    "API_URL",
+    "AWS_REGION",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+    "EMAIL_DOMAIN",
+    "PLUNK_API_KEY",
+    "ANTHROPIC_API_KEY"
+  ],
   "globalPassThroughEnv": ["NODE_ENV", "npm_lifecycle_event"],
   "tasks": {
     "topo": {

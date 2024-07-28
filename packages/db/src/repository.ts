@@ -5,8 +5,8 @@ import { eq, and, lt, isNotNull } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import type { CreateJournalEntrySchema, CreatePromptSchema, OnboardUserSchema, UpdateUserSchema } from '@innkeeper/db';
-import { promptsTable, journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, schema } from '@innkeeper/db';
+import type { CreateJournalEntrySchema, OnboardUserSchema, UpdateUserSchema } from '@innkeeper/db';
+import { journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, schema } from '@innkeeper/db';
 import { TOTP, Secret } from 'otpauth';
 
 export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schema> }) => {
@@ -127,22 +127,9 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
       });
     },
 
-    async createPrompt({ title, body, userId }: z.infer<typeof CreatePromptSchema>) {
-      const [newPrompt] = await db.insert(promptsTable).values({ title, body, userId }).returning();
-      return newPrompt;
-    },
-
-    async createJournalEntry({ entry, promptId, userId }: z.infer<typeof CreateJournalEntrySchema>) {
-      return db.transaction(async (tx) => {
-        await tx.insert(journalEntriesTable).values({ entry, promptId, userId }).returning();
-        await tx.update(usersTable).set({ lastEntryTime: new Date().toISOString() }).where(eq(usersTable.id, userId));
-        return tx.query.journalEntriesTable.findFirst({
-          columns: {
-            isDeleted: false,
-          },
-          where: eq(journalEntriesTable.promptId, promptId),
-        });
-      });
+    async createJournalEntry({ entry, userId }: z.infer<typeof CreateJournalEntrySchema>) {
+      const [newJournalEntry] = await db.insert(journalEntriesTable).values({ entry, userId }).returning();
+      return newJournalEntry;
     },
 
     async updateJournalEntry({ entry, id }: { entry: string; id: string }) {
@@ -184,13 +171,9 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
       });
     },
 
-    async getUserByPromptId({ promptId }: { promptId: string }) {
-      return db.query.promptsTable.findFirst({
-        columns: {},
-        where: (prompt, { eq }) => eq(prompt.id, promptId),
-        with: {
-          user: true,
-        },
+    async getUserByJournalEntryId({ promptId }: { promptId: string }) {
+      return db.query.journalEntriesTable.findFirst({
+        where: eq(journalEntriesTable.id, promptId),
       });
     },
 
@@ -206,9 +189,6 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
     async getJournalEntriesByUserId({ userId, isDeleted = false }: { userId: string; isDeleted?: boolean }) {
       return db.query.journalEntriesTable.findMany({
         where: (journalEntry, { and, eq }) => and(eq(journalEntry.userId, userId), eq(journalEntry.isDeleted, isDeleted)),
-        with: {
-          prompt: true,
-        },
         columns: {
           isDeleted: false,
         },
@@ -216,12 +196,10 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
       });
     },
 
-    async getJournalEntryByPromptId({ promptId, isDeleted = false }: { promptId: string; isDeleted?: boolean }) {
+    async getJournalEntryByPromptId({ isDeleted = false }: { promptId: string; isDeleted?: boolean }) {
       return db.query.journalEntriesTable.findFirst({
-        where: (journalEntry, { and, eq }) => and(eq(journalEntry.promptId, promptId), eq(journalEntry.isDeleted, isDeleted)),
-        with: {
-          prompt: true,
-        },
+        where: (journalEntry, { and, eq }) => and(eq(journalEntry.isDeleted, isDeleted)),
+
         columns: {
           isDeleted: false,
         },
@@ -231,9 +209,6 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
     async getJournalEntryById({ journalEntryId, isDeleted = false }: { journalEntryId: string; isDeleted?: boolean }) {
       return db.query.journalEntriesTable.findFirst({
         where: (journalEntry, { and, eq }) => and(eq(journalEntry.id, journalEntryId), eq(journalEntry.isDeleted, isDeleted)),
-        with: {
-          prompt: true,
-        },
         columns: {
           isDeleted: false,
         },

@@ -1,5 +1,5 @@
 {
-  "id": "fc3a69c6-109f-4b0f-841e-2b19e8635b77",
+  "id": "8bd7558a-877d-4628-b801-cdc8a390685f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -81,17 +81,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "promptId": {
-          "name": "promptId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "entry": {
           "name": "entry",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "prompt": {
+          "name": "prompt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "id": {
           "name": "id",
@@ -141,123 +141,12 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "journalEntryPromptIdIndex": {
-          "name": "journalEntryPromptIdIndex",
-          "columns": [
-            {
-              "expression": "promptId",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "isDeleted",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
         "journal_entries_userId_users_id_fk": {
           "name": "journal_entries_userId_users_id_fk",
           "tableFrom": "journal_entries",
-          "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "journal_entries_promptId_prompts_id_fk": {
-          "name": "journal_entries_promptId_prompts_id_fk",
-          "tableFrom": "journal_entries",
-          "tableTo": "prompts",
-          "columnsFrom": [
-            "promptId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.prompts": {
-      "name": "prompts",
-      "schema": "",
-      "columns": {
-        "userId": {
-          "name": "userId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "body": {
-          "name": "body",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "(CURRENT_TIMESTAMP)"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "promptUserIdIndex": {
-          "name": "promptUserIdIndex",
-          "columns": [
-            {
-              "expression": "userId",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "prompts_userId_users_id_fk": {
-          "name": "prompts_userId_users_id_fk",
-          "tableFrom": "prompts",
           "tableTo": "users",
           "columnsFrom": [
             "userId"

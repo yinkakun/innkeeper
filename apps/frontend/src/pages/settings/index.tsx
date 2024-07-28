@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Switch } from 'react-aria-components';
 import { Switch } from '@/components/switch';
 import { AppLayout } from '@/components/app-layout';
 import { CheckCircle, Circle } from '@phosphor-icons/react';
