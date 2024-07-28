@@ -29,11 +29,7 @@ app.use(
   '/trpc/*',
   cors({
     credentials: true,
-    origin: (origin, c) => {
-      console.log('origin', origin);
-      return origin;
-    },
-    // origin: (ctx) => ctx,
+    origin: ['http://localhost:5173', 'https://innkeeper.pages.dev'],
   }),
 );
 
