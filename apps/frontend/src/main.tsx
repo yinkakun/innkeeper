@@ -13,6 +13,7 @@ import { Login } from '@/pages/login';
 import { Settings } from '@/pages/settings';
 import { Onboarding } from '@/pages/onboarding';
 import { PageLoading } from '@/components/page-loading';
+import { Toaster } from '@/components/toaster';
 
 import type { TrpcClient } from '@/lib/trpc';
 import { trpc, trpcClient } from '@/lib/trpc';
@@ -24,8 +25,9 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
   component: () => (
     <React.Fragment>
       <Outlet />
-      {/* <ReactQueryDevtools /> */}
-      {/* <TanStackRouterDevtools /> */}
+      <Toaster />
+      <ReactQueryDevtools />
+      <TanStackRouterDevtools />
     </React.Fragment>
   ),
 
@@ -69,6 +71,10 @@ const journalRoute = createRoute({
   component: Journal,
   getParentRoute: () => rootRoute,
   pendingComponent: () => <PageLoading />,
+  loader: async ({ context }) => {
+    const clientUtils = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
+    await clientUtils.journal.entries.ensureData();
+  },
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
@@ -105,10 +111,7 @@ const insightsRoute = createRoute({
 
 const settingsRoute = createRoute({
   path: 'settings',
-  component: () => {
-    const userData = trpc.useUtils().user.details.getData();
-    return <Settings user={userData} />;
-  },
+  component: Settings,
   getParentRoute: () => rootRoute,
   pendingComponent: () => <PageLoading />,
   loader: async ({ context }) => {

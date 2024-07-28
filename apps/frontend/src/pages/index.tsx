@@ -4,7 +4,7 @@ import { Link } from '@tanstack/react-router';
 export const Index = () => {
   return (
     <Layout className="relative flex flex-col gap-8 pt-40">
-      <header className="fixed left-1/2 top-6 w-full max-w-sm -translate-x-1/2 rounded-[15px] border border-neutral-200 bg-transparent backdrop-blur-lg">
+      <header className="fixed left-1/2 top-6 w-full max-w-sm -translate-x-1/2 rounded-[15px] border border-zinc-200 bg-transparent backdrop-blur-lg">
         <nav className="flex w-full items-center justify-between p-0.5">
           <Link to="/" className="flex rounded-[13px] bg-white px-2 lowercase">
             💌 Innkeeper

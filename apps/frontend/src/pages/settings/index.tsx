@@ -9,7 +9,7 @@ import { RouterOutputs, trpc } from '@/lib/trpc';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Spinner } from '@/components/spinner';
-
+import { toast } from 'sonner';
 const formSchema = z.object({
   name: z.string().min(1, 'First name is required').max(100, 'First name must be 100 characters or less'),
   promptFrequency: z.enum(['daily', 'weekly'], {
@@ -67,11 +67,8 @@ const GOALS = [
   },
 ];
 
-interface SettingsProps {
-  user: RouterOutputs['user']['details'];
-}
-
-export const Settings: React.FC<SettingsProps> = ({ user }) => {
+export const Settings = () => {
+  const user = trpc.user.details.useQuery().data;
   const mutation = trpc.user.update.useMutation();
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
@@ -87,7 +84,14 @@ export const Settings: React.FC<SettingsProps> = ({ user }) => {
 
   const onSubmit = (data: FormSchemaType) => {
     if (mutation.isPending) return;
-    mutation.mutate({ ...data, isPaused: !data.enableEmailNotifications });
+    mutation.mutate(
+      { ...data, isPaused: !data.enableEmailNotifications },
+      {
+        onSuccess: () => {
+          toast.success('Settings saved');
+        },
+      },
+    );
   };
 
   return (

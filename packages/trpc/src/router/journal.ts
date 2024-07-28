@@ -1,21 +1,46 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { UpdateJournalEntrySchema, CreateJournalEntrySchema } from '@innkeeper/db';
+import { TRPCError } from '@trpc/server';
 
 export const journalRouter = createTRPCRouter({
-  create: protectedProcedure.input(CreateJournalEntrySchema).mutation(async ({ input, ctx }) => {
-    const user = ctx.user;
-    const newJournalEntry = await ctx.db.createJournalEntry({
-      userId: user.id,
-      promptId: input.promptId,
-      entry: input.entry,
-    });
-    return newJournalEntry;
-  }),
+  create: protectedProcedure
+    .input(
+      CreateJournalEntrySchema.omit({
+        userId: true,
+        promptId: true,
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const user = ctx.user;
+      // create empty prompt
+      const newPrompt = await ctx.db.createPrompt({
+        body: '',
+        userId: user.id,
+        title: 'Untitled',
+      });
+
+      if (!newPrompt) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create prompt',
+        });
+      }
+
+      const newJournalEntry = await ctx.db.createJournalEntry({
+        userId: user.id,
+        entry: input.entry,
+        promptId: newPrompt.id,
+      });
+
+      return newJournalEntry;
+    }),
   update: protectedProcedure
     .input(
       UpdateJournalEntrySchema.required({
         id: true,
+      }).omit({
+        userId: true,
       }),
     )
     .mutation(async ({ input, ctx }) => {
