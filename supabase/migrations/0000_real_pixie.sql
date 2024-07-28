@@ -1,3 +1,27 @@
+DO $$ BEGIN
+ CREATE TYPE "public"."primary_journal_goal" AS ENUM('Self-Discovery and Growth', 'Emotional Wellness and Resilience', 'Relationships and Behavioral Change');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."prompt_frequency" AS ENUM('daily', 'weekly');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."prompt_period" AS ENUM('morning', 'afternoon', 'evening', 'night');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."prompt_tone" AS ENUM('neutral', 'nurturing', 'challenging');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "email_verification" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
@@ -37,9 +61,12 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"name" text,
 	"id" text PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
-	"promptHourUTC" integer,
-	"timezone" text,
+	"userTimezone" text,
+	"prompt_period" "prompt_period",
 	"lastEntryTime" timestamp,
+	"prompt_tone" "prompt_tone",
+	"primary_journal_goal" "primary_journal_goal",
+	"prompt_frequency" "prompt_frequency",
 	"created_at" timestamp with time zone DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	"updated_at" timestamp with time zone,
 	"isPaused" boolean DEFAULT false,
@@ -81,5 +108,4 @@ CREATE INDEX IF NOT EXISTS "journalEntriesUserIdIndex" ON "journal_entries" USIN
 CREATE INDEX IF NOT EXISTS "journalEntryPromptIdIndex" ON "journal_entries" USING btree ("promptId","isDeleted");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "promptUserIdIndex" ON "prompts" USING btree ("userId");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "emailIndex" ON "users" USING btree ("email");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "preferredHourIndex" ON "users" USING btree ("promptHourUTC","isPaused");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "lastEntryTimeIndex" ON "users" USING btree ("lastEntryTime","isPaused");

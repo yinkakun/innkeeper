@@ -7,7 +7,12 @@ import { OTPInput, SlotProps } from 'input-otp';
 import googleLogo from '@/assets/google-logo.svg';
 import { Stepper, useStepper } from '@/components/stepper';
 import { useNavigate } from '@tanstack/react-router';
+import { z } from 'zod';
+import { atom, useSetAtom, useAtomValue } from 'jotai';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
+const emailAtom = atom('');
 const API_URL = import.meta.env.VITE_API_URL as string;
 
 export const Login = () => {
@@ -23,10 +28,30 @@ export const Login = () => {
   );
 };
 
+const requestEmailOtpSchema = z.object({
+  email: z.string().email(),
+});
+
+type RequestEmailOtp = z.infer<typeof requestEmailOtpSchema>;
+
 const RequestOtp = () => {
   const { nextStep } = useStepper();
+  const setEmail = useSetAtom(emailAtom);
+  const mutation = trpc.login.requestEmailOtp.useMutation();
 
-  const requestOtpMutation = trpc.login.requestEmailOtp.useMutation();
+  const form = useForm<RequestEmailOtp>({
+    resolver: zodResolver(requestEmailOtpSchema),
+  });
+
+  const onSubmit = (data: RequestEmailOtp) => {
+    if (mutation.isPending) return;
+    mutation.mutate(data, {
+      onSuccess: () => {
+        setEmail(data.email);
+        nextStep();
+      },
+    });
+  };
 
   return (
     <StepWrapper>
@@ -41,78 +66,100 @@ const RequestOtp = () => {
 
       <p>OR</p>
 
-      <div className="flex w-full flex-col gap-4">
-        <input
-          type="email"
-          className="h-8 rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs placeholder:text-neutral-500 focus-within:bg-orange-100"
-          placeholder="Enter email"
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-4">
+        <div className="w-full">
+          <input
+            formNoValidate
+            type="email"
+            {...form.register('email')}
+            className="h-8 w-full rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs placeholder:text-neutral-500 focus-within:bg-orange-100"
+            placeholder="Enter email"
+          />
+          {form.formState.errors.email && <span className="text-xs text-red-500">{form.formState.errors.email.message}</span>}
+        </div>
         <button
-          onClick={() =>
-            requestOtpMutation.mutate(
-              { email: 'yinkakun@gmail.com' },
-              {
-                onSuccess: () => {
-                  nextStep();
-                },
-              },
-            )
-          }
+          type="submit"
           className="flex h-8 w-full items-center justify-center rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200"
         >
-          {requestOtpMutation.isPending ? <Spinner /> : 'Send OTP'}
+          {mutation.isPending ? <Spinner /> : 'Send OTP'}
         </button>
-      </div>
+      </form>
     </StepWrapper>
   );
 };
 
+const verifyEmailOtpSchema = z.object({
+  otp: z.string().length(6),
+});
+
+type VerifyEmailOtp = z.infer<typeof verifyEmailOtpSchema>;
+
 const VerifyOtp = () => {
   const navigate = useNavigate();
+  const email = useAtomValue(emailAtom);
   const verifyOtpMutation = trpc.login.verifyEmailOtp.useMutation();
+
+  const form = useForm<VerifyEmailOtp>({
+    resolver: zodResolver(verifyEmailOtpSchema),
+  });
+
+  const onSubmit = ({ otp }: VerifyEmailOtp) => {
+    if (verifyOtpMutation.isPending) return;
+    verifyOtpMutation.mutate(
+      { email, otp },
+      {
+        onSuccess: (data) => {
+          if (data.onboarded) {
+            navigate({
+              to: '/journal',
+            });
+          }
+          if (!data.onboarded) {
+            navigate({
+              to: '/onboarding',
+            });
+          }
+        },
+      },
+    );
+  };
 
   return (
     <StepWrapper>
-      <div>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="flex w-full flex-col items-center gap-4">
-          <OTPInput
-            maxLength={6}
-            containerClassName="group flex items-center has-[:disabled]:opacity-30"
-            render={({ slots }) => (
-              <React.Fragment>
-                <div className="flex">
-                  {slots.map((slot, idx) => (
-                    <Slot key={idx} {...slot} />
-                  ))}
-                </div>
-              </React.Fragment>
+          <span className="text-xs text-neutral-600">Enter the 6-digit code sent to {email}</span>
+          <Controller
+            control={form.control}
+            name="otp"
+            render={({ field }) => (
+              <OTPInput
+                maxLength={6}
+                {...field}
+                containerClassName="group flex items-center has-[:disabled]:opacity-30"
+                render={({ slots }) => (
+                  <React.Fragment>
+                    <div className="flex">
+                      {slots.map((slot, idx) => (
+                        <Slot key={idx} {...slot} />
+                      ))}
+                    </div>
+                  </React.Fragment>
+                )}
+              />
             )}
           />
+
+          {form.formState.errors.otp && <span className="text-xs text-red-500">{form.formState.errors.otp.message}</span>}
+
           <button
-            onClick={() =>
-              verifyOtpMutation.mutate(
-                { email: 'yinkakun@gmail.com', otp: '590847' },
-                {
-                  onSuccess: ({ onboarded }) => {
-                    console.log('success');
-                    if (onboarded) {
-                      navigate({ to: '/journal' });
-                    } else {
-                      navigate({ to: '/onboarding' });
-                    }
-                  },
-                  onError: (error) => {
-                    console.error(error);
-                  },
-                },
-              )
-            }
+            type="submit"
             className="flex h-8 w-full items-center justify-center rounded-lg bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm text-stone-50 duration-200"
           >
             {verifyOtpMutation.isPending ? <Spinner /> : 'Verify OTP'}
           </button>
         </div>
-      </div>
+      </form>
     </StepWrapper>
   );
 };

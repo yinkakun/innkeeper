@@ -2,7 +2,16 @@ import { z } from 'zod';
 import { relations, sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { integer, pgTable, text, timestamp, uniqueIndex, index, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uniqueIndex, index, boolean, pgEnum } from 'drizzle-orm/pg-core';
+
+export const promptFrequencyEnum = pgEnum('prompt_frequency', ['daily', 'weekly']);
+export const promptToneEnum = pgEnum('prompt_tone', ['neutral', 'nurturing', 'challenging']);
+export const promptPeriodEnum = pgEnum('prompt_period', ['morning', 'afternoon', 'evening', 'night']);
+export const primaryJournalGoalEnum = pgEnum('primary_journal_goal', [
+  'Self-Discovery and Growth',
+  'Emotional Wellness and Resilience',
+  'Relationships and Behavioral Change',
+]);
 
 export const usersTable = pgTable(
   'users',
@@ -10,11 +19,14 @@ export const usersTable = pgTable(
     name: text('name'),
     id: text('id').notNull().primaryKey(),
     email: text('email').notNull().unique(),
-    promptHourUTC: integer('promptHourUTC'), // 0-23
-    timezone: text('timezone'), // TODO: maybe use enum?
+    timezone: text('userTimezone'),
+    promptPeriod: promptPeriodEnum('prompt_period'),
     lastEntryTime: timestamp('lastEntryTime', {
       mode: 'string',
     }),
+    promptTone: promptToneEnum('prompt_tone'),
+    primaryGoal: primaryJournalGoalEnum('primary_journal_goal'),
+    promptFrequency: promptFrequencyEnum('prompt_frequency'),
     createdAt: timestamp('created_at', {
       mode: 'string',
       withTimezone: true,
@@ -30,7 +42,6 @@ export const usersTable = pgTable(
   },
   (table) => ({
     emailIndex: uniqueIndex('emailIndex').on(table.email),
-    preferredHourIndex: index('preferredHourIndex').on(table.promptHourUTC, table.isPaused),
     lastEntryTimeIndex: index('lastEntryTimeIndex').on(table.lastEntryTime, table.isPaused),
   }),
 );
@@ -156,4 +167,18 @@ export const CreateJournalEntrySchema = createInsertSchema(journalEntriesTable, 
   createdAt: true,
   updatedAt: true,
   isDeleted: true,
+});
+
+export const UpdateJournalEntrySchema = createInsertSchema(journalEntriesTable, {}).omit({
+  createdAt: true,
+  updatedAt: true,
+  isDeleted: true,
+});
+
+export const OnboardUserSchema = createInsertSchema(usersTable, {}).omit({
+  email: true,
+  isPaused: true,
+  createdAt: true,
+  updatedAt: true,
+  completedOnboarding: true,
 });

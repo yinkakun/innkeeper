@@ -1,9 +1,38 @@
-import { AppLayout } from '@/components/app-layout';
 import React from 'react';
-import { SignOut as SignOutIcon } from '@phosphor-icons/react';
 import { Switch } from 'react-aria-components';
-import { Label, RadioGroup, Radio } from 'react-aria-components';
+import { AppLayout } from '@/components/app-layout';
 import { CheckCircle, Circle } from '@phosphor-icons/react';
+import { Label, RadioGroup, Radio } from 'react-aria-components';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const formSchema = z.object({
+  firstName: z.string().min(1, 'First name is required').max(100, 'First name must be 100 characters or less'),
+  promptFrequency: z
+    .enum(['daily', 'weekly'], {
+      required_error: 'Please select a prompt frequency',
+    })
+    .default('Weekly'),
+  preferredPromptTime: z
+    .enum(['morning', 'afternoon', 'evening', 'night'], {
+      required_error: 'Please select a preferred prompt time',
+    })
+    .default('Morning'),
+  primaryGoal: z
+    .enum(['Self-Discovery and Growth', 'Emotional Wellness and Resilience', 'Relationships and Behavioral Change'], {
+      required_error: 'Please select a primary goal',
+    })
+    .default('Self-Discovery and Growth'),
+  preferredPromptTone: z
+    .enum(['neutral', 'nurturing', 'challenging'], {
+      required_error: 'Please select a preferred prompt tone',
+    })
+    .default('Neutral'),
+  enableEmailNotifications: z.boolean().default(false),
+});
+
+type FormSchemaType = z.infer<typeof formSchema>;
 
 const FREQUENCY = ['Daily', 'Weekly'];
 const TIMES = ['Morning', 'Afternoon', 'Evening', 'Night'];
@@ -42,7 +71,18 @@ const GOALS = [
 ];
 
 export const Settings = () => {
-  const [selectedFrequency, setSelectedFrequency] = React.useState<string | null>(null);
+  const form = useForm<FormSchemaType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: '',
+      promptFrequency: undefined,
+      preferredPromptTime: undefined,
+      primaryGoal: undefined,
+      preferredPromptTone: undefined,
+      enableEmailNotifications: false,
+    },
+  });
+
   return (
     <AppLayout>
       <div className="flex grow flex-col gap-4">
@@ -58,12 +98,7 @@ export const Settings = () => {
             />
           </div>
 
-          <RadioGroup
-            className="flex w-full max-w-none shrink-0 flex-col gap-2"
-            onChange={(value) => {
-              setSelectedFrequency(value);
-            }}
-          >
+          <RadioGroup className="flex w-full max-w-none shrink-0 flex-col gap-2" onChange={(value) => {}}>
             <Label className="text-sm">Prompt Frequency</Label>
             <div className="grid w-full shrink-0 grid-cols-2 gap-4">
               {FREQUENCY.map((item) => (
@@ -77,6 +112,26 @@ export const Settings = () => {
                       {isSelected ? <CheckCircle /> : <Circle />}
 
                       <div>{item}</div>
+                    </div>
+                  )}
+                </Radio>
+              ))}
+            </div>
+          </RadioGroup>
+
+          <RadioGroup className="flex flex-col gap-2">
+            <Label className="text-sm">Preferred Prompt Time</Label>
+            <div className="grid w-full grid-cols-4 flex-col gap-2">
+              {TIMES.map((time) => (
+                <Radio
+                  value={time}
+                  key={time}
+                  className="cursor-pointer rounded-lg border border-neutral-200 bg-white p-2 py-1 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-stone-700"
+                >
+                  {({ isSelected }) => (
+                    <div className="flex items-center gap-2">
+                      {isSelected ? <CheckCircle /> : <Circle />}
+                      <div>{time}</div>
                     </div>
                   )}
                 </Radio>

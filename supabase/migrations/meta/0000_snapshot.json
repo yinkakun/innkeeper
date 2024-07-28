@@ -1,5 +1,5 @@
 {
-  "id": "7858541e-9953-4919-afec-23d1785f770d",
+  "id": "fc3a69c6-109f-4b0f-841e-2b19e8635b77",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -336,21 +336,43 @@
           "primaryKey": false,
           "notNull": true
         },
-        "promptHourUTC": {
-          "name": "promptHourUTC",
-          "type": "integer",
+        "userTimezone": {
+          "name": "userTimezone",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "timezone": {
-          "name": "timezone",
-          "type": "text",
+        "prompt_period": {
+          "name": "prompt_period",
+          "type": "prompt_period",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
         "lastEntryTime": {
           "name": "lastEntryTime",
           "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prompt_tone": {
+          "name": "prompt_tone",
+          "type": "prompt_tone",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "primary_journal_goal": {
+          "name": "primary_journal_goal",
+          "type": "primary_journal_goal",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prompt_frequency": {
+          "name": "prompt_frequency",
+          "type": "prompt_frequency",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
@@ -398,27 +420,6 @@
           "method": "btree",
           "with": {}
         },
-        "preferredHourIndex": {
-          "name": "preferredHourIndex",
-          "columns": [
-            {
-              "expression": "promptHourUTC",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "isPaused",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "lastEntryTimeIndex": {
           "name": "lastEntryTimeIndex",
           "columns": [
@@ -454,7 +455,44 @@
       }
     }
   },
-  "enums": {},
+  "enums": {
+    "public.primary_journal_goal": {
+      "name": "primary_journal_goal",
+      "schema": "public",
+      "values": [
+        "Self-Discovery and Growth",
+        "Emotional Wellness and Resilience",
+        "Relationships and Behavioral Change"
+      ]
+    },
+    "public.prompt_frequency": {
+      "name": "prompt_frequency",
+      "schema": "public",
+      "values": [
+        "daily",
+        "weekly"
+      ]
+    },
+    "public.prompt_period": {
+      "name": "prompt_period",
+      "schema": "public",
+      "values": [
+        "morning",
+        "afternoon",
+        "evening",
+        "night"
+      ]
+    },
+    "public.prompt_tone": {
+      "name": "prompt_tone",
+      "schema": "public",
+      "values": [
+        "neutral",
+        "nurturing",
+        "challenging"
+      ]
+    }
+  },
   "schemas": {},
   "_meta": {
     "columns": {},

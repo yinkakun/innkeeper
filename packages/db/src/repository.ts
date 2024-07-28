@@ -1,19 +1,13 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 import { addMinutes, formatISO } from 'date-fns';
 import postgres from 'postgres';
 import { eq, and, lt } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import type { CreateJournalEntrySchema, CreatePromptSchema, UpdateUserSchema } from '@innkeeper/db';
+import type { CreateJournalEntrySchema, CreatePromptSchema, OnboardUserSchema, UpdateUserSchema } from '@innkeeper/db';
 import { promptsTable, journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, schema } from '@innkeeper/db';
 import { TOTP, Secret } from 'otpauth';
-
-// const totp = new TOTP({
-//   digits: 6,
-//   period: 30,
-//   secret: 'super_secret', // TODO: replace with a secret
-// });
 
 export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schema> }) => {
   return {
@@ -37,10 +31,23 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
       return deletedUser;
     },
 
-    async updateUser({ id, name, email, promptHourUTC, timezone }: z.infer<typeof UpdateUserSchema>) {
+    async updateUser({ id, name, email }: z.infer<typeof UpdateUserSchema>) {
+      const [updatedUser] = await db.update(usersTable).set({ name, email }).where(eq(usersTable.id, id)).returning();
+      return updatedUser;
+    },
+
+    async onboardUser({ name, promptFrequency, timezone, primaryGoal, promptPeriod, promptTone, id }: z.infer<typeof OnboardUserSchema>) {
       const [updatedUser] = await db
         .update(usersTable)
-        .set({ name, email, promptHourUTC, timezone })
+        .set({
+          name,
+          timezone,
+          primaryGoal,
+          promptTone,
+          promptPeriod,
+          promptFrequency,
+          completedOnboarding: true,
+        })
         .where(eq(usersTable.id, id))
         .returning();
       return updatedUser;
@@ -160,12 +167,6 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
         with: {
           user: true,
         },
-      });
-    },
-
-    async getUsersToPromptByCurrentHour({ hourUtc }: { hourUtc: number }) {
-      return db.query.usersTable.findMany({
-        where: and(eq(usersTable.promptHourUTC, hourUtc), eq(usersTable.isPaused, false)),
       });
     },
 

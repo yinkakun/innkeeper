@@ -2,6 +2,9 @@ import { Drawer } from 'vaul';
 import { AppLayout } from '@/components/app-layout';
 import { useMeasure } from 'react-use';
 import { CalendarCheck, Plus } from '@phosphor-icons/react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const shadowJournalingPrompts = [
   {
@@ -30,6 +33,12 @@ const shadowJournalingPrompts = [
   },
 ];
 
+const journalEntrySchema = z.object({
+  entry: z.string().nonempty(),
+});
+
+type JournalEntry = z.infer<typeof journalEntrySchema>;
+
 export const Journal = () => {
   return (
     <AppLayout className="gap-6">
@@ -45,6 +54,10 @@ export const Journal = () => {
 
 const NewJournalEntry = () => {
   const [ref, { height }] = useMeasure<HTMLFormElement>();
+  const form = useForm<JournalEntry>({
+    resolver: zodResolver(journalEntrySchema),
+  });
+
   return (
     <Drawer.Root>
       <Drawer.Trigger>
@@ -95,6 +108,9 @@ interface JournalEntryProps {
 
 const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry }) => {
   const [ref, { height }] = useMeasure<HTMLFormElement>();
+  const form = useForm<JournalEntry>({
+    resolver: zodResolver(journalEntrySchema),
+  });
 
   return (
     <Drawer.Root>
@@ -112,7 +128,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry }) => {
       </Drawer.Trigger>
 
       <Drawer.Portal>
-        <Drawer.Content className="fixed bottom-7 left-0 right-0 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] max-w-[calc(768px-88px)] flex-col bg-transparent">
+        <Drawer.Content className="fixed bottom-5 left-0 right-0 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] max-w-[calc(768px-68px)] flex-col bg-transparent">
           <div className="relative flex flex-1 flex-col gap-4 rounded-[20px] bg-white px-4 pb-4 pt-2">
             <Drawer.Handle className="absolute top-2 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
 
