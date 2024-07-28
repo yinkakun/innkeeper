@@ -1,5 +1,5 @@
 import superjson from 'superjson';
-import type { AppRouter } from '@innkeeper/trpc';
+import type { AppRouter, RouterInputs, RouterOutputs } from '@innkeeper/trpc';
 import { createTRPCReact } from '@trpc/react-query';
 import { httpBatchLink, loggerLink } from '@trpc/client';
 
@@ -21,3 +21,5 @@ export const trpcClient = trpc.createClient({
 });
 
 export type TrpcClient = typeof trpcClient;
+
+export type { RouterInputs, RouterOutputs };

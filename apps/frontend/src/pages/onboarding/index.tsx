@@ -12,7 +12,6 @@ import { atom, useAtom } from 'jotai';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Spinner } from '@/components/spinner';
-import { ZodError } from 'zod';
 
 const firstNameSchema = z.object({
   name: z

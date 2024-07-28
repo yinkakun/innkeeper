@@ -105,13 +105,20 @@ const insightsRoute = createRoute({
 
 const settingsRoute = createRoute({
   path: 'settings',
-  component: Settings,
+  component: () => {
+    const userData = trpc.useUtils().user.details.getData();
+    return <Settings user={userData} />;
+  },
   getParentRoute: () => rootRoute,
   pendingComponent: () => <PageLoading />,
+  loader: async ({ context }) => {
+    const client = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
+    await client.user.details.ensureData();
+  },
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
-    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
-    await clientUtils.login.status.fetch().catch((err) => {
+    const client = createTRPCQueryUtils({ queryClient, client: trpcClient });
+    await client.login.status.fetch().catch((err) => {
       throw redirect({
         to: '/login',
         search: {

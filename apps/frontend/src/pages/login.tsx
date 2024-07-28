@@ -188,7 +188,7 @@ interface StepWrapperProps {
 const StepWrapper: React.FC<StepWrapperProps> = ({ children }) => {
   return (
     <div className="flex max-w-sm flex-col items-center gap-4 rounded-3xl border border-neutral-200 border-opacity-40 bg-neutral-50 p-8 text-center">
-      <p className="max-w-[70%] text-center text-neutral-700">Start using 💌 Innkeeper for shadow work journaling</p>
+      <p className="max-w-[70%] text-center text-neutral-700">Start your shadow work journalling with 💌 Innkeeper</p>
 
       {children}
 

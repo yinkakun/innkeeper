@@ -31,8 +31,21 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
       return deletedUser;
     },
 
-    async updateUser({ id, name, email }: z.infer<typeof UpdateUserSchema>) {
-      const [updatedUser] = await db.update(usersTable).set({ name, email }).where(eq(usersTable.id, id)).returning();
+    async updateUser({
+      id,
+      name,
+      isPaused,
+      primaryGoal,
+      promptFrequency,
+      promptPeriod,
+      promptTone,
+      timezone,
+    }: z.infer<typeof UpdateUserSchema>) {
+      const [updatedUser] = await db
+        .update(usersTable)
+        .set({ name, isPaused, primaryGoal, promptFrequency, promptPeriod, promptTone, timezone })
+        .where(eq(usersTable.id, id))
+        .returning();
       return updatedUser;
     },
 

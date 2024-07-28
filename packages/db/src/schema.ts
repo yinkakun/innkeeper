@@ -150,10 +150,9 @@ export const UserSchema = createSelectSchema(usersTable);
 export const PromptSchema = createSelectSchema(promptsTable);
 export const JournalEntrySchema = createSelectSchema(journalEntriesTable);
 
-export const UpdateUserSchema = createInsertSchema(usersTable, {
-  email: z.string().email().min(1).max(255),
-})
-  .omit({ createdAt: true, updatedAt: true, lastEntryTime: true })
+export const UpdateUserSchema = createInsertSchema(usersTable, {})
+  .omit({ createdAt: true, updatedAt: true, lastEntryTime: true, email: true, completedOnboarding: true })
+  .partial()
   .required({ id: true });
 
 export const CreatePromptSchema = createInsertSchema(promptsTable, {}).omit({
