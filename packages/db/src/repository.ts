@@ -1,7 +1,7 @@
-import { z } from 'zod';
+import type { z } from 'zod';
 import { addMinutes, formatISO } from 'date-fns';
 import postgres from 'postgres';
-import { eq, and, lt } from 'drizzle-orm';
+import { eq, and, lt, isNotNull } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
@@ -158,6 +158,17 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
     async getUsers() {
       return db.query.usersTable.findMany({
         where: and(eq(usersTable.isPaused, false)),
+      });
+    },
+
+    async getUsersWithEmailPromptsEnabled() {
+      return db.query.usersTable.findMany({
+        where: and(
+          eq(usersTable.isPaused, false),
+          isNotNull(usersTable.timezone),
+          eq(usersTable.completedOnboarding, true),
+          isNotNull(usersTable.promptPeriod),
+        ),
       });
     },
 

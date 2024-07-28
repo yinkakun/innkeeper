@@ -1,6 +1,6 @@
 import { sendEmail, db } from '../lib';
 import { logger, task, retry, AbortTaskRunError } from '@trigger.dev/sdk/v3';
-import { Email } from 'postal-mime';
+import type { Email } from 'postal-mime';
 interface JournalEntryPayload {
   email: Email;
 }

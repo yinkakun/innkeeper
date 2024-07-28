@@ -6,7 +6,7 @@ import { prettyJSON } from 'hono/pretty-json';
 import { trpcServer } from '@hono/trpc-server';
 import { authRouter } from './routes/auth';
 import { tasks } from '@trigger.dev/sdk/v3';
-import { saveJournalEntry } from '@innkeeper/jobs';
+import type { saveJournalEntry } from '@innkeeper/jobs';
 import type { HonoOptions, Bindings, HonoContext } from './context';
 import { appRouter, createContext } from '@innkeeper/trpc';
 import type { ReadableStream } from 'web-streams-polyfill';

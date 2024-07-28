@@ -1,31 +1,33 @@
-// import { Ollama } from '@langchain/community/llms/ollama';
-// import { ChatAnthropic } from '@langchain/anthropic';
+import Anthropic from '@anthropic-ai/sdk';
+import { SHADOW_WORK_SYSTEM_PROMPT, createShadowWorkUserPrompt } from './prompts';
 
-// const ollama = new Ollama({
-//   baseUrl: 'http://localhost:11434', // Default value
-//   model: 'llama2', // Default value
-// });
+type Model = Anthropic;
 
-// const model = new ChatAnthropic({
-//   model: 'claude-3-sonnet-20240229',
-//   temperature: 0,
-// });
+interface GeneratePromptPayload {
+  tone?: string;
+  goal?: string;
+}
 
-// const llm = new OpenAI({
-//   apiKey: '',
-//   baseURL: 'xxx',
-// });
-
-// https://logsnag.com/blog/handling-timezones-in-javascript-with-date-fns-tz
-// https://github.com/batuhanbilginn/background-jobs-nextjs13-inngest/blob/main/app/api/inngest/route.ts
-
-export const llm = {
-  generateInsights: async (payload: { userId: string }) => {
-    // TODO: generate insights for the user
-    return 'Insights';
-  },
-  generatePrompt: async (payload: { userId: string }) => {
-    // TODO: generate prompt for the user
-    return 'Prompt';
-  },
+export const initLlm = (model: Model) => {
+  return {
+    generatePrompt: async ({ goal, tone }: GeneratePromptPayload) => {
+      return await model.messages.create({
+        model: 'claude-3-5-sonnet-20240620',
+        max_tokens: 1000,
+        temperature: 0.5,
+        system: SHADOW_WORK_SYSTEM_PROMPT,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: createShadowWorkUserPrompt({ tone, goal }),
+              },
+            ],
+          },
+        ],
+      });
+    },
+  };
 };
