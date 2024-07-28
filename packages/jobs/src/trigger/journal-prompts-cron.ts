@@ -72,10 +72,10 @@ export const sendPrompt = task({
 
     const prompt = response.content[0]?.type === 'text' ? response.content[0].text : '';
 
-    // await db.createJournalEntry({
-    //   prompt,
-    //   userId: payload.userId,
-    // });
+    await db.createJournalEntry({
+      prompt,
+      userId: payload.userId,
+    });
 
     await retry.onThrow(
       async () => {

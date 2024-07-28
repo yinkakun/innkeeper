@@ -29,7 +29,11 @@ app.use(
   '/trpc/*',
   cors({
     credentials: true,
-    origin: (ctx) => ctx,
+    origin: (origin, c) => {
+      console.log('origin', origin);
+      return origin;
+    },
+    // origin: (ctx) => ctx,
   }),
 );
 

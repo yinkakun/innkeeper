@@ -65,8 +65,7 @@ export const authRouter = createTRPCRouter({
     return { success: true };
   }),
   status: publicProcedure.query(async ({ ctx }) => {
-    const session = ctx.hono.get('session');
-    console.log('s🔥ession', session);
+    const session = ctx.session;
     if (!session) {
       throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
     }
