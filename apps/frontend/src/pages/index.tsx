@@ -1,31 +1,27 @@
-import { Layout } from '@/components/layout';
+import { DotPattern } from '@/components/dot-pattern';
 import { Link } from '@tanstack/react-router';
 
 export const Index = () => {
   return (
-    <Layout className="relative flex flex-col gap-8 pt-40">
-      <header className="fixed left-1/2 top-6 w-full max-w-sm -translate-x-1/2 rounded-[15px] border border-zinc-200 bg-transparent backdrop-blur-lg">
-        <nav className="flex w-full items-center justify-between p-0.5">
-          <Link to="/" className="flex rounded-[13px] bg-white px-2 lowercase">
-            💌 Innkeeper
-          </Link>
-
-          <Link to="/login" className="flex rounded-[13px] bg-orange-500 px-4 py-1 text-sm text-white">
-            Start Journaling
-          </Link>
-        </nav>
-      </header>
-      <div className="mx-auto w-full max-w-prose grow">
-        <p className="font-serif text-lg">
-          Innkeeper is a shadow work journaling app that helps you explore your inner self, uncover hidden beliefs, and heal past traumas.
-          By writing about your thoughts and feelings, you can gain a deeper understanding of yourself and work through emotional
-          challenges.
-        </p>
-
-        <div>Feature grid here</div>
-
-        <div>Faq here</div>
+    <div className="relative flex h-[100dvh] flex-col items-center justify-center gap-8 bg-orange-500 px-4 font-sans text-white">
+      <div className="mx-auto flex w-full max-w-screen-lg flex-col items-center gap-8">
+        <div className="flex flex-col items-center gap-4">
+          <p className="max-w-prose text-center text-4xl">
+            💌 Innkeeper helps you engage in shadow work through AI generated daily journaling, sends shadow work prompts via email, allows
+            users to respond through the web app or directly in the email.
+          </p>
+          <p className="max-w-lg rounded-2xl bg-white bg-opacity-5 px-4 py-3 text-center text-2xl">
+            Until you make the unconscious conscious, it will direct your life and you will call it fate.” — Carl Jung
+          </p>
+        </div>
+        <Link
+          className="w-full max-w-[200px] rounded-xl bg-white px-8 py-2 text-center font-medium text-orange-500 duration-100 hover:border-white"
+          to="/login"
+        >
+          Get started
+        </Link>
+        <DotPattern />
       </div>
-    </Layout>
+    </div>
   );
 };
