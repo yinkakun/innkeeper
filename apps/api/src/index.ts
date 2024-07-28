@@ -17,6 +17,15 @@ import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 
 const app = new Hono<HonoOptions>();
 
+app.use('*', async (c, next) => {
+  const corsMiddleware = cors({
+    credentials: true,
+    origin: c.env.APP_URL,
+    allowMethods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
+  });
+  await corsMiddleware(c, next);
+});
+
 app.use(csrf());
 app.use(logger());
 app.use(prettyJSON());
@@ -25,13 +34,13 @@ app.use(authMiddleware);
 app.use(emailMiddleware);
 app.use(triggerMiddleware);
 
-app.use(
-  '/trpc/*',
-  cors({
-    credentials: true,
-    origin: ['http://localhost:5173', 'https://innkeeper.pages.dev'],
-  }),
-);
+// app.use(
+//   '/trpc/*',
+//   cors({
+//     credentials: true,
+//     origin: ['http://localhost:5173', 'https://innkeeper.pages.dev'],
+//   }),
+// );
 
 app.route('/auth', authRouter);
 
