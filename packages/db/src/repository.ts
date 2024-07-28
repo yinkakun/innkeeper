@@ -145,12 +145,12 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
       });
     },
 
-    async updateJournalEntry(id: string, { entry }: { entry: string }) {
+    async updateJournalEntry({ entry, id }: { entry: string; id: string }) {
       const [updatedJournalEntry] = await db.update(journalEntriesTable).set({ entry }).where(eq(journalEntriesTable.id, id)).returning();
       return updatedJournalEntry;
     },
 
-    async deleteJournalEntry(id: string) {
+    async deleteJournalEntry({ id }: { id: string }) {
       const [deletedUser] = await db.update(journalEntriesTable).set({ isDeleted: true }).where(eq(journalEntriesTable.id, id)).returning();
       return deletedUser;
     },

@@ -204,7 +204,7 @@ const TimeSettings = () => {
             <Label className="w-full font-medium">How often would you like to journal?</Label>
             {['Daily', 'Weekly'].map((item) => (
               <Radio
-                className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-stone-700"
+                className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-neutral-700"
                 key={item}
                 value={item.toLowerCase()}
               >
@@ -238,7 +238,7 @@ const TimeSettings = () => {
             <Label className="w-full font-medium">What time of the day do you prefer to journal?</Label>
             {['Morning', 'Afternoon', 'Evening', 'Night'].map((item) => (
               <Radio
-                className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-stone-700"
+                className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-neutral-700"
                 key={item}
                 value={item.toLowerCase()}
               >
@@ -317,13 +317,13 @@ const PrimaryGoal = () => {
                 </div>
                 {GOALS.map((goal) => (
                   <Radio
-                    className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-stone-700"
+                    className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-neutral-700"
                     key={goal.title}
                     value={goal.title}
                   >
                     {({ isSelected }) => (
                       <React.Fragment>
-                        <div className="flex items-center gap-2 text-stone-900">
+                        <div className="flex items-center gap-2 text-neutral-900">
                           <div className="shrink-0">{isSelected ? <CheckCircle /> : <Circle />}</div>
                           <h3 className="text-sm">{goal.title}</h3>
                         </div>
@@ -422,7 +422,7 @@ const PreferredTone = () => {
             <Label className="w-full font-medium">What tone of prompts would you prefer for your journaling experience?</Label>
             {TONES.map((tone) => (
               <Radio
-                className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-stone-700"
+                className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-neutral-700"
                 key={tone.title}
                 value={tone.title.toLowerCase()}
               >

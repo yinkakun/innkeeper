@@ -72,7 +72,7 @@ const RequestOtp = () => {
             formNoValidate
             type="email"
             {...form.register('email')}
-            className="h-8 w-full rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs placeholder:text-neutral-500 focus-within:bg-orange-100"
+            className="h-8 w-full rounded-lg border border-neutral-200 bg-white px-2 py-1 text-xs placeholder:text-neutral-500 focus-within:bg-orange-100"
             placeholder="Enter email"
           />
           {form.formState.errors.email && <span className="text-xs text-red-500">{form.formState.errors.email.message}</span>}
@@ -154,7 +154,7 @@ const VerifyOtp = () => {
 
           <button
             type="submit"
-            className="flex h-8 w-full items-center justify-center rounded-lg bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm text-stone-50 duration-200"
+            className="text--50 flex h-8 w-full items-center justify-center rounded-lg bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm duration-200"
           >
             {verifyOtpMutation.isPending ? <Spinner /> : 'Verify OTP'}
           </button>

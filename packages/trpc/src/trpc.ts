@@ -36,10 +36,10 @@ export const publicProcedure = t.procedure;
 export const createCallerFactory = t.createCallerFactory;
 
 const enforceAuth = t.middleware(({ ctx, next }) => {
-  if (!ctx.session) {
+  if (!ctx.session || !ctx.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
-  return next({ ctx: { session: ctx.session } });
+  return next({ ctx: { session: ctx.session, user: ctx.user } });
 });
 
 export const protectedProcedure = t.procedure.use(enforceAuth);

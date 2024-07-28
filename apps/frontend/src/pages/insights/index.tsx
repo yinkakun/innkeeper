@@ -82,7 +82,7 @@ const Stat: React.FC<StatCardProps> = ({ value, title, className, icon }) => {
         <img
           src={icon}
           className={cn('w-full max-w-10', {
-            'grayscale filter': value === '0',
+            'neutralscale filter': value === '0',
           })}
         />
       </div>
@@ -96,7 +96,7 @@ const Stat: React.FC<StatCardProps> = ({ value, title, className, icon }) => {
 
 const Overview = () => {
   return (
-    <div className="flex w-full flex-col gap-4 rounded-3xl border bg-gray-50 bg-opacity-50 p-4 backdrop-blur-md">
+    <div className="flex w-full flex-col gap-4 rounded-3xl border bg-neutral-50 bg-opacity-50 p-4 backdrop-blur-md">
       <h2>Consistency is hard, but you got this!</h2>
 
       <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border border-[#ffa380] border-opacity-20 bg-[#ffede5] bg-opacity-20 p-4">
@@ -140,7 +140,7 @@ const ConsistencyBadges = () => {
     <div className="grid w-full grid-cols-2 gap-4">
       {CONSISTENCY.map(({ max, title, value, description }, index) => {
         return (
-          <div className="flex w-full items-center gap-4 rounded-xl border bg-gray-50 bg-opacity-50 p-2 backdrop-blur-md" key={index}>
+          <div className="flex w-full items-center gap-4 rounded-xl border bg-neutral-50 bg-opacity-50 p-2 backdrop-blur-md" key={index}>
             <div className="shrink-0">
               <CircularProgressBar
                 max={parseInt(max)}
@@ -151,7 +151,7 @@ const ConsistencyBadges = () => {
               />
             </div>
             <div className="flex max-w-sm flex-col gap-0">
-              <span className="text-sm font-medium text-gray-800">{title}</span>
+              <span className="text-sm font-medium text-neutral-800">{title}</span>
               <span className="text-[10px]">{description}</span>
             </div>
           </div>
@@ -163,7 +163,7 @@ const ConsistencyBadges = () => {
 
 const MilestoneAchievements = () => {
   return (
-    <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border bg-gray-50 bg-opacity-50 p-3">
+    <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border bg-neutral-50 bg-opacity-50 p-3">
       {MILESTONES.map(({ name, description, value, max }, index) => {
         return (
           <div className="flex flex-col items-start gap-1 px-3" key={index}>
@@ -176,10 +176,10 @@ const MilestoneAchievements = () => {
                 size="xs"
               />
               <div className="flex flex-col items-start gap-0">
-                <span className="text-lg font-medium leading-none text-gray-900">{name}</span>
+                <span className="text-lg font-medium leading-none text-neutral-900">{name}</span>
               </div>
             </div>
-            <span className="mt-auto text-xs text-gray-700">{description}</span>
+            <span className="mt-auto text-xs text-neutral-700">{description}</span>
           </div>
         );
       })}
@@ -197,7 +197,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ title, value, className }) 
   return (
     <div
       className={cn(
-        'flex flex-col items-center gap-1 rounded-3xl border bg-gray-50 bg-opacity-50 p-4 text-center backdrop-blur-md',
+        'flex flex-col items-center gap-1 rounded-3xl border bg-neutral-50 bg-opacity-50 p-4 text-center backdrop-blur-md',
         className,
       )}
     >

@@ -102,7 +102,7 @@ export const Settings: React.FC<SettingsProps> = ({ user }) => {
               type="text"
               id="name"
               {...form.register('name')}
-              className="h-8 grow rounded-lg border border-orange-200 bg-orange-50 bg-opacity-50 px-2 py-1 text-xs placeholder:text-neutral-500 focus:bg-orange-50"
+              className="h-8 grow rounded-lg border border-orange-100 bg-orange-50 bg-opacity-20 px-2 py-1 text-xs placeholder:text-neutral-500 focus:border-orange-200 focus:bg-orange-50"
             />
           </div>
 
@@ -116,7 +116,7 @@ export const Settings: React.FC<SettingsProps> = ({ user }) => {
                   <div className="grid w-full shrink-0 grid-cols-2 gap-4">
                     {['Daily', 'Weekly'].map((item) => (
                       <Radio
-                        className="cursor-pointer rounded-lg border border-orange-200 bg-orange-50 bg-opacity-50 p-2 py-1 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-stone-700"
+                        className="cursor-pointer rounded-lg border border-orange-100 bg-orange-50 bg-opacity-20 p-2 py-1 transition-colors duration-200 hover:bg-orange-50 hover:bg-opacity-20 data-[selected]:border-orange-400 data-[selected]:bg-orange-50 data-[selected]:text-neutral-700"
                         key={item}
                         value={item.toLowerCase()}
                       >
@@ -147,7 +147,7 @@ export const Settings: React.FC<SettingsProps> = ({ user }) => {
                       <Radio
                         key={time}
                         value={time.toLowerCase()}
-                        className="cursor-pointer rounded-lg border border-orange-200 bg-orange-50 bg-opacity-50 p-2 py-1 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-stone-700"
+                        className="cursor-pointer rounded-lg border border-orange-100 bg-orange-50 bg-opacity-20 p-2 py-1 transition-colors duration-200 hover:bg-orange-50 hover:bg-opacity-20 data-[selected]:border-orange-400 data-[selected]:bg-orange-100 data-[selected]:text-neutral-700"
                       >
                         {({ isSelected }) => (
                           <div className="flex items-center gap-2">
@@ -175,7 +175,7 @@ export const Settings: React.FC<SettingsProps> = ({ user }) => {
                       <Radio
                         key={goal.title}
                         value={goal.title}
-                        className="cursor-pointer rounded-lg border border-orange-200 bg-orange-50 bg-opacity-50 p-3 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-100 data-[selected]:text-stone-700"
+                        className="cursor-pointer rounded-lg border border-orange-100 bg-orange-50 bg-opacity-20 p-3 transition-colors duration-200 hover:bg-orange-50 hover:bg-opacity-20 data-[selected]:border-orange-400 data-[selected]:bg-orange-50 data-[selected]:text-neutral-700"
                       >
                         {({ isSelected }) => (
                           <React.Fragment>
@@ -207,11 +207,11 @@ export const Settings: React.FC<SettingsProps> = ({ user }) => {
                       <Radio
                         key={tone.title}
                         value={tone.title.toLowerCase()}
-                        className="flex cursor-pointer flex-col gap-2 rounded-lg border border-orange-200 bg-orange-50 bg-opacity-50 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-100 data-[selected]:text-stone-700"
+                        className="flex cursor-pointer flex-col gap-2 rounded-lg border border-orange-100 bg-orange-50 bg-opacity-20 p-2 transition-colors duration-200 hover:bg-orange-50 hover:bg-opacity-20 data-[selected]:border-orange-400 data-[selected]:bg-orange-50 data-[selected]:text-neutral-700"
                       >
                         {({ isSelected }) => (
                           <React.Fragment>
-                            <div className="flex items-center gap-2 text-stone-900">
+                            <div className="flex items-center gap-2 text-neutral-900">
                               <div className="shrink-0">{isSelected ? <CheckCircle /> : <Circle />}</div>
                               <h3 className="text-xs">{tone.title}</h3>
                             </div>
@@ -232,7 +232,7 @@ export const Settings: React.FC<SettingsProps> = ({ user }) => {
             render={({ field }) => {
               const id = React.useId();
               return (
-                <div className="flex items-center justify-between gap-2 rounded-xl border border-orange-200 bg-orange-50 bg-opacity-50 p-2 py-2">
+                <div className="flex items-center justify-between gap-2 rounded-xl border border-orange-100 bg-orange-50 bg-opacity-20 p-2 py-2">
                   <label htmlFor={id} className="text-sm">
                     Enable Email Notifications
                   </label>
@@ -264,19 +264,5 @@ export const Settings: React.FC<SettingsProps> = ({ user }) => {
         </button>
       </form>
     </AppLayout>
-  );
-};
-
-interface SettingsSectionProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-export const SettingsSection: React.FC<SettingsSectionProps> = ({ title, children }) => {
-  return (
-    <div className="flex h-full w-full flex-col rounded-3xl border border-orange-100 border-opacity-50 bg-neutral-50 bg-opacity-50 p-6 pb-4 pt-4 backdrop-blur-sm">
-      <h2 className="text-base font-medium">{title}</h2>
-      <div className="flex w-full flex-col text-sm">{children}</div>
-    </div>
   );
 };

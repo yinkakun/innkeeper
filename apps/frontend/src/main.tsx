@@ -25,7 +25,7 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
     <React.Fragment>
       <Outlet />
       {/* <ReactQueryDevtools /> */}
-      {/* <TanStackRouterDevtools  /> */}
+      {/* <TanStackRouterDevtools /> */}
     </React.Fragment>
   ),
 
