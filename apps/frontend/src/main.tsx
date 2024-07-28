@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter, Outlet, createRoute, createRootRouteWithContext } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { redirect } from '@tanstack/react-router';
 import { Index } from '@/pages';
 import { NotFound } from '@/pages/not-found';
 import { Journal } from '@/pages/journal';
@@ -14,11 +13,9 @@ import { Settings } from '@/pages/settings';
 import { Onboarding } from '@/pages/onboarding';
 import { PageLoading } from '@/components/page-loading';
 import { Toaster } from '@/components/toaster';
-
+import { redirect } from '@tanstack/react-router';
 import type { TrpcClient } from '@/lib/trpc';
 import { trpc, trpcClient } from '@/lib/trpc';
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createTRPCQueryUtils } from '@trpc/react-query';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcClient: TrpcClient }>()({
@@ -26,11 +23,12 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
     <React.Fragment>
       <Outlet />
       <Toaster />
-      <ReactQueryDevtools />
-      <TanStackRouterDevtools />
     </React.Fragment>
   ),
-
+  // errorComponent: NotFound,
+  onError: (error) => {
+    console.error('error', error);
+  },
   notFoundComponent: NotFound,
 });
 
@@ -50,7 +48,7 @@ const onboardingRoute = createRoute({
   path: 'onboarding',
   component: Onboarding,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => <PageLoading />,
+  pendingComponent: () => PageLoading,
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
@@ -70,7 +68,7 @@ const journalRoute = createRoute({
   path: 'journal',
   component: Journal,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => <PageLoading />,
+  pendingComponent: () => PageLoading,
   loader: async ({ context }) => {
     const clientUtils = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
     await clientUtils.journal.entries.ensureData();
@@ -94,7 +92,7 @@ const insightsRoute = createRoute({
   path: 'insights',
   component: Insights,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => <PageLoading />,
+  pendingComponent: () => PageLoading,
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
@@ -113,7 +111,7 @@ const settingsRoute = createRoute({
   path: 'settings',
   component: Settings,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => <PageLoading />,
+  pendingComponent: () => PageLoading,
   loader: async ({ context }) => {
     const client = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
     await client.user.details.ensureData();
@@ -154,7 +152,6 @@ declare module '@tanstack/react-router' {
 }
 
 const $root = document.getElementById('root');
-
 if ($root && !$root.innerHTML) {
   const root = ReactDOM.createRoot($root);
   root.render(

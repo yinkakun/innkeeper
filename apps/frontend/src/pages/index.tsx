@@ -25,20 +25,7 @@ export const Index = () => {
         <div>Feature grid here</div>
 
         <div>Faq here</div>
-
-        {/* check daft site */}
-
-        {/* open that innkeeper obsidian */}
       </div>
     </Layout>
   );
 };
-
-{
-  /* <div>
-        <li>Brief explanation of shadow work and the app's purpose</li>
-        <li>benefits of using the app</li>
-        <li>A "Start Journaling" button at the end that redirect to login page</li>
-        <li>Briefly explain the concept of shadow work and how the app supports it.</li>
-      </div> */
-}

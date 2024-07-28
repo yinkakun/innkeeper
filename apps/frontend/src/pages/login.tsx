@@ -154,7 +154,7 @@ const VerifyOtp = () => {
 
           <button
             type="submit"
-            className="text--50 flex h-8 w-full items-center justify-center rounded-lg bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm duration-200"
+            className="flex h-8 w-full items-center justify-center rounded-lg bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm text-zinc-50 duration-200"
           >
             {verifyOtpMutation.isPending ? <Spinner /> : 'Verify OTP'}
           </button>
