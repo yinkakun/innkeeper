@@ -25,7 +25,6 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
       <Toaster />
     </React.Fragment>
   ),
-  // errorComponent: NotFound,
   onError: (error) => {
     console.error('error', error);
   },
@@ -48,7 +47,7 @@ const onboardingRoute = createRoute({
   path: 'onboarding',
   component: Onboarding,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => PageLoading,
+  pendingComponent: PageLoading,
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
@@ -68,7 +67,7 @@ const journalRoute = createRoute({
   path: 'journal',
   component: Journal,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => PageLoading,
+  pendingComponent: PageLoading,
   loader: async ({ context }) => {
     const clientUtils = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
     await clientUtils.journal.entries.ensureData();
@@ -92,7 +91,7 @@ const insightsRoute = createRoute({
   path: 'insights',
   component: Insights,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => PageLoading,
+  pendingComponent: PageLoading,
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
@@ -111,7 +110,7 @@ const settingsRoute = createRoute({
   path: 'settings',
   component: Settings,
   getParentRoute: () => rootRoute,
-  pendingComponent: () => PageLoading,
+  pendingComponent: PageLoading,
   loader: async ({ context }) => {
     const client = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
     await client.user.details.ensureData();
