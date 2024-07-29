@@ -29,6 +29,7 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
     console.error('error', error);
   },
   notFoundComponent: NotFound,
+  pendingComponent: PageLoading,
 });
 
 const indexRoute = createRoute({
