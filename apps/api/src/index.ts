@@ -18,12 +18,11 @@ import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 const app = new Hono<HonoOptions>();
 
 app.use('*', async (c, next) => {
-  const corsMiddleware = cors({
+  const corsMiddlewareHandler = cors({
     credentials: true,
-    origin: c.env.APP_URL,
-    allowMethods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
+    origin: [c.env.APP_URL, 'http://localhost:5173'],
   });
-  await corsMiddleware(c, next);
+  return corsMiddlewareHandler(c, next);
 });
 
 app.use(csrf());
@@ -33,28 +32,6 @@ app.use(dbMiddleware);
 app.use(authMiddleware);
 app.use(emailMiddleware);
 app.use(triggerMiddleware);
-
-app.use(
-  '/trpc/*',
-  cors({
-    credentials: true,
-    // origin: ['https://innkeeper.olopo.studio', 'localhost:5173'],
-    origin: (origin, c) => {
-      return origin.endsWith('.olopo.studio') ? origin : 'http://localhost:5173';
-    },
-  }),
-);
-
-// app.use('*', async (c, next) => {
-//   const corsMiddlewareHandler = cors({
-//     origin: c.env.CORS_ORIGIN,
-//   });
-//   return corsMiddlewareHandler(c, next);
-// });
-
-app.options('*', (c) => {
-  return c.text('', 204);
-});
 
 app.route('/auth', authRouter);
 
