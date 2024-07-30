@@ -27,7 +27,7 @@ export const sendDailyPromptsCron = schedules.task({
   cron: '0 * * * *',
   id: 'send-daily-prompts',
   run: async () => {
-    const users = await retry.onThrow(async () => await db.getUsersWithEmailPromptsEnabled(), { maxAttempts: 3 });
+    const users = await retry.onThrow(async () => await db.getUsersWithEmailNotificationsEnabled(), { maxAttempts: 3 });
 
     if (users.length === 0) {
       return { message: 'No users' };
@@ -72,10 +72,10 @@ export const sendPrompt = task({
 
     const prompt = response.content[0]?.type === 'text' ? response.content[0].text : '';
 
-    await db.createJournalEntry({
-      prompt,
-      userId: payload.userId,
-    });
+    // await db.createP({
+    //   prompt,
+    //   userId: payload.userId,
+    // });
 
     await retry.onThrow(
       async () => {

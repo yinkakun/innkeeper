@@ -1,7 +1,8 @@
 import React from 'react';
 import { Switch } from '@/components/switch';
 import { AppLayout } from '@/components/app-layout';
-import { CheckCircle, Circle } from '@phosphor-icons/react';
+
+import { CheckCircle, Circle, RadioButton } from '@phosphor-icons/react';
 import { Label, RadioGroup, Radio } from 'react-aria-components';
 import { z } from 'zod';
 import { RouterOutputs, trpc } from '@/lib/trpc';
@@ -9,6 +10,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Spinner } from '@/components/spinner';
 import { toast } from 'sonner';
+
 const formSchema = z.object({
   name: z.string().min(1, 'First name is required').max(100, 'First name must be 100 characters or less'),
   promptFrequency: z.enum(['daily', 'weekly'], {
@@ -37,18 +39,15 @@ type FormSchemaType = z.infer<typeof formSchema>;
 const TONES = [
   {
     title: 'Neutral',
-    description:
-      'Balanced, objective prompts for self-directed exploration. Suitable for those seeking a more open-ended journaling experience',
+    description: 'Balanced, objective prompts for self-directed exploration.',
   },
   {
     title: 'Nurturing',
-    description:
-      'Gentle, supportive prompts encouraging self-compassion. Ideal for those new to shadow work or dealing with sensitive issues',
+    description: 'Gentle, supportive prompts encouraging self-compassion.',
   },
   {
     title: 'Challenging',
-    description:
-      'Direct, thought-provoking prompts that push comfort zones. Suitable for those seeking rapid growth (direct thought-provoking prompts that push users out of their comfort zone)',
+    description: 'Direct, thought-provoking prompts that push comfort zones.',
   },
 ];
 const GOALS = [
@@ -125,7 +124,7 @@ export const Settings = () => {
                       >
                         {({ isSelected }) => (
                           <div className="flex items-center gap-2">
-                            {isSelected ? <CheckCircle /> : <Circle />}
+                            {isSelected ? <RadioButton weight="fill" /> : <Circle />}
 
                             <div>{item}</div>
                           </div>
@@ -154,7 +153,7 @@ export const Settings = () => {
                       >
                         {({ isSelected }) => (
                           <div className="flex items-center gap-2">
-                            {isSelected ? <CheckCircle /> : <Circle />}
+                            {isSelected ? <RadioButton weight="fill" /> : <Circle />}
                             <div>{time}</div>
                           </div>
                         )}
@@ -183,7 +182,7 @@ export const Settings = () => {
                         {({ isSelected }) => (
                           <React.Fragment>
                             <div className="flex flex-col gap-1">
-                              <div className="shrink-0">{isSelected ? <CheckCircle /> : <Circle />}</div>
+                              <div className="shrink-0">{isSelected ? <RadioButton weight="fill" /> : <Circle />}</div>
                               <h3 className="text-xs">{goal.title}</h3>
                             </div>
                             <p className="text-[10px] text-neutral-600">{goal.description}</p>
@@ -215,7 +214,7 @@ export const Settings = () => {
                         {({ isSelected }) => (
                           <React.Fragment>
                             <div className="flex items-center gap-2 text-neutral-900">
-                              <div className="shrink-0">{isSelected ? <CheckCircle /> : <Circle />}</div>
+                              <div className="shrink-0">{isSelected ? <RadioButton weight="fill" /> : <Circle />}</div>
                               <h3 className="text-xs">{tone.title}</h3>
                             </div>
                             <p className="text-[10px] text-neutral-600">{tone.description}</p>
@@ -247,24 +246,29 @@ export const Settings = () => {
           />
 
           <div className="flex items-center justify-between gap-4">
-            <button className="mr-auto flex h-8 w-[100px] items-center justify-center rounded-lg border border-neutral-300 bg-neutral-200 py-1 text-sm font-medium text-neutral-700 duration-200">
-              <span>Logout</span>
-            </button>
-
             <button className="ml-auto flex h-8 w-[120px] items-center justify-center rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200">
               <span>{mutation.isPending ? <Spinner /> : 'Save Changes'}</span>
             </button>
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            alert('Coming soon');
-          }}
-          className="text-center text-xs text-red-600"
-        >
-          Delete Account
-        </button>
+        <div className="flex flex-col divide-y rounded-3xl border">
+          <div className="px-6 py-2">
+            <button className="text-xs">
+              <span>Logout</span>
+            </button>
+          </div>
+          <div className="p-2 px-4">
+            <button
+              onClick={() => {
+                alert('Coming soon');
+              }}
+              className="text-xs text-red-600"
+            >
+              Delete Account
+            </button>
+          </div>
+        </div>
       </form>
     </AppLayout>
   );

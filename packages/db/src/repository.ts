@@ -1,16 +1,17 @@
 import type { z } from 'zod';
 import { addMinutes, formatISO } from 'date-fns';
 import postgres from 'postgres';
-import { eq, and, lt, isNotNull } from 'drizzle-orm';
+import { eq, and, lt } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import type { CreateJournalEntrySchema, OnboardUserSchema, UpdateUserSchema } from '@innkeeper/db';
-import { journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, schema } from '@innkeeper/db';
+import { journalEntriesTable, usersTable, sessionsTable, emailVerificationTable, promptsTable, schema } from '@innkeeper/db';
 import { TOTP, Secret } from 'otpauth';
 
 export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schema> }) => {
   return {
+    // USERS
     async createUser({ id, email }: { id: string; email: string }) {
       const [newUser] = await db.insert(usersTable).values({ id, email }).returning();
       return newUser;
@@ -73,6 +74,35 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
       return user?.completedOnboarding ?? false;
     },
 
+    async getUsersWithEmailNotificationsEnabled() {
+      return db.query.usersTable.findMany({
+        where: and(eq(usersTable.isPaused, false), eq(usersTable.emailNotificationsEnabled, true)),
+      });
+    },
+
+    async getUserById({ userId }: { userId: string }) {
+      return db.query.usersTable.findFirst({
+        where: eq(usersTable.id, userId),
+      });
+    },
+
+    async getUserByEmail({ email }: { email: string }) {
+      return db.query.usersTable.findFirst({
+        where: eq(usersTable.email, email),
+      });
+    },
+
+    async getInactiveUsers({ days }: { days: number }) {
+      const now = new Date();
+      const start = new Date(now);
+      start.setDate(start.getDate() - days);
+      return db.query.usersTable.findMany({
+        where: and(eq(usersTable.isPaused, false), lt(usersTable.lastEntryTime, start.toISOString())),
+      });
+    },
+
+    // AUTH
+
     async generateEmailOtpCode({ userId, email }: { userId: string; email: string }) {
       const expiresAt = addMinutes(new Date(), 15);
       const secret = new Secret({ size: 20 }).base32;
@@ -127,92 +157,72 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
       });
     },
 
-    async createJournalEntry({ entry, userId }: z.infer<typeof CreateJournalEntrySchema>) {
-      const [newJournalEntry] = await db.insert(journalEntriesTable).values({ entry, userId }).returning();
+    // PROMPTS
+    async createPrompt({ prompt, userId }: { prompt: string; userId: string }) {
+      const [newPrompt] = await db
+        .insert(promptsTable)
+        .values({
+          prompt,
+          userId,
+        })
+        .returning();
+      return newPrompt;
+    },
+
+    async getPromptsByUserId({ userId }: { userId: string }) {
+      return db.query.promptsTable.findMany({
+        where: eq(promptsTable.userId, userId),
+        with: {
+          journalEntries: true,
+        },
+        orderBy: (table, { desc }) => [desc(table.createdAt)],
+      });
+    },
+
+    async deletePrompt({ id, userId }: { id: string; userId: string }) {
+      const [deletedPrompt] = await db
+        .delete(promptsTable)
+        .where(and(eq(promptsTable.id, id), eq(promptsTable.userId, userId)))
+        .returning();
+      return deletedPrompt;
+    },
+
+    async updatePrompt({ id, prompt, userId }: { id: string; prompt: string; userId: string }) {
+      const [updatedPrompt] = await db
+        .update(promptsTable)
+        .set({ prompt })
+        .where(and(eq(promptsTable.id, id), eq(promptsTable.userId, userId)))
+        .returning();
+      return updatedPrompt;
+    },
+
+    async getPromptById({ id, userId }: { id: string; userId: string }) {
+      return db.query.promptsTable.findFirst({
+        where: and(eq(promptsTable.id, id), eq(promptsTable.userId, userId)),
+      });
+    },
+
+    // JOURNAL ENTRIES
+    async createJournalEntry({ entry, userId, promptId }: z.infer<typeof CreateJournalEntrySchema>) {
+      const [newJournalEntry] = await db.insert(journalEntriesTable).values({ entry, userId, promptId }).returning();
       return newJournalEntry;
     },
 
-    async updateJournalEntry({ entry, id }: { entry: string; id: string }) {
-      const [updatedJournalEntry] = await db.update(journalEntriesTable).set({ entry }).where(eq(journalEntriesTable.id, id)).returning();
+    async updateJournalEntry({ entry, id, userId }: { entry: string; id: string; userId: string }) {
+      const [updatedJournalEntry] = await db
+        .update(journalEntriesTable)
+        .set({ entry })
+        .where(and(eq(journalEntriesTable.id, id), eq(journalEntriesTable.userId, userId)))
+        .returning();
       return updatedJournalEntry;
     },
 
-    async deleteJournalEntry({ id }: { id: string }) {
-      const [deletedUser] = await db.update(journalEntriesTable).set({ isDeleted: true }).where(eq(journalEntriesTable.id, id)).returning();
-      return deletedUser;
-    },
-
-    async getUsers() {
-      return db.query.usersTable.findMany({
-        where: and(eq(usersTable.isPaused, false)),
-      });
-    },
-
-    async getUsersWithEmailPromptsEnabled() {
-      return db.query.usersTable.findMany({
-        where: and(
-          eq(usersTable.isPaused, false),
-          isNotNull(usersTable.timezone),
-          eq(usersTable.completedOnboarding, true),
-          isNotNull(usersTable.promptPeriod),
-        ),
-      });
-    },
-
-    async getUserById({ userId }: { userId: string }) {
-      return db.query.usersTable.findFirst({
-        where: eq(usersTable.id, userId),
-      });
-    },
-
-    async getUserByEmail({ email }: { email: string }) {
-      return db.query.usersTable.findFirst({
-        where: eq(usersTable.email, email),
-      });
-    },
-
-    async getUserByJournalEntryId({ promptId }: { promptId: string }) {
-      return db.query.journalEntriesTable.findFirst({
-        where: eq(journalEntriesTable.id, promptId),
-      });
-    },
-
-    async getInactiveUsers({ days }: { days: number }) {
-      const now = new Date();
-      const start = new Date(now);
-      start.setDate(start.getDate() - days);
-      return db.query.usersTable.findMany({
-        where: and(eq(usersTable.isPaused, false), lt(usersTable.lastEntryTime, start.toISOString())),
-      });
-    },
-
-    async getJournalEntriesByUserId({ userId, isDeleted = false }: { userId: string; isDeleted?: boolean }) {
-      return db.query.journalEntriesTable.findMany({
-        where: (journalEntry, { and, eq }) => and(eq(journalEntry.userId, userId), eq(journalEntry.isDeleted, isDeleted)),
-        columns: {
-          isDeleted: false,
-        },
-        orderBy: (journalEntry, { desc }) => desc(journalEntry.createdAt),
-      });
-    },
-
-    async getJournalEntryByPromptId({ isDeleted = false }: { promptId: string; isDeleted?: boolean }) {
-      return db.query.journalEntriesTable.findFirst({
-        where: (journalEntry, { and, eq }) => and(eq(journalEntry.isDeleted, isDeleted)),
-
-        columns: {
-          isDeleted: false,
-        },
-      });
-    },
-
-    async getJournalEntryById({ journalEntryId, isDeleted = false }: { journalEntryId: string; isDeleted?: boolean }) {
-      return db.query.journalEntriesTable.findFirst({
-        where: (journalEntry, { and, eq }) => and(eq(journalEntry.id, journalEntryId), eq(journalEntry.isDeleted, isDeleted)),
-        columns: {
-          isDeleted: false,
-        },
-      });
+    async deleteJournalEntry({ id, userId }: { id: string; userId: string }) {
+      const [deletedJournalEntry] = await db
+        .delete(journalEntriesTable)
+        .where(and(eq(journalEntriesTable.id, id), eq(journalEntriesTable.userId, userId)))
+        .returning();
+      return deletedJournalEntry;
     },
   };
 };

@@ -29,9 +29,23 @@ app.use(
   '/trpc/*',
   cors({
     credentials: true,
-    origin: (ctx) => ctx,
+    // origin: ['https://innkeeper.olopo.studio', 'localhost:5173'],
+    origin: (origin, c) => {
+      return origin.endsWith('.olopo.studio') ? origin : 'http://localhost:5173';
+    },
   }),
 );
+
+// app.use('*', async (c, next) => {
+//   const corsMiddlewareHandler = cors({
+//     origin: c.env.CORS_ORIGIN,
+//   });
+//   return corsMiddlewareHandler(c, next);
+// });
+
+app.options('*', (c) => {
+  return c.text('', 204);
+});
 
 app.route('/auth', authRouter);
 

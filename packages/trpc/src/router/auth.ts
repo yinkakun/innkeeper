@@ -65,7 +65,10 @@ export const authRouter = createTRPCRouter({
     return { success: true };
   }),
   status: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.session) throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+    const session = ctx.session;
+    if (!session) {
+      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+    }
     return { session: ctx.session, user: ctx.user };
   }),
 });

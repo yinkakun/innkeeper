@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { relations, sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
@@ -19,8 +18,8 @@ export const usersTable = pgTable(
     name: text('name'),
     id: text('id').notNull().primaryKey(),
     email: text('email').notNull().unique(),
-    timezone: text('userTimezone'),
-    promptPeriod: promptPeriodEnum('prompt_period'),
+    timezone: text('userTimezone').default('America/New_York'),
+    promptPeriod: promptPeriodEnum('prompt_period').$default(() => 'morning'),
     lastEntryTime: timestamp('lastEntryTime', {
       mode: 'string',
     }),
@@ -39,6 +38,8 @@ export const usersTable = pgTable(
     }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
     isPaused: boolean('isPaused').default(false),
     completedOnboarding: boolean('completedOnboarding').notNull().default(false),
+    pushNotificationsEnabled: boolean('pushNotificationsEnabled').default(false),
+    emailNotificationsEnabled: boolean('emailNotificationsEnabled').default(false),
   },
   (table) => ({
     emailIndex: uniqueIndex('emailIndex').on(table.email),
@@ -83,8 +84,10 @@ export const journalEntriesTable = pgTable(
     userId: text('userId')
       .notNull()
       .references(() => usersTable.id, { onDelete: 'cascade' }),
-    entry: text('entry'),
-    prompt: text('prompt'),
+    promptId: text('promptId')
+      .notNull()
+      .references(() => promptsTable.id, { onDelete: 'cascade' }),
+    entry: text('entry').notNull(),
     id: text('id').notNull().primaryKey().$default(createId),
     createdAt: timestamp('createdAt', {
       mode: 'string',
@@ -96,22 +99,55 @@ export const journalEntriesTable = pgTable(
       mode: 'string',
       withTimezone: true,
     }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
-    isDeleted: boolean('isDeleted').notNull().default(false),
   },
   (table) => ({
-    journalEntryUserIdIndex: index('journalEntriesUserIdIndex').on(table.userId, table.isDeleted),
+    journalEntryUserIdIndex: index('journalEntriesUserIdIndex').on(table.userId),
+    journalEntryPromptIdIndex: index('journalEntryPromptIdIndex').on(table.promptId),
+  }),
+);
+
+export const promptsTable = pgTable(
+  'prompts',
+  {
+    userId: text('userId')
+      .notNull()
+      .references(() => usersTable.id, { onDelete: 'cascade' }),
+    id: text('id').notNull().primaryKey().$default(createId),
+    prompt: text('prompt').notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'string',
+      withTimezone: true,
+    })
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'string',
+      withTimezone: true,
+    }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+  },
+  (table) => ({
+    promptUserIdIndex: index('promptUserIdIndex').on(table.userId),
   }),
 );
 
 export const userRelations = relations(usersTable, ({ many }) => ({
+  prompts: many(promptsTable),
+  sessions: many(sessionsTable),
   journalEntries: many(journalEntriesTable),
+}));
+
+export const promptRelations = relations(promptsTable, ({ one }) => ({
+  user: one(usersTable, { fields: [promptsTable.userId], references: [usersTable.id] }),
+  journalEntries: one(journalEntriesTable, { fields: [promptsTable.id], references: [journalEntriesTable.promptId] }),
 }));
 
 export const journalEntryRelations = relations(journalEntriesTable, ({ one }) => ({
   user: one(usersTable, { fields: [journalEntriesTable.userId], references: [usersTable.id] }),
+  prompt: one(promptsTable, { fields: [journalEntriesTable.promptId], references: [promptsTable.id] }),
 }));
 
 export const UserSchema = createSelectSchema(usersTable);
+export const PromptSchema = createSelectSchema(promptsTable);
 export const JournalEntrySchema = createSelectSchema(journalEntriesTable);
 
 export const UpdateUserSchema = createInsertSchema(usersTable, {})
@@ -119,17 +155,21 @@ export const UpdateUserSchema = createInsertSchema(usersTable, {})
   .partial()
   .required({ id: true });
 
+export const CreatePromptSchema = createInsertSchema(promptsTable, {}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const CreateJournalEntrySchema = createInsertSchema(journalEntriesTable, {}).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-  isDeleted: true,
 });
 
 export const UpdateJournalEntrySchema = createInsertSchema(journalEntriesTable, {}).omit({
   createdAt: true,
   updatedAt: true,
-  isDeleted: true,
 });
 
 export const OnboardUserSchema = createInsertSchema(usersTable, {}).omit({

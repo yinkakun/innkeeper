@@ -1,7 +1,7 @@
 import { Drawer } from 'vaul';
 import { AppLayout } from '@/components/app-layout';
 import { useMeasure } from 'react-use';
-import { Plus, Asterisk } from '@phosphor-icons/react';
+import { Plus, CalendarDot, CalendarDots, CalendarCheck, Checks, RadioButton, CheckCircle } from '@phosphor-icons/react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,10 +12,12 @@ import { trpc } from '@/lib/trpc';
 import { Spinner } from '@/components/spinner';
 import { formatRelative } from 'date-fns';
 import { toast } from 'sonner';
+import { ArrowCircleUp } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChatBubble } from '@/components/chat-bubble';
 
 const journalEntrySchema = z.object({
-  entry: z.string().nonempty(),
+  entry: z.string().min(1),
 });
 
 type JournalEntry = z.infer<typeof journalEntrySchema>;
@@ -48,7 +50,6 @@ export const Journal = () => {
 const NewJournalEntry = () => {
   const [isOpened, setIsOpened] = React.useState(false);
   const mutation = trpc.journal.create.useMutation();
-  const [ref, { height }] = useMeasure<HTMLFormElement>();
   const form = useForm<JournalEntry>({
     resolver: zodResolver(journalEntrySchema),
   });
@@ -70,26 +71,33 @@ const NewJournalEntry = () => {
 
   return (
     <Drawer.Root open={isOpened} onOpenChange={setIsOpened}>
-      <Drawer.Trigger>
+      <Drawer.Trigger className="h-full">
         <motion.div
+          whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          className="z-50 flex min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-[#ffa380] border-opacity-20 bg-[#ffede5] bg-opacity-20 p-4 pt-2 text-left backdrop-blur-md"
+          className="z-50 flex h-full min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md"
         >
           <div className="flex w-full items-center justify-center">
-            <Plus className="text-orange-500" size={24} />
+            <Plus className="text-orange-300" weight="light" size={40} />
           </div>
-          <div className="flex flex-col gap-2 text-orange-800">
-            <span className="text-sm font-medium">New Journal Entry</span>
-          </div>
+          {/* <div className="flex flex-col gap-2 text-gray-700">
+            <span className="text-sm text-orange-500">New Journal Entry</span>
+          </div> */}
         </motion.div>
       </Drawer.Trigger>
 
       <Drawer.Portal>
-        <Drawer.Content className="fixed bottom-4 left-0 right-0 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] max-w-[calc(768px-68px)] flex-col bg-transparent">
-          <div className="relative flex flex-1 flex-col gap-4 rounded-3xl bg-white px-4 pb-4 pt-2">
-            <Drawer.Handle className="absolute top-2 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-zinc-300" />
+        <Drawer.Content className="fixed inset-x-0 bottom-20 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[400px] flex-col overflow-hidden rounded-[36px] border border-gray-300">
+          <div className="pt- relative flex flex-1 flex-col gap-4 bg-white px-4 py-4">
+            <Drawer.Handle className="absolute top-0 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
+            <ChatBubble
+              isSender={false}
+              message={
+                'Journaling is a powerful tool to help you reflect on your thoughts, feelings, and experiences. It can help you gain clarity, process your emotions, and reduce stress. Start by writing about your day, your thoughts, or anything that comes to mind.'
+              }
+            />
 
-            <div className="absolute top-0 flex w-full items-center justify-between gap-2 px-8 py-4">
+            {/* <div className="absolute top-0 flex w-full items-center justify-between gap-2 px-8 py-4">
               <div></div>
               <button
                 type="submit"
@@ -98,21 +106,24 @@ const NewJournalEntry = () => {
               >
                 {mutation.isPending ? <Spinner /> : 'Save'}
               </button>
-            </div>
-            <div className="mt-10 flex h-full w-full grow flex-col gap-4 rounded-2xl bg-transparent bg-opacity-50">
-              <form ref={ref} id="journal-entry-form" onSubmit={form.handleSubmit(onSubmit)} className="flex grow flex-col overflow-y-auto">
-                <textarea
-                  style={{ height: height }}
-                  {...form.register('entry')}
-                  className="border-1 h-full w-full grow resize-none rounded-2xl border border-orange-300 border-opacity-50 bg-white p-2 text-zinc-900 outline-none duration-200 hover:border-orange-200 focus:border-orange-200"
-                  placeholder="What's on your mind?"
-                />
+            </div> */}
+            <div className="mt-10 flex h-full w-full grow flex-col gap-4">
+              <form id="journal-entry-form" onSubmit={form.handleSubmit(onSubmit)} className="flex grow flex-col overflow-y-auto">
+                <div className="mt-auto flex items-end gap-2">
+                  <textarea
+                    {...form.register('entry')}
+                    className="border-1 xbg-white w-full grow resize-none rounded-3xl border border-orange-100 bg-orange-50 bg-opacity-20 p-2 text-sm text-zinc-900 outline-none duration-200 placeholder:text-xs placeholder:text-gray-600 hover:border-orange-500 focus:border-orange-200"
+                    placeholder="What's on your mind?"
+                  />
+                  <button className="">
+                    <ArrowCircleUp size={24} weight="fill" className="text-orange-500" />
+                  </button>
+                </div>
               </form>
             </div>
           </div>
         </Drawer.Content>
-        {/* TODO: Use CSS vars here */}
-        <Drawer.Overlay className="fixed inset-0 bottom-5 top-5 z-10 mx-auto max-w-[calc(768px-68px)] rounded-3xl bg-black/40 p-0 backdrop-blur-sm" />
+        <Drawer.Overlay className="fixed inset-0 z-20 mx-auto bg-orange-900 bg-opacity-20 p-0 backdrop-blur" />
       </Drawer.Portal>
     </Drawer.Root>
   );
@@ -177,18 +188,17 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry, createdAt,
     >
       <Drawer.Trigger className="h-full w-full">
         <motion.div
-          // whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          className={cn(
-            'flex h-full w-full flex-col gap-3 rounded-2xl border border-orange-100 bg-orange-50 bg-opacity-20 p-4 pt-2 text-left backdrop-blur-md duration-200 hover:bg-opacity-80',
-          )}
+          // className={cn(
+          //   'flex h-full w-full flex-col gap-3 rounded-2xl border border-orange-100 bg-orange-50 bg-opacity-20 p-4 pt-2 text-left backdrop-blur-md duration-200 hover:bg-opacity-80',
+          // )}
+          className="z-50 flex min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md"
         >
-          <div className="flex flex-col gap-2 text-zinc-900">
-            <span className="text-pretty text-sm">{truncateText(entry ?? prompt ?? '', 140)}</span>
-          </div>
+          <span className="text-pretty text-xs text-gray-500">{truncateText(entry ?? prompt ?? '', 140)}</span>
 
-          <div className="mt-auto flex w-full items-center gap-1 text-zinc-600">
-            <Asterisk size={16} />
+          <div className="mt-auto flex w-full items-center gap-1 text-gray-500">
+            <CheckCircle size={20} weight="light" />
             <span className="rounded-full text-xs capitalize">
               {updatedAt ? 'Updated' : 'Created'} {formatRelative(new Date(updatedAt ?? createdAt), new Date())}
             </span>
@@ -202,9 +212,11 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry, createdAt,
             <Drawer.Handle className="absolute top-2 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-zinc-300" />
 
             <div className="absolute inset-x-0 top-0 flex w-full items-center justify-between gap-2 px-4 py-4">
-              <div className="flex items-center gap-1 text-zinc-600">
-                <Asterisk size={18} />
-                <span className="rounded-full text-xs">Saturday August 12th</span>
+              <div className="flex items-center gap-1 text-gray-600">
+                <CheckCircle size={18} weight="light" />
+                <span className="rounded-full text-[10px]">
+                  {updatedAt ? 'Updated' : 'Created'} {formatRelative(new Date(updatedAt ?? createdAt), new Date())}
+                </span>
               </div>
               <div className="flex items-center gap-4">
                 <button
