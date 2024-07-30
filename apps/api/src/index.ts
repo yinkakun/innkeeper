@@ -17,6 +17,15 @@ import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 
 const app = new Hono<HonoOptions>();
 
+app.use('*', async (c, next) => {
+  const corsMiddleware = cors({
+    credentials: true,
+    origin: c.env.APP_URL,
+    allowMethods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
+  });
+  await corsMiddleware(c, next);
+});
+
 app.use(csrf());
 app.use(logger());
 app.use(prettyJSON());
