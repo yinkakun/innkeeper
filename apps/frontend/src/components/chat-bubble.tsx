@@ -18,7 +18,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isSender }) => 
         <div
           className={cn('flex w-fit text-pretty rounded-3xl px-4 py-2 tracking-tight text-opacity-90', {
             'bg-orange-500 text-white': isSender,
-            'bg-gray-100 text-gray-600': !isSender,
+            'bg-gray-100 text-gray-700': !isSender,
           })}
         >
           {message}
