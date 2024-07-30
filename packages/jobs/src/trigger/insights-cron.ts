@@ -7,7 +7,7 @@ export const weeklyInsightsCron = schedules.task({
   id: 'weekly-insights',
   run: async () => {
     logger.log('Generating weekly insights');
-    const users = await retry.onThrow(async () => await db.getUsers(), { maxAttempts: 3 });
+    const users = await retry.onThrow(async () => db.getUsersWithEmailNotificationsEnabled(), { maxAttempts: 3 });
 
     if (users.length === 0) {
       return { message: 'No users found' };

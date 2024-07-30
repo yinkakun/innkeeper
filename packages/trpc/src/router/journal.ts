@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { UpdateJournalEntrySchema, CreateJournalEntrySchema } from '@innkeeper/db';
+import { UpdateJournalEntrySchema, CreateJournalEntrySchema, CreatePromptSchema, UpdatePromptSchema } from '@innkeeper/db';
 
 export const journalRouter = createTRPCRouter({
-  create: protectedProcedure
+  addJournalEntry: protectedProcedure
     .input(
       CreateJournalEntrySchema.omit({
         userId: true,
@@ -15,11 +15,12 @@ export const journalRouter = createTRPCRouter({
       const newJournalEntry = await ctx.db.createJournalEntry({
         userId: user.id,
         entry: input.entry,
+        promptId: input.promptId,
       });
 
       return newJournalEntry;
     }),
-  update: protectedProcedure
+  updateJournalEntry: protectedProcedure
     .input(
       UpdateJournalEntrySchema.required({
         id: true,
@@ -35,17 +36,52 @@ export const journalRouter = createTRPCRouter({
       const updatedJournalEntry = await ctx.db.updateJournalEntry({
         id: input.id,
         entry: input.entry,
+        userId: ctx.user.id,
       });
       return updatedJournalEntry;
     }),
-  delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+  deleteJournalEntry: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
     const deletedJournalEntry = await ctx.db.deleteJournalEntry({
       id: input.id,
+      userId: ctx.user.id,
     });
     return deletedJournalEntry;
   }),
-  entries: protectedProcedure.query(async ({ ctx }) => {
+  generatePrompt: protectedProcedure.mutation(async ({ input, ctx }) => {
+    const generatedPrompt = 'What are you grateful for today?';
     const user = ctx.user;
-    return ctx.db.getJournalEntriesByUserId({ userId: user.id });
+    const newPrompt = await ctx.db.createPrompt({
+      userId: user.id,
+      prompt: generatedPrompt,
+    });
+    return newPrompt;
+  }),
+  regeneratePrompt: protectedProcedure
+    .input(
+      z.object({
+        promptId: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const generatedPrompt = 'What are you grateful for today?';
+      const updatedPrompt = await ctx.db.updatePrompt({
+        id: input.promptId,
+        prompt: generatedPrompt,
+        userId: ctx.user.id,
+      });
+      return updatedPrompt;
+    }),
+  deletePrompt: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+    const deletedPrompt = await ctx.db.deletePrompt({
+      id: input.id,
+      userId: ctx.user.id,
+    });
+    return deletedPrompt;
+  }),
+  getPrompts: protectedProcedure.query(async ({ ctx }) => {
+    const prompts = await ctx.db.getPromptsByUserId({
+      userId: ctx.user.id,
+    });
+    return prompts;
   }),
 });

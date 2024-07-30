@@ -71,7 +71,7 @@ const journalRoute = createRoute({
   pendingComponent: PageLoading,
   loader: async ({ context }) => {
     const clientUtils = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
-    await clientUtils.journal.entries.ensureData();
+    await clientUtils.journal.getPrompts.ensureData();
   },
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;

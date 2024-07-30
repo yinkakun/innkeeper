@@ -78,6 +78,30 @@ export const emailVerificationTable = pgTable('email_verification', {
   }).notNull(),
 });
 
+export const promptsTable = pgTable(
+  'prompts',
+  {
+    userId: text('userId')
+      .notNull()
+      .references(() => usersTable.id, { onDelete: 'cascade' }),
+    id: text('id').notNull().primaryKey().$default(createId),
+    prompt: text('prompt').notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'string',
+      withTimezone: true,
+    })
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'string',
+      withTimezone: true,
+    }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+  },
+  (table) => ({
+    promptUserIdIndex: index('promptUserIdIndex').on(table.userId),
+  }),
+);
+
 export const journalEntriesTable = pgTable(
   'journal_entries',
   {
@@ -103,30 +127,6 @@ export const journalEntriesTable = pgTable(
   (table) => ({
     journalEntryUserIdIndex: index('journalEntriesUserIdIndex').on(table.userId),
     journalEntryPromptIdIndex: index('journalEntryPromptIdIndex').on(table.promptId),
-  }),
-);
-
-export const promptsTable = pgTable(
-  'prompts',
-  {
-    userId: text('userId')
-      .notNull()
-      .references(() => usersTable.id, { onDelete: 'cascade' }),
-    id: text('id').notNull().primaryKey().$default(createId),
-    prompt: text('prompt').notNull(),
-    createdAt: timestamp('createdAt', {
-      mode: 'string',
-      withTimezone: true,
-    })
-      .notNull()
-      .default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: timestamp('updatedAt', {
-      mode: 'string',
-      withTimezone: true,
-    }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
-  },
-  (table) => ({
-    promptUserIdIndex: index('promptUserIdIndex').on(table.userId),
   }),
 );
 
@@ -157,6 +157,11 @@ export const UpdateUserSchema = createInsertSchema(usersTable, {})
 
 export const CreatePromptSchema = createInsertSchema(promptsTable, {}).omit({
   id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const UpdatePromptSchema = createInsertSchema(promptsTable, {}).omit({
   createdAt: true,
   updatedAt: true,
 });

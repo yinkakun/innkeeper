@@ -23,13 +23,13 @@ const journalEntrySchema = z.object({
 type JournalEntry = z.infer<typeof journalEntrySchema>;
 
 export const Journal = () => {
-  const entries = trpc.journal.entries.useQuery().data ?? [];
+  const prompts = trpc.journal.getPrompts.useQuery().data ?? [];
   return (
     <AppLayout className="gap-6">
       <div className="grid auto-rows-fr grid-cols-2 gap-6">
         <NewJournalEntry />
         <AnimatePresence>
-          {entries.map(({ prompt, entry, id, updatedAt, createdAt }) => (
+          {prompts.map(({ prompt, id, updatedAt, createdAt, journalEntries }) => (
             <motion.div
               className="w-full"
               key={id}
@@ -38,7 +38,7 @@ export const Journal = () => {
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.3 }}
             >
-              <JournalEntries id={id} key={id} entry={entry ?? ''} prompt={prompt ?? ''} updatedAt={updatedAt} createdAt={createdAt} />
+              <JournalEntries id={id} key={id} entry={prompt} prompt={prompt} updatedAt={updatedAt} createdAt={createdAt} />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -49,7 +49,7 @@ export const Journal = () => {
 
 const NewJournalEntry = () => {
   const [isOpened, setIsOpened] = React.useState(false);
-  const mutation = trpc.journal.create.useMutation();
+  const mutation = trpc.journal.addJournalEntry.useMutation();
   const form = useForm<JournalEntry>({
     resolver: zodResolver(journalEntrySchema),
   });
@@ -57,6 +57,8 @@ const NewJournalEntry = () => {
   const onSubmit = (data: JournalEntry) => {
     mutation.mutate(
       {
+        // TODO: Call generate prompt first
+        promptId: '',
         entry: data.entry,
       },
       {
@@ -139,8 +141,8 @@ interface JournalEntryProps {
 
 const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry, createdAt, id, updatedAt }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const updateMutation = trpc.journal.update.useMutation();
-  const deleteMutation = trpc.journal.delete.useMutation();
+  const updateMutation = trpc.journal.updateJournalEntry.useMutation();
+  const deleteMutation = trpc.journal.deleteJournalEntry.useMutation();
   const [ref, { height }] = useMeasure<HTMLFormElement>();
   const form = useForm<JournalEntry>({
     resolver: zodResolver(journalEntrySchema),
@@ -154,6 +156,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry, createdAt,
     updateMutation.mutate(
       {
         id,
+        promptId: '',
         entry: data.entry,
       },
       {
