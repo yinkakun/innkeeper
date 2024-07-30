@@ -4,7 +4,7 @@ import { Chance } from 'chance';
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { usersTable, schema, initDbRepository } from './index';
-import type { CreateJournalEntrySchema, UserSchema } from './schema';
+import type { CreatePromptSchema, CreateJournalEntrySchema, UserSchema } from './schema';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -39,9 +39,25 @@ const seedUsers = async (count: number) => {
   return (await Promise.all(Array.from({ length: count }, createUser))).filter((user) => !!user);
 };
 
+const seedPrompt = async (userId: string) => {
+  const promptData: z.infer<typeof CreatePromptSchema> = {
+    userId,
+    prompt: chance.sentence(),
+  };
+  return await db.createPrompt(promptData);
+};
+
 const seedJournalEntry = async (user: z.infer<typeof UserSchema>) => {
+  const prompt = await seedPrompt(user.id).catch((error) => {
+    console.error(`Failed to create prompt for user ${user.id}:`, error);
+    return null;
+  });
+
+  if (!prompt) return null;
+
   const journalEntryData: z.infer<typeof CreateJournalEntrySchema> = {
     userId: user.id,
+    promptId: prompt.id,
     entry: chance.paragraph(),
   };
 
@@ -52,7 +68,7 @@ const seedJournalEntry = async (user: z.infer<typeof UserSchema>) => {
 
   if (!journalEntry) return null;
 
-  return { journalEntry };
+  return { prompt, journalEntry };
 };
 
 const seedJournalEntries = async (users: z.infer<typeof UserSchema>[], count: number) => {
