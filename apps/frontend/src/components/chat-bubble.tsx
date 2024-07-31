@@ -9,7 +9,7 @@ interface ChatBubbleProps {
 export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isSender }) => {
   return (
     <div
-      className={cn('flex w-full text-xs', {
+      className={cn('flex w-full text-sm', {
         'justify-end': isSender,
         'justify-start': !isSender,
       })}
