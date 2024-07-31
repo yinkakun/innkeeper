@@ -1,9 +1,9 @@
 import { Drawer } from 'vaul';
 import { AppLayout } from '@/components/app-layout';
 import { useMeasure } from 'react-use';
-import { Plus, CalendarDot, CalendarDots, CalendarCheck, Checks, RadioButton, CheckCircle } from '@phosphor-icons/react';
+import { Plus, CheckCircle } from '@phosphor-icons/react';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/lib/utils';
 import React from 'react';
@@ -38,7 +38,7 @@ export const Journal = () => {
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.3 }}
             >
-              <JournalEntries id={id} key={id} entry={prompt} prompt={prompt} updatedAt={updatedAt} createdAt={createdAt} />
+              <JournalEntries id={id} key={id} prompt={prompt} updatedAt={updatedAt} createdAt={createdAt} />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -48,28 +48,38 @@ export const Journal = () => {
 };
 
 const NewJournalEntry = () => {
+  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
   const [isOpened, setIsOpened] = React.useState(false);
   const mutation = trpc.journal.addJournalEntry.useMutation();
+  const generatePromptMutation = trpc.journal.generatePrompt.useMutation();
   const form = useForm<JournalEntry>({
     resolver: zodResolver(journalEntrySchema),
   });
 
+  React.useEffect(() => {
+    if (!textAreaRef.current) return;
+    textAreaRef.current.style.height = 'auto';
+    textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+  }, [form.watch('entry')]);
+
   const onSubmit = (data: JournalEntry) => {
     mutation.mutate(
       {
-        // TODO: Call generate prompt first
         promptId: '',
         entry: data.entry,
       },
       {
-        onSuccess: () => {
-          setIsOpened(false);
-          toast.success('Journal entry created');
+        onSettled: () => {
           form.reset();
         },
       },
     );
   };
+
+  React.useEffect(() => {
+    if (!isOpened) return;
+    generatePromptMutation.mutate(undefined, {});
+  }, [isOpened]);
 
   return (
     <Drawer.Root open={isOpened} onOpenChange={setIsOpened}>
@@ -82,9 +92,6 @@ const NewJournalEntry = () => {
           <div className="flex w-full items-center justify-center">
             <Plus className="text-orange-300" weight="light" size={40} />
           </div>
-          {/* <div className="flex flex-col gap-2 text-gray-700">
-            <span className="text-sm text-orange-500">New Journal Entry</span>
-          </div> */}
         </motion.div>
       </Drawer.Trigger>
 
@@ -99,23 +106,29 @@ const NewJournalEntry = () => {
               }
             />
 
-            {/* <div className="absolute top-0 flex w-full items-center justify-between gap-2 px-8 py-4">
-              <div></div>
-              <button
-                type="submit"
-                form="journal-entry-form"
-                className="flex h-8 w-[80px] items-center justify-center rounded-lg bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm text-zinc-50 duration-200"
-              >
-                {mutation.isPending ? <Spinner /> : 'Save'}
-              </button>
-            </div> */}
+            <div>
+              {generatePromptMutation.isPending && (
+                <div className="flex items-center gap-2">
+                  <Spinner />
+                  <span>Generating prompt...</span>
+                </div>
+              )}
+            </div>
+
             <div className="mt-10 flex h-full w-full grow flex-col gap-4">
               <form id="journal-entry-form" onSubmit={form.handleSubmit(onSubmit)} className="flex grow flex-col overflow-y-auto">
                 <div className="mt-auto flex items-end gap-2">
-                  <textarea
-                    {...form.register('entry')}
-                    className="border-1 xbg-white w-full grow resize-none rounded-3xl border border-orange-100 bg-orange-50 bg-opacity-20 p-2 text-sm text-zinc-900 outline-none duration-200 placeholder:text-xs placeholder:text-gray-600 hover:border-orange-500 focus:border-orange-200"
-                    placeholder="What's on your mind?"
+                  <Controller
+                    control={form.control}
+                    name="entry"
+                    render={({ field }) => (
+                      <textarea
+                        {...field}
+                        ref={textAreaRef}
+                        className="border-1 xbg-white w-full grow resize-none rounded-3xl border border-orange-100 bg-orange-50 bg-opacity-20 p-2 text-sm text-gray-800 outline-none duration-200 placeholder:text-xs placeholder:text-gray-600 hover:border-orange-500 focus:border-orange-500"
+                        placeholder="What's on your mind?"
+                      />
+                    )}
                   />
                   <button className="">
                     <ArrowCircleUp size={24} weight="fill" className="text-orange-500" />
@@ -133,13 +146,12 @@ const NewJournalEntry = () => {
 
 interface JournalEntryProps {
   id: string;
-  entry?: string;
-  prompt?: string;
+  prompt: string;
   createdAt: string;
   updatedAt: string | null;
 }
 
-const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry, createdAt, id, updatedAt }) => {
+const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, id, updatedAt }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const updateMutation = trpc.journal.updateJournalEntry.useMutation();
   const deleteMutation = trpc.journal.deleteJournalEntry.useMutation();
@@ -147,7 +159,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry, createdAt,
   const form = useForm<JournalEntry>({
     resolver: zodResolver(journalEntrySchema),
     defaultValues: {
-      entry,
+      entry: '',
     },
   });
 
@@ -196,9 +208,9 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, entry, createdAt,
           // className={cn(
           //   'flex h-full w-full flex-col gap-3 rounded-2xl border border-orange-100 bg-orange-50 bg-opacity-20 p-4 pt-2 text-left backdrop-blur-md duration-200 hover:bg-opacity-80',
           // )}
-          className="z-50 flex min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md"
+          className="z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md"
         >
-          <span className="text-pretty text-xs text-gray-500">{truncateText(entry ?? prompt ?? '', 140)}</span>
+          <span className="text-pretty text-xs text-gray-500">{truncateText(prompt, 140)}</span>
 
           <div className="mt-auto flex w-full items-center gap-1 text-gray-500">
             <CheckCircle size={20} weight="light" />

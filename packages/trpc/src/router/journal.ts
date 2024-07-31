@@ -50,6 +50,8 @@ export const journalRouter = createTRPCRouter({
   generatePrompt: protectedProcedure.mutation(async ({ input, ctx }) => {
     const generatedPrompt = 'What are you grateful for today?';
     const user = ctx.user;
+    // delay to simulate async operation
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     const newPrompt = await ctx.db.createPrompt({
       userId: user.id,
       prompt: generatedPrompt,
