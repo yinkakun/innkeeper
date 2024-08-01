@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { UpdateJournalEntrySchema, CreateJournalEntrySchema, CreatePromptSchema, UpdatePromptSchema } from '@innkeeper/db';
+import { TRPCError } from '@trpc/server';
 
 export const journalRouter = createTRPCRouter({
   addJournalEntry: protectedProcedure
@@ -51,11 +52,17 @@ export const journalRouter = createTRPCRouter({
     const generatedPrompt = 'What are you grateful for today?';
     const user = ctx.user;
     // delay to simulate async operation
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const newPrompt = await ctx.db.createPrompt({
       userId: user.id,
       prompt: generatedPrompt,
     });
+    if (!newPrompt) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to generate prompt',
+      });
+    }
     return newPrompt;
   }),
   regeneratePrompt: protectedProcedure
