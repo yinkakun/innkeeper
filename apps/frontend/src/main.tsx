@@ -30,6 +30,19 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
   },
   notFoundComponent: NotFound,
   pendingComponent: PageLoading,
+  beforeLoad: async ({ context }) => {
+    const { queryClient, trpcClient } = context;
+    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
+    await clientUtils.login.status.fetch().catch((err) => {
+      console.log('err', err);
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      });
+    });
+  },
 });
 
 const indexRoute = createRoute({
@@ -49,19 +62,6 @@ const onboardingRoute = createRoute({
   component: Onboarding,
   getParentRoute: () => rootRoute,
   pendingComponent: PageLoading,
-  beforeLoad: async ({ context }) => {
-    const { queryClient, trpcClient } = context;
-    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
-    await clientUtils.login.status.fetch().catch((err) => {
-      console.log('err', err);
-      throw redirect({
-        to: '/login',
-        search: {
-          redirect: location.href,
-        },
-      });
-    });
-  },
 });
 
 const journalRoute = createRoute({
@@ -73,19 +73,6 @@ const journalRoute = createRoute({
     const clientUtils = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
     await clientUtils.journal.getPrompts.ensureData();
   },
-  beforeLoad: async ({ context }) => {
-    const { queryClient, trpcClient } = context;
-    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
-    await clientUtils.login.status.fetch().catch((err) => {
-      console.log('err', err);
-      throw redirect({
-        to: '/login',
-        search: {
-          redirect: location.href,
-        },
-      });
-    });
-  },
 });
 
 const insightsRoute = createRoute({
@@ -93,18 +80,6 @@ const insightsRoute = createRoute({
   component: Insights,
   getParentRoute: () => rootRoute,
   pendingComponent: PageLoading,
-  beforeLoad: async ({ context }) => {
-    const { queryClient, trpcClient } = context;
-    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
-    await clientUtils.login.status.fetch().catch((err) => {
-      throw redirect({
-        to: '/login',
-        search: {
-          redirect: location.href,
-        },
-      });
-    });
-  },
 });
 
 const settingsRoute = createRoute({
@@ -115,18 +90,6 @@ const settingsRoute = createRoute({
   loader: async ({ context }) => {
     const client = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
     await client.user.details.ensureData();
-  },
-  beforeLoad: async ({ context }) => {
-    const { queryClient, trpcClient } = context;
-    const client = createTRPCQueryUtils({ queryClient, client: trpcClient });
-    await client.login.status.fetch().catch((err) => {
-      throw redirect({
-        to: '/login',
-        search: {
-          redirect: location.href,
-        },
-      });
-    });
   },
 });
 

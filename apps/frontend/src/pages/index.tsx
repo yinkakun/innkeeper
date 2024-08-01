@@ -84,8 +84,8 @@ export const Index = () => {
         <div className="flex w-full flex-col gap-4 p-4 pt-12">
           {QA.map(({ answer, question }) => (
             <React.Fragment>
-              <ChatBubble message={question} isSender={true} />
-              <ChatBubble message={answer} isSender={false} />
+              <ChatBubble isSender={true}>{question}</ChatBubble>
+              <ChatBubble isSender={false}>{answer}</ChatBubble>
             </React.Fragment>
           ))}
           <div className="flex max-w-[50%] flex-col gap-1.5 rounded-xl bg-gray-100 p-1.5 text-gray-600">

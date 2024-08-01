@@ -1,20 +1,19 @@
 import { Drawer } from 'vaul';
 import { AppLayout } from '@/components/app-layout';
-import { useMeasure } from 'react-use';
-import { Plus, CheckCircle } from '@phosphor-icons/react';
+import { Plus, CheckCircle, TrashSimple } from '@phosphor-icons/react';
 import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/lib/utils';
 import React from 'react';
-import { TrashSimple } from '@phosphor-icons/react';
 import { trpc } from '@/lib/trpc';
-import { Spinner } from '@/components/spinner';
 import { formatRelative } from 'date-fns';
-import { toast } from 'sonner';
 import { ArrowCircleUp } from '@phosphor-icons/react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ChatBubble } from '@/components/chat-bubble';
+import { ThreeDotsScale } from 'react-svg-spinners';
+import { JournalEntrySchema } from '@innkeeper/db';
+import mergeRefs from 'merge-refs';
 
 const journalEntrySchema = z.object({
   entry: z.string().min(1),
@@ -32,13 +31,21 @@ export const Journal = () => {
           {prompts.map(({ prompt, id, updatedAt, createdAt, journalEntries }) => (
             <motion.div
               className="w-full"
+              layout
               key={id}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.3 }}
             >
-              <JournalEntries id={id} key={id} prompt={prompt} updatedAt={updatedAt} createdAt={createdAt} />
+              <JournalEntries
+                promptId={id}
+                key={id}
+                prompt={prompt}
+                updatedAt={updatedAt}
+                createdAt={createdAt}
+                journalEntries={journalEntries ?? []}
+              />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -47,13 +54,55 @@ export const Journal = () => {
   );
 };
 
+const chatBubbleVariants: Variants = {
+  initial: {
+    opacity: 0,
+    scale: 0.9,
+    originX: 0,
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    originX: 0,
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.9,
+    originX: 0,
+  },
+  isSenderInitial: {
+    opacity: 0,
+    scale: 0.9,
+    y: 20,
+    originX: 1,
+  },
+  isSenderAnimate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    originX: 1,
+  },
+  isSenderExit: {
+    opacity: 0,
+    scale: 0.9,
+    y: -20,
+    originX: 1,
+  },
+};
+
 const NewJournalEntry = () => {
-  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
   const [isOpened, setIsOpened] = React.useState(false);
+  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
   const mutation = trpc.journal.addJournalEntry.useMutation();
   const generatePromptMutation = trpc.journal.generatePrompt.useMutation();
+  const [journalEntries, setJournalEntries] = React.useState<string[]>([]);
+
   const form = useForm<JournalEntry>({
     resolver: zodResolver(journalEntrySchema),
+    defaultValues: {
+      entry: '',
+    },
   });
 
   React.useEffect(() => {
@@ -62,14 +111,22 @@ const NewJournalEntry = () => {
     textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
   }, [form.watch('entry')]);
 
-  const onSubmit = (data: JournalEntry) => {
+  React.useEffect(() => {
+    if (!chatContainerRef.current) return;
+    chatContainerRef.current.scrollTo(0, chatContainerRef.current.scrollHeight);
+  }, [journalEntries]);
+
+  const onSubmit = ({ entry }: JournalEntry) => {
+    if (mutation.isPending) return;
+    if (generatePromptMutation.status !== 'success') return;
+    setJournalEntries((prev) => [...prev, entry]);
     mutation.mutate(
       {
-        promptId: '',
-        entry: data.entry,
+        entry,
+        promptId: generatePromptMutation.data.id,
       },
       {
-        onSettled: () => {
+        onSuccess: () => {
           form.reset();
         },
       },
@@ -78,7 +135,7 @@ const NewJournalEntry = () => {
 
   React.useEffect(() => {
     if (!isOpened) return;
-    generatePromptMutation.mutate(undefined, {});
+    generatePromptMutation.mutate();
   }, [isOpened]);
 
   return (
@@ -96,42 +153,94 @@ const NewJournalEntry = () => {
       </Drawer.Trigger>
 
       <Drawer.Portal>
-        <Drawer.Content className="fixed inset-x-0 bottom-20 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[400px] flex-col overflow-hidden rounded-[36px] border border-gray-300">
-          <div className="pt- relative flex flex-1 flex-col gap-4 bg-white px-4 py-4">
-            <Drawer.Handle className="absolute top-0 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
-            <ChatBubble
-              isSender={false}
-              message={
-                'Journaling is a powerful tool to help you reflect on your thoughts, feelings, and experiences. It can help you gain clarity, process your emotions, and reduce stress. Start by writing about your day, your thoughts, or anything that comes to mind.'
-              }
-            />
-
-            <div>
-              {generatePromptMutation.isPending && (
-                <div className="flex items-center gap-2">
-                  <Spinner />
-                  <span>Generating prompt...</span>
-                </div>
-              )}
+        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[450px] flex-col overflow-hidden rounded-[36px] border border-border bg-white">
+          <div className="relative flex flex-1 flex-col gap-4 pt-4">
+            <div className="sr-only">
+              <Drawer.Title>Journal Entry</Drawer.Title>
+              <Drawer.Description>Journal Entry</Drawer.Description>
             </div>
+            <Drawer.Handle className="absolute top-0 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-border" />
+            <motion.div layout className="no-scrollbar max-h-full grow basis-0 overflow-y-auto scroll-smooth px-4" ref={chatContainerRef}>
+              <AnimatePresence mode="wait">
+                {generatePromptMutation.isPending && (
+                  <motion.div
+                    key="loading"
+                    variants={chatBubbleVariants}
+                    exit="exit"
+                    initial="initial"
+                    animate="animate"
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChatBubble isSender={false} className="px-8">
+                      <ThreeDotsScale color="#6B7280" height={20} className="border border-red-500" />
+                    </ChatBubble>
+                  </motion.div>
+                )}
 
-            <div className="mt-10 flex h-full w-full grow flex-col gap-4">
-              <form id="journal-entry-form" onSubmit={form.handleSubmit(onSubmit)} className="flex grow flex-col overflow-y-auto">
+                {generatePromptMutation.isSuccess && (
+                  <motion.div
+                    key="prompt"
+                    exit="exit"
+                    initial="initial"
+                    animate="animate"
+                    variants={chatBubbleVariants}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChatBubble isSender={false}>
+                      <span className="text-sm text-gray-600">{generatePromptMutation.data?.prompt}</span>
+                    </ChatBubble>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="flex flex-col">
+                <AnimatePresence>
+                  {journalEntries.map((entry, index) => (
+                    <motion.div
+                      key={index}
+                      exit="isSenderExit"
+                      initial="isSenderInitial"
+                      animate="isSenderAnimate"
+                      variants={chatBubbleVariants}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChatBubble isSender={true}>{entry}</ChatBubble>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+
+            <div className="flex h-full w-full flex-col gap-4 border-t border-border px-4 py-4 pb-4">
+              <form
+                id="journal-entry-form"
+                onSubmit={form.handleSubmit(onSubmit)}
+                className={cn('flex grow flex-col overflow-y-auto duration-300')}
+              >
                 <div className="mt-auto flex items-end gap-2">
                   <Controller
-                    control={form.control}
                     name="entry"
-                    render={({ field }) => (
-                      <textarea
-                        {...field}
-                        ref={textAreaRef}
-                        className="border-1 xbg-white w-full grow resize-none rounded-3xl border border-orange-100 bg-orange-50 bg-opacity-20 p-2 text-sm text-gray-800 outline-none duration-200 placeholder:text-xs placeholder:text-gray-600 hover:border-orange-500 focus:border-orange-500"
-                        placeholder="What's on your mind?"
-                      />
-                    )}
+                    control={form.control}
+                    render={({ field }) => {
+                      return (
+                        <textarea
+                          {...field}
+                          ref={mergeRefs(field.ref, textAreaRef)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              form.handleSubmit(onSubmit)();
+                            }
+                          }}
+                          readOnly={mutation.isPending}
+                          className="w-full grow resize-none columns-1 overflow-hidden rounded-3xl border border-orange-100 bg-orange-50 bg-opacity-20 p-2 text-sm text-gray-800 outline-none duration-200 placeholder:text-xs placeholder:text-gray-600 hover:border-orange-500 focus:border-orange-500"
+                          placeholder="What's on your mind?"
+                        />
+                      );
+                    }}
                   />
-                  <button className="">
-                    <ArrowCircleUp size={24} weight="fill" className="text-orange-500" />
+                  <button type="submit" disabled={mutation.isPending} className="text-orange-500 duration-200 hover:text-orange-400">
+                    <ArrowCircleUp size={24} weight="fill" />
                   </button>
                 </div>
               </form>
@@ -145,17 +254,20 @@ const NewJournalEntry = () => {
 };
 
 interface JournalEntryProps {
-  id: string;
+  promptId: string;
   prompt: string;
   createdAt: string;
   updatedAt: string | null;
+  journalEntries: z.infer<typeof JournalEntrySchema>[];
 }
 
-const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, id, updatedAt }) => {
+const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, promptId, updatedAt, journalEntries }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const updateMutation = trpc.journal.updateJournalEntry.useMutation();
-  const deleteMutation = trpc.journal.deleteJournalEntry.useMutation();
-  const [ref, { height }] = useMeasure<HTMLFormElement>();
+  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+  const newJournalEntryMutation = trpc.journal.addJournalEntry.useMutation();
+  const updateJournalEntryMutation = trpc.journal.updateJournalEntry.useMutation();
+  const deleteJournalEntryMutation = trpc.journal.deleteJournalEntry.useMutation();
+
   const form = useForm<JournalEntry>({
     resolver: zodResolver(journalEntrySchema),
     defaultValues: {
@@ -164,30 +276,15 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, id, up
   });
 
   const onSubmit = (data: JournalEntry) => {
-    if (updateMutation.isPending) return;
-    updateMutation.mutate(
+    if (newJournalEntryMutation.isPending) return;
+    newJournalEntryMutation.mutate(
       {
-        id,
-        promptId: '',
+        promptId,
         entry: data.entry,
       },
       {
         onSuccess: () => {
-          setIsOpen(false);
-          toast.success('Journal entry updated');
-        },
-      },
-    );
-  };
-
-  const handleDelete = () => {
-    if (deleteMutation.isPending) return;
-    deleteMutation.mutate(
-      { id },
-      {
-        onSuccess: () => {
-          setIsOpen(false);
-          toast.success('Journal entry deleted');
+          form.reset();
         },
       },
     );
@@ -196,18 +293,17 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, id, up
   return (
     <Drawer.Root
       open={isOpen}
-      onOpenChange={setIsOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+      }}
       onClose={() => {
         form.reset();
       }}
     >
       <Drawer.Trigger className="h-full w-full">
         <motion.div
-          whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          // className={cn(
-          //   'flex h-full w-full flex-col gap-3 rounded-2xl border border-orange-100 bg-orange-50 bg-opacity-20 p-4 pt-2 text-left backdrop-blur-md duration-200 hover:bg-opacity-80',
-          // )}
+          whileHover={{ scale: 1.03 }}
           className="z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md"
         >
           <span className="text-pretty text-xs text-gray-500">{truncateText(prompt, 140)}</span>
@@ -222,59 +318,78 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, id, up
       </Drawer.Trigger>
 
       <Drawer.Portal>
-        <Drawer.Content className="fixed bottom-5 left-0 right-0 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] max-w-[calc(768px-68px)] flex-col rounded-3xl bg-transparent">
-          <div className="relative flex flex-1 flex-col gap-4 rounded-[20px] bg-white px-4 pb-4 pt-2">
-            <Drawer.Handle className="absolute top-2 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-zinc-300" />
-
-            <div className="absolute inset-x-0 top-0 flex w-full items-center justify-between gap-2 px-4 py-4">
-              <div className="flex items-center gap-1 text-gray-600">
-                <CheckCircle size={18} weight="light" />
-                <span className="rounded-full text-[10px]">
-                  {updatedAt ? 'Updated' : 'Created'} {formatRelative(new Date(updatedAt ?? createdAt), new Date())}
-                </span>
-              </div>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleDelete}
-                  className="flex size-8 items-center justify-center rounded-xl text-zinc-500 duration-200 hover:bg-zinc-100 hover:text-orange-500"
-                >
-                  {deleteMutation.isPending ? <Spinner /> : <TrashSimple size={16} />}
-                  <span className="sr-only">{deleteMutation.isPending ? 'Deleting...' : 'Delete'}</span>
-                </button>
-                <button
-                  type="submit"
-                  form="journal-update-form"
-                  className="flex h-8 w-[80px] items-center justify-center rounded-lg bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm text-zinc-50 duration-200"
-                >
-                  {updateMutation.isPending ? <Spinner /> : 'Save'}
-                </button>
-              </div>
+        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[450px] flex-col overflow-hidden rounded-[36px] border border-border bg-white">
+          <div className="relative flex flex-1 flex-col gap-4 pt-4">
+            <div className="sr-only">
+              <Drawer.Title>Journal Entry</Drawer.Title>
+              <Drawer.Description>Journal Entry</Drawer.Description>
             </div>
+            <Drawer.Handle className="absolute top-0 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
+            <motion.div layout className="no-scrollbar max-h-full grow basis-0 overflow-y-auto scroll-smooth px-4">
+              <div className="flex flex-col">
+                <ChatBubble isSender={false} className="px-8">
+                  {prompt}
+                </ChatBubble>
+                <AnimatePresence>
+                  {journalEntries.map(({ entry }, index) => (
+                    <motion.div
+                      key={index}
+                      exit="isSenderExit"
+                      initial="isSenderInitial"
+                      animate="isSenderAnimate"
+                      variants={chatBubbleVariants}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChatBubble isSender={true}>{entry}</ChatBubble>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </motion.div>
 
-            <div className="mt-10 flex h-full w-full grow flex-col gap-4 rounded-2xl bg-transparent bg-opacity-50">
-              {prompt && (
-                <div className="rounded-2xl border border-orange-100 bg-orange-50 bg-opacity-60 p-4">
-                  <span className="text-sm font-medium text-zinc-800">{prompt}</span>
-                </div>
-              )}
+            <div className="flex h-full w-full flex-col gap-4 border-t border-border px-4 py-4 pb-2">
               <form
-                ref={ref}
-                id="journal-update-form"
+                id="journal-entry-form"
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex grow flex-col overflow-y-auto"
+                className={cn('flex grow flex-col overflow-y-auto duration-300')}
               >
-                <textarea
-                  style={{ height: height }}
-                  {...form.register('entry')}
-                  className="border-1 h-full w-full grow resize-none rounded-2xl border border-orange-300 border-opacity-50 bg-white p-2 text-zinc-900 outline-none duration-200 hover:border-orange-200 focus:border-orange-200"
-                  placeholder="What's on your mind?"
-                />
+                <div className="mt-auto flex items-end gap-2">
+                  <Controller
+                    name="entry"
+                    control={form.control}
+                    render={({ field }) => {
+                      return (
+                        <textarea
+                          {...field}
+                          ref={mergeRefs(field.ref, textAreaRef)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              form.handleSubmit(onSubmit)();
+                            }
+                          }}
+                          className="w-full grow resize-none columns-1 overflow-hidden rounded-3xl border border-orange-100 bg-orange-50 bg-opacity-20 p-2 text-sm text-gray-800 outline-none duration-200 placeholder:text-xs placeholder:text-gray-600 hover:border-orange-500 focus:border-orange-500"
+                          placeholder="What's on your mind?"
+                        />
+                      );
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={newJournalEntryMutation.isPending}
+                    className="text-orange-500 duration-200 hover:text-orange-400"
+                  >
+                    <ArrowCircleUp size={24} weight="fill" />
+                  </button>
+                </div>
+                <div className="mx-auto mt-2 w-fit rounded-lg px-4 text-[10px] text-gray-500">
+                  Use <kbd className="bg-gray-200 px-1">shift + return</kbd> for new line
+                </div>
               </form>
             </div>
           </div>
         </Drawer.Content>
-        {/* TODO: Use CSS vars here */}
-        <Drawer.Overlay className="fixed inset-0 bottom-5 top-5 z-10 mx-auto max-w-[calc(768px-68px)] rounded-3xl bg-black/20 p-0 backdrop-blur-sm" />
+        <Drawer.Overlay className="fixed inset-0 z-20 mx-auto bg-orange-900 bg-opacity-20 p-0 backdrop-blur" />
       </Drawer.Portal>
     </Drawer.Root>
   );
