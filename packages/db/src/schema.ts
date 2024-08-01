@@ -136,9 +136,9 @@ export const userRelations = relations(usersTable, ({ many }) => ({
   journalEntries: many(journalEntriesTable),
 }));
 
-export const promptRelations = relations(promptsTable, ({ one }) => ({
+export const promptRelations = relations(promptsTable, ({ one, many }) => ({
+  journalEntries: many(journalEntriesTable),
   user: one(usersTable, { fields: [promptsTable.userId], references: [usersTable.id] }),
-  journalEntries: one(journalEntriesTable, { fields: [promptsTable.id], references: [journalEntriesTable.promptId] }),
 }));
 
 export const journalEntryRelations = relations(journalEntriesTable, ({ one }) => ({
