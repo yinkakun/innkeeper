@@ -62,7 +62,6 @@ export const Insights = () => {
       <div className="flex w-full flex-col gap-4">
         <div className="flex items-center gap-2">
           <h2>Consistency is hard, but you got this!</h2>
-          <span className="rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs">Coming soon</span>
         </div>
 
         <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border border-border bg-gray-50 p-3 backdrop-blur">
@@ -146,10 +145,10 @@ const MilestoneAchievements = () => {
               <img src={star} className="w-full max-w-[50px]" />
 
               <div className="flex flex-col items-start gap-0">
-                <span className="text-lg font-medium leading-none text-zinc-900">{name}</span>
+                <span className="text-lg font-medium leading-none text-gray-900">{name}</span>
               </div>
             </div>
-            <span className="mt-auto text-xs text-zinc-700">{description}</span>
+            <span className="mt-auto text-xs text-gray-700">{description}</span>
             <ProgressBar value={parseInt(value)} max={parseInt(max)} />
           </div>
         );
@@ -175,7 +174,7 @@ const ConsistencyBadges = () => {
               <img src={star} className="w-full max-w-[50px]" />
             </div>
             <div className="flex max-w-sm flex-col gap-0">
-              <span className="text-sm font-medium text-zinc-800">{title}</span>
+              <span className="text-sm font-medium text-gray-800">{title}</span>
               <span className="text-[10px]">{description}</span>
             </div>
           </div>

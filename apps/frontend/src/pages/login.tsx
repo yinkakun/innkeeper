@@ -58,7 +58,7 @@ const RequestOtp = () => {
       <a
         target="_blank"
         href={`${API_URL}/auth/google`}
-        className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-1.5 text-center text-sm font-normal text-zinc-800"
+        className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-1.5 text-center text-sm font-normal text-gray-800"
       >
         <img src={googleLogo} alt="" className="max-w-4" />
         <span>Continue with Google</span>
@@ -72,14 +72,14 @@ const RequestOtp = () => {
             formNoValidate
             type="email"
             {...form.register('email')}
-            className="h-8 w-full rounded-lg border border-zinc-200 bg-white px-2 py-1 text-xs placeholder:text-zinc-500 focus-within:bg-orange-100"
+            className="h-8 w-full rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs placeholder:text-gray-500 focus-within:bg-orange-100"
             placeholder="Enter email"
           />
           {form.formState.errors.email && <span className="text-xs text-red-500">{form.formState.errors.email.message}</span>}
         </div>
         <button
           type="submit"
-          className="flex h-8 w-full items-center justify-center rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-zinc-50 duration-200"
+          className="flex h-8 w-full items-center justify-center rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-gray-50 duration-200"
         >
           {mutation.isPending ? <Spinner /> : 'Send OTP'}
         </button>
@@ -128,7 +128,7 @@ const VerifyOtp = () => {
     <StepWrapper>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="flex w-full flex-col items-center gap-4">
-          <span className="text-xs text-zinc-600">Enter the 6-digit code sent to {email}</span>
+          <span className="text-xs text-gray-600">Enter the 6-digit code sent to {email}</span>
           <Controller
             control={form.control}
             name="otp"
@@ -154,7 +154,7 @@ const VerifyOtp = () => {
 
           <button
             type="submit"
-            className="flex h-8 w-full items-center justify-center rounded-lg bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm text-zinc-50 duration-200"
+            className="flex h-8 w-full items-center justify-center rounded-lg bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm text-gray-50 duration-200"
           >
             {verifyOtpMutation.isPending ? <Spinner /> : 'Verify OTP'}
           </button>
@@ -188,11 +188,11 @@ interface StepWrapperProps {
 const StepWrapper: React.FC<StepWrapperProps> = ({ children }) => {
   return (
     <div className="flex max-w-sm flex-col items-center gap-4 rounded-3xl border border-gray-200 bg-gray-100 bg-opacity-50 p-8 text-center">
-      <p className="max-w-[70%] text-center text-zinc-700">Start your shadow work journalling with 💌 Innkeeper</p>
+      <p className="max-w-[70%] text-center text-gray-700">Start your shadow work journalling with 💌 Innkeeper</p>
 
       {children}
 
-      <span className="max-w-[90%] text-xs text-zinc-600">
+      <span className="max-w-[90%] text-xs text-gray-600">
         By continuing, you agree to our{' '}
         <a href="#" className="underline">
           Terms of Service

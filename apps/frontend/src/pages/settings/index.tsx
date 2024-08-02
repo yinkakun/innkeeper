@@ -258,11 +258,11 @@ export const Settings = () => {
                         <Radio
                           key={tone.title}
                           value={tone.title.toLowerCase()}
-                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 text-neutral-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50"
+                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50"
                         >
                           {({ isSelected }) => (
                             <React.Fragment>
-                              <div className="flex items-center gap-2 text-neutral-900">
+                              <div className="flex items-center gap-2 text-gray-900">
                                 <div
                                   className={cn('text-gray-800 duration-200 group-hover:text-orange-500', {
                                     'text-orange-500': isSelected,
@@ -272,7 +272,7 @@ export const Settings = () => {
                                 </div>
                                 <h3 className="text-sm">{tone.title}</h3>
                               </div>
-                              <p className="text-[10px] text-neutral-600">{tone.description}</p>
+                              <p className="text-[10px] text-gray-600">{tone.description}</p>
                             </React.Fragment>
                           )}
                         </Radio>
@@ -287,7 +287,7 @@ export const Settings = () => {
           <div className="flex items-center justify-between gap-4">
             <button
               type="submit"
-              className="ml-auto flex h-8 w-[150px] items-center justify-center rounded-lg bg-orange-500 px-6 py-1 text-sm font-medium text-neutral-50 duration-200"
+              className="ml-auto flex h-8 w-[150px] items-center justify-center rounded-lg bg-orange-500 px-6 py-1 text-sm font-medium text-gray-50 duration-200"
             >
               <span>{mutation.isPending ? <Spinner /> : 'Save Changes'}</span>
             </button>

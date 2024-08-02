@@ -160,7 +160,7 @@ const FirstName = () => {
         </div>
 
         <div className="flex gap-4">
-          <button type="submit" className="h-8 w-full rounded-lg bg-orange-500 py-1 text-sm font-medium text-neutral-50 duration-200">
+          <button type="submit" className="h-8 w-full rounded-lg bg-orange-500 py-1 text-sm font-medium text-gray-50 duration-200">
             Continue
           </button>
         </div>
@@ -332,7 +332,7 @@ const PrimaryGoal = () => {
                   >
                     {({ isSelected }) => (
                       <React.Fragment>
-                        <div className="flex items-center gap-2 text-neutral-900">
+                        <div className="flex items-center gap-2 text-gray-900">
                           <div
                             className={cn('text-gray-800 duration-200 group-hover:text-orange-500', {
                               'text-orange-500': isSelected,
@@ -342,7 +342,7 @@ const PrimaryGoal = () => {
                           </div>
                           <h3 className="text-sm">{goal.title}</h3>
                         </div>
-                        <p className="text-xs text-neutral-600">{goal.description}</p>
+                        <p className="text-xs text-gray-600">{goal.description}</p>
                       </React.Fragment>
                     )}
                   </Radio>
@@ -453,7 +453,7 @@ const PreferredTone = () => {
                       </div>
                       <h3 className="text-sm">{tone.title}</h3>
                     </div>
-                    <p className="text-xs text-neutral-600">{tone.description}</p>
+                    <p className="text-xs text-gray-600">{tone.description}</p>
                   </React.Fragment>
                 )}
               </Radio>
@@ -485,8 +485,8 @@ const Done = () => {
   return (
     <div className="relative flex w-full max-w-md flex-col items-center gap-4 rounded-3xl border border-gray-200 bg-white p-6 pt-4 text-center">
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-medium text-neutral-800">Welcome to 💌 Innkeeper</h2>
-        <p className="text-xs text-neutral-600">You're all set up and your shadow work journey begins now! </p>
+        <h2 className="text-lg font-medium text-gray-800">Welcome to 💌 Innkeeper</h2>
+        <p className="text-xs text-gray-600">You're all set up and your shadow work journey begins now! </p>
       </div>
 
       <CheckCircle className="h-24 w-24 text-[#FF4800]" weight="thin" />
