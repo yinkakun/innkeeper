@@ -275,6 +275,12 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
     },
   });
 
+  React.useEffect(() => {
+    if (!textAreaRef.current) return;
+    textAreaRef.current.style.height = 'auto';
+    textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+  }, [form.watch('entry')]);
+
   const onSubmit = (data: JournalEntry) => {
     if (newJournalEntryMutation.isPending) return;
     newJournalEntryMutation.mutate(
@@ -347,7 +353,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
               </div>
             </motion.div>
 
-            <div className="flex h-full w-full flex-col gap-4 border-t border-border px-4 py-4 pb-2">
+            <div className="flex h-full w-full flex-col gap-4 border-t border-orange-50 px-4 py-4 pb-2">
               <form
                 id="journal-entry-form"
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -383,7 +389,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
                   </button>
                 </div>
                 <div className="mx-auto mt-2 w-fit rounded-lg px-4 text-[10px] text-gray-500">
-                  Use <kbd className="bg-gray-200 px-1">shift + return</kbd> for new line
+                  Use <kbd className="border border-border bg-gray-100 px-1">shift + return</kbd> for new line
                 </div>
               </form>
             </div>
