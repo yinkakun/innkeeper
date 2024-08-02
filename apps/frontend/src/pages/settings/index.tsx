@@ -4,12 +4,13 @@ import { AppLayout } from '@/components/app-layout';
 import { Circle, RadioButton } from '@phosphor-icons/react';
 import { Label, RadioGroup, Radio } from 'react-aria-components';
 import { z } from 'zod';
-import { RouterOutputs, trpc } from '@/lib/trpc';
+import { trpc } from '@/lib/trpc';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Spinner } from '@/components/spinner';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+
 const formSchema = z.object({
   name: z.string().min(1, 'First name is required').max(100, 'First name must be 100 characters or less'),
   promptFrequency: z.enum(['daily', 'weekly'], {
@@ -187,8 +188,15 @@ export const Settings = () => {
               render={({ field }) => {
                 const id = React.useId();
                 return (
-                  <div className="flex items-center justify-between gap-2 rounded-xl border border-gray-200 bg-gray-50 bg-opacity-50 p-2 py-2">
-                    <label htmlFor={id} className="text-sm">
+                  <div
+                    className={cn(
+                      'flex items-center justify-between gap-2 rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-2 py-1.5 duration-200 hover:border-orange-300 hover:bg-orange-50',
+                      {
+                        'border-orange-300 bg-orange-50': field.value,
+                      },
+                    )}
+                  >
+                    <label htmlFor={id} className="grow text-sm">
                       Enable Email Notifications
                     </label>
 
@@ -277,7 +285,10 @@ export const Settings = () => {
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <button className="ml-auto flex h-8 w-[120px] items-center justify-center rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200">
+            <button
+              type="submit"
+              className="ml-auto flex h-8 w-[150px] items-center justify-center rounded-lg bg-orange-500 px-6 py-1 text-sm font-medium text-neutral-50 duration-200"
+            >
               <span>{mutation.isPending ? <Spinner /> : 'Save Changes'}</span>
             </button>
           </div>

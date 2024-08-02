@@ -144,7 +144,7 @@ const NewJournalEntry = () => {
         <motion.div
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          className="z-50 flex h-full min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md"
+          className="z-50 flex h-full min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50"
         >
           <div className="flex w-full items-center justify-center">
             <Plus className="text-orange-300" weight="light" size={40} />
@@ -153,7 +153,7 @@ const NewJournalEntry = () => {
       </Drawer.Trigger>
 
       <Drawer.Portal>
-        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[450px] flex-col overflow-hidden rounded-[36px] border border-border bg-white">
+        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[450px] flex-col overflow-hidden rounded-[36px] border border-orange-100 bg-white">
           <div className="relative flex flex-1 flex-col gap-4 pt-4">
             <div className="sr-only">
               <Drawer.Title>Journal Entry</Drawer.Title>
@@ -211,7 +211,7 @@ const NewJournalEntry = () => {
               </div>
             </motion.div>
 
-            <div className="flex h-full w-full flex-col gap-4 border-t border-border px-4 py-4 pb-4">
+            <div className="flex h-full w-full flex-col gap-4 border-t border-orange-100 px-4 py-4 pb-4">
               <form
                 id="journal-entry-form"
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -310,7 +310,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
         <motion.div
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.03 }}
-          className="z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md"
+          className="z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50"
         >
           <span className="text-pretty text-xs text-gray-500">{truncateText(prompt, 140)}</span>
 
@@ -324,7 +324,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
       </Drawer.Trigger>
 
       <Drawer.Portal>
-        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[450px] flex-col overflow-hidden rounded-[36px] border border-border bg-white">
+        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[450px] flex-col overflow-hidden rounded-[36px] border border-orange-100 bg-white">
           <div className="relative flex flex-1 flex-col gap-4 pt-4">
             <div className="sr-only">
               <Drawer.Title>Journal Entry</Drawer.Title>
@@ -353,7 +353,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
               </div>
             </motion.div>
 
-            <div className="flex h-full w-full flex-col gap-4 border-t border-orange-50 px-4 py-4 pb-2">
+            <div className="flex h-full w-full flex-col gap-4 border-t border-orange-100 px-4 py-4 pb-2">
               <form
                 id="journal-entry-form"
                 onSubmit={form.handleSubmit(onSubmit)}
