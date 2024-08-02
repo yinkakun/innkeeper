@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
 import { motion } from 'framer-motion';
-import { CheckCircle, Circle } from '@phosphor-icons/react';
+import { RadioButton, Circle, CheckCircle } from '@phosphor-icons/react';
 import { Layout } from '@/components/layout';
 import { Stepper, useStepper } from '@/components/stepper';
 import { Label, RadioGroup, Radio } from 'react-aria-components';
@@ -99,8 +99,8 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ totalSteps, currentSt
         <div
           key={index}
           className={cn('h-full w-full rounded-full backdrop-blur-sm', {
-            'bg-white bg-opacity-95': !isPrevStep(index),
-            'bg-[#FF4800]': isPrevStep(index),
+            'bg-gray-200': !isPrevStep(index),
+            'bg-primary': isPrevStep(index),
           })}
         >
           {isActiveStep(index) && (
@@ -108,7 +108,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ totalSteps, currentSt
               initial={{ width: 0 }}
               animate={{ width: '100%' }}
               transition={{ duration: 0.2 }}
-              className="h-full w-full rounded-full bg-[#FF4800]"
+              className="h-full w-full rounded-full bg-primary"
             />
           )}
         </div>
@@ -132,12 +132,12 @@ const FirstName = () => {
   };
 
   return (
-    <div className="relative flex w-full max-w-md flex-col items-center gap-6 rounded-3xl border border-neutral-200 border-opacity-40 bg-neutral-50 p-8 pt-16 text-left">
+    <div className="relative flex w-full max-w-md flex-col items-center gap-6 rounded-3xl border border-gray-200 bg-white p-8 pt-16 text-left">
       <StepProgressBar totalSteps={totalSteps} currentStep={activeStepIndex + 1} />
 
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-medium text-neutral-800">What should we call you?</h2>
-        <p className="text-xs text-neutral-600">Your preferred name will be used to personalize your journaling experience</p>
+        <h2 className="text-lg font-medium text-gray-800">What should we call you?</h2>
+        <p className="text-xs text-gray-600">Your preferred name will be used to personalize your journaling experience</p>
       </div>
 
       <form className="flex w-full flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -147,7 +147,7 @@ const FirstName = () => {
             id="name"
             {...form.register('name')}
             placeholder="Preferred Name"
-            className="h-8 w-full grow rounded-lg border border-neutral-300 border-opacity-50 bg-white px-2 py-1 text-xs placeholder:text-neutral-500"
+            className="h-8 w-full grow rounded-lg border border-gray-300 border-opacity-50 bg-white px-2 py-1 text-xs outline-none placeholder:text-gray-500 hover:border-orange-300 hover:bg-orange-50 focus:border-orange-400 focus:bg-orange-50"
           />
           <p
             className={cn('h-3 text-xs text-red-500', {
@@ -160,10 +160,7 @@ const FirstName = () => {
         </div>
 
         <div className="flex gap-4">
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200"
-          >
+          <button type="submit" className="h-8 w-full rounded-lg bg-orange-500 py-1 text-sm font-medium text-neutral-50 duration-200">
             Continue
           </button>
         </div>
@@ -192,7 +189,7 @@ const TimeSettings = () => {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="relative flex w-full max-w-md shrink-0 flex-col items-start gap-6 rounded-3xl border border-neutral-200 border-opacity-40 bg-neutral-50 p-8 pt-16 text-left"
+      className="relative flex w-full max-w-md shrink-0 flex-col items-start gap-6 rounded-3xl border border-gray-200 bg-white p-8 pt-16 text-left"
     >
       <StepProgressBar totalSteps={totalSteps} currentStep={activeStepIndex + 1} />
 
@@ -201,16 +198,22 @@ const TimeSettings = () => {
         control={form.control}
         render={({ field }) => (
           <RadioGroup {...field} className="flex w-full max-w-none shrink-0 flex-col gap-2">
-            <Label className="w-full font-medium">How often would you like to journal?</Label>
+            <Label className="w-full font-medium text-gray-700">How often would you like to journal?</Label>
             {['Daily', 'Weekly'].map((item) => (
               <Radio
-                className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-neutral-700"
+                className="group cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50"
                 key={item}
                 value={item.toLowerCase()}
               >
                 {({ isSelected }) => (
                   <div className="flex items-center gap-2">
-                    {isSelected ? <CheckCircle /> : <Circle />}
+                    <div
+                      className={cn('text-gray-800 duration-200 group-hover:text-orange-500', {
+                        'text-orange-500': isSelected,
+                      })}
+                    >
+                      {isSelected ? <RadioButton weight="fill" /> : <Circle />}
+                    </div>
 
                     <div>{item}</div>
                   </div>
@@ -235,16 +238,22 @@ const TimeSettings = () => {
         control={form.control}
         render={({ field }) => (
           <RadioGroup {...field} className="flex w-full max-w-none shrink-0 flex-col gap-2">
-            <Label className="w-full font-medium">What time of the day do you prefer to journal?</Label>
+            <Label className="w-full font-medium text-gray-700">What time of the day do you prefer to journal?</Label>
             {['Morning', 'Afternoon', 'Evening', 'Night'].map((item) => (
               <Radio
-                className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-neutral-700"
+                className="group cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50"
                 key={item}
                 value={item.toLowerCase()}
               >
                 {({ isSelected }) => (
                   <div className="flex items-center gap-2">
-                    {isSelected ? <CheckCircle /> : <Circle />}
+                    <div
+                      className={cn('text-gray-800 duration-200 group-hover:text-orange-500', {
+                        'text-orange-500': isSelected,
+                      })}
+                    >
+                      {isSelected ? <RadioButton weight="fill" /> : <Circle />}
+                    </div>
                     <div>{item}</div>
                   </div>
                 )}
@@ -265,7 +274,7 @@ const TimeSettings = () => {
 
       <button
         type="submit"
-        className="w-full rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200"
+        className="flex h-8 w-full items-center justify-center rounded-lg bg-primary py-1 text-center text-sm font-medium text-gray-50 duration-200 hover:bg-orange-400"
       >
         Continue
       </button>
@@ -303,7 +312,7 @@ const PrimaryGoal = () => {
   const { activeStepIndex, totalSteps, nextStep } = useStepper();
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <div className="relative flex w-full max-w-md flex-col items-center gap-6 rounded-3xl border border-neutral-200 border-opacity-40 bg-neutral-50 p-8 pt-16 text-left">
+      <div className="relative flex w-full max-w-md flex-col items-center gap-6 rounded-3xl border border-gray-200 bg-white p-8 pt-16 text-left">
         <StepProgressBar totalSteps={totalSteps} currentStep={activeStepIndex + 1} />
 
         {
@@ -311,20 +320,26 @@ const PrimaryGoal = () => {
             name="primaryGoal"
             control={form.control}
             render={({ field }) => (
-              <RadioGroup {...field} className="flex w-full max-w-none shrink-0 flex-col gap-2">
+              <RadioGroup {...field} className="flex w-full max-w-none shrink-0 flex-col gap-3">
                 <div>
                   <Label className="w-full font-medium">What is your primary goal for journaling?</Label>
                 </div>
                 {GOALS.map((goal) => (
                   <Radio
-                    className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-neutral-700"
+                    className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50"
                     key={goal.title}
                     value={goal.title}
                   >
                     {({ isSelected }) => (
                       <React.Fragment>
                         <div className="flex items-center gap-2 text-neutral-900">
-                          <div className="shrink-0">{isSelected ? <CheckCircle /> : <Circle />}</div>
+                          <div
+                            className={cn('text-gray-800 duration-200 group-hover:text-orange-500', {
+                              'text-orange-500': isSelected,
+                            })}
+                          >
+                            {isSelected ? <RadioButton weight="fill" /> : <Circle />}
+                          </div>
                           <h3 className="text-sm">{goal.title}</h3>
                         </div>
                         <p className="text-xs text-neutral-600">{goal.description}</p>
@@ -346,14 +361,12 @@ const PrimaryGoal = () => {
           />
         }
 
-        <div className="flex w-full flex-col gap-4">
-          <button
-            type="submit"
-            className="hover-bg-orange-600 w-full rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200"
-          >
-            Continue
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="flex h-8 w-full items-center justify-center rounded-lg bg-primary py-1 text-center text-sm font-medium text-gray-50 duration-200 hover:bg-orange-400"
+        >
+          Continue
+        </button>
       </div>
     </form>
   );
@@ -410,7 +423,7 @@ const PreferredTone = () => {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="relative flex w-full max-w-md flex-col items-center gap-6 rounded-3xl border border-neutral-200 border-opacity-40 bg-neutral-50 p-8 pt-16 text-left"
+      className="relative flex w-full max-w-md flex-col items-center gap-6 rounded-3xl border border-gray-200 bg-white p-8 pt-16 text-left"
     >
       <StepProgressBar totalSteps={totalSteps} currentStep={activeStepIndex + 1} />
 
@@ -418,18 +431,26 @@ const PreferredTone = () => {
         name="promptTone"
         control={form.control}
         render={({ field }) => (
-          <RadioGroup {...field} className="flex w-full max-w-none shrink-0 flex-col gap-2">
-            <Label className="w-full font-medium">What tone of prompts would you prefer for your journaling experience?</Label>
+          <RadioGroup {...field} className="flex w-full max-w-none shrink-0 flex-col gap-3">
+            <Label className="w-full font-medium text-gray-700">
+              What tone of prompts would you prefer for your journaling experience?
+            </Label>
             {TONES.map((tone) => (
               <Radio
-                className="cursor-pointer rounded-lg border border-orange-200 p-2 transition-colors duration-200 hover:bg-orange-100 hover:bg-opacity-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-200 data-[selected]:text-neutral-700"
+                className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50"
                 key={tone.title}
                 value={tone.title.toLowerCase()}
               >
                 {({ isSelected }) => (
                   <React.Fragment>
                     <div className="flex items-center gap-2">
-                      <div className="shrink-0">{isSelected ? <CheckCircle /> : <Circle />}</div>
+                      <div
+                        className={cn('text-gray-800 duration-200 group-hover:text-orange-500', {
+                          'text-orange-500': isSelected,
+                        })}
+                      >
+                        {isSelected ? <RadioButton weight="fill" /> : <Circle />}
+                      </div>
                       <h3 className="text-sm">{tone.title}</h3>
                     </div>
                     <p className="text-xs text-neutral-600">{tone.description}</p>
@@ -452,7 +473,7 @@ const PreferredTone = () => {
 
       <button
         type="submit"
-        className="w-full rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200"
+        className="flex h-8 w-full items-center justify-center rounded-lg bg-primary py-1 text-center text-sm font-medium text-gray-50 duration-200 hover:bg-orange-400"
       >
         {mutation.isPending ? <Spinner /> : 'Continue'}
       </button>
@@ -462,7 +483,7 @@ const PreferredTone = () => {
 
 const Done = () => {
   return (
-    <div className="relative flex w-full max-w-md flex-col items-center gap-4 rounded-3xl border border-neutral-300 border-opacity-40 bg-neutral-50 p-6 pt-4 text-center">
+    <div className="relative flex w-full max-w-md flex-col items-center gap-4 rounded-3xl border border-gray-200 bg-white p-6 pt-4 text-center">
       <div className="flex flex-col gap-1">
         <h2 className="text-lg font-medium text-neutral-800">Welcome to 💌 Innkeeper</h2>
         <p className="text-xs text-neutral-600">You're all set up and your shadow work journey begins now! </p>
@@ -473,7 +494,7 @@ const Done = () => {
       <div className="flex w-full flex-col gap-4">
         <Link
           to="/journal"
-          className="w-full rounded-lg bg-[#FF4800] bg-gradient-to-r from-[#FF5C0A] to-[#F54100] py-1 text-sm font-medium text-neutral-50 duration-200"
+          className="flex h-8 w-full items-center justify-center rounded-lg bg-primary py-1 text-center text-sm font-medium text-gray-50 duration-200 hover:bg-orange-400"
         >
           Start Journaling
         </Link>

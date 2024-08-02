@@ -1,8 +1,7 @@
 import React from 'react';
 import { Switch } from '@/components/switch';
 import { AppLayout } from '@/components/app-layout';
-
-import { CheckCircle, Circle, RadioButton } from '@phosphor-icons/react';
+import { Circle, RadioButton } from '@phosphor-icons/react';
 import { Label, RadioGroup, Radio } from 'react-aria-components';
 import { z } from 'zod';
 import { RouterOutputs, trpc } from '@/lib/trpc';
@@ -104,8 +103,9 @@ export const Settings = () => {
               <input
                 type="text"
                 id="name"
+                placeholder="Enter your first name"
                 {...form.register('name')}
-                className="h-8 grow rounded-lg border border-border bg-gray-50 px-2 py-1 text-xs outline-none duration-200 placeholder:text-neutral-500 hover:border-orange-300 hover:bg-orange-50 focus:border-orange-300 focus:bg-orange-50"
+                className="h-8 grow rounded-lg border border-orange-400 bg-orange-50 px-2 py-1 text-xs outline-none duration-200 placeholder:text-gray-500 placeholder-shown:border-border placeholder-shown:bg-gray-50 hover:border-orange-300 hover:bg-orange-50 focus:border-orange-300 focus:bg-orange-50"
               />
             </div>
           </div>
@@ -212,7 +212,7 @@ export const Settings = () => {
                         <Radio
                           key={goal.title}
                           value={goal.title}
-                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-3 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50"
+                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3 text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50"
                         >
                           {({ isSelected }) => (
                             <React.Fragment>
@@ -250,7 +250,7 @@ export const Settings = () => {
                         <Radio
                           key={tone.title}
                           value={tone.title.toLowerCase()}
-                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-2 text-neutral-700 transition-colors duration-200 hover:bg-gray-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50"
+                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 text-neutral-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50"
                         >
                           {({ isSelected }) => (
                             <React.Fragment>
