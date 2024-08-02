@@ -99,6 +99,7 @@ export const queryClient = new QueryClient({});
 
 const router = createRouter({
   routeTree,
+  defaultPendingMinMs: 0,
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
   context: {
