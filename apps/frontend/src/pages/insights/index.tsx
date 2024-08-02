@@ -6,6 +6,7 @@ import { ProgressBar } from '@/components/progress-bar';
 import { AppLayout } from '@/components/app-layout';
 import highVoltageEmoji from '@/assets/high-voltage-emoji.svg';
 import { CircularProgressBar } from '@/components/circular-progress-bar';
+import star from '@/assets/star.svg';
 
 const CONSISTENCY = [
   {
@@ -64,13 +65,13 @@ export const Insights = () => {
           <span className="rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs">Coming soon</span>
         </div>
 
-        <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border border-[#ffa380] border-opacity-20 bg-[#ffede5] bg-opacity-20 p-4">
+        <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border border-border bg-gray-50 p-3 backdrop-blur">
           <Stat title="Vanity XP" value="21" icon={highVoltageEmoji} />
           <Stat title="Current Streak" value="1" icon={fireEmoji} />
           <Stat title="Longest Streak" value="10" icon={moaiEmoji} />
         </div>
 
-        <div className="flex w-full flex-col gap-4 rounded-3xl border border-[#ffa380] border-opacity-20 bg-[#ffede5] bg-opacity-20 p-3 backdrop-blur">
+        <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur">
           {/* TODO: fix hack of using negative value */}
           <div className="-mb-9 w-full">
             <HeatMap
@@ -114,7 +115,7 @@ const Stat: React.FC<StatCardProps> = ({ value, title, className, icon }) => {
     <div className={cn('flex items-start gap-4 px-4', className)}>
       <div className="relative">
         <img
-          src={icon}
+          src={star}
           className={cn('w-full max-w-10', {
             'grayscale filter': value === '0',
           })}
@@ -130,18 +131,19 @@ const Stat: React.FC<StatCardProps> = ({ value, title, className, icon }) => {
 
 const MilestoneAchievements = () => {
   return (
-    <div className="grid grid-cols-3 gap-0 divide-x rounded-3xl border border-[#ffa380] border-opacity-20 bg-[#ffede5] bg-opacity-20 p-2 backdrop-blur">
+    <div className="grid grid-cols-3 gap-0 divide-x rounded-3xl border border-border bg-gray-50 p-3 py-4 backdrop-blur">
       {MILESTONES.map(({ name, description, value, max }, index) => {
         return (
           <div className="flex flex-col items-start gap-1 px-3" key={index}>
             <div className={cn('flex w-full items-center gap-2')}>
-              <CircularProgressBar
+              {/* <CircularProgressBar
                 max={parseInt(max)}
                 value={parseInt(value)}
                 gaugePrimaryColor="#FF4800"
                 gaugeSecondaryColor="#F3F4F6"
                 size="xs"
-              />
+              /> */}
+              <img src={star} className="w-full max-w-[50px]" />
 
               <div className="flex flex-col items-start gap-0">
                 <span className="text-lg font-medium leading-none text-zinc-900">{name}</span>
@@ -161,18 +163,16 @@ const ConsistencyBadges = () => {
     <div className="grid w-full grid-cols-2 gap-4">
       {CONSISTENCY.map(({ max, title, value, description }, index) => {
         return (
-          <div
-            className="flex w-full items-center gap-4 rounded-3xl border border-[#ffa380] border-opacity-20 bg-[#ffede5] bg-opacity-20 p-2 backdrop-blur"
-            key={index}
-          >
+          <div className="flex w-full items-center gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur" key={index}>
             <div className="shrink-0">
-              <CircularProgressBar
+              {/* <CircularProgressBar
                 max={parseInt(max)}
                 value={parseInt(value)}
                 gaugePrimaryColor="#FF4800"
                 gaugeSecondaryColor="#F3F4F6"
                 size="sm"
-              />
+              /> */}
+              <img src={star} className="w-full max-w-[50px]" />
             </div>
             <div className="flex max-w-sm flex-col gap-0">
               <span className="text-sm font-medium text-zinc-800">{title}</span>
