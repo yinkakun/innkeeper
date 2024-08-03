@@ -1,99 +1,100 @@
 import { cn } from '@/lib/utils';
 import HeatMap from '@uiw/react-heat-map';
-import fireEmoji from '@/assets/fire-emoji.svg';
-import moaiEmoji from '@/assets/moai-emoji.svg';
 import { ProgressBar } from '@/components/progress-bar';
 import { AppLayout } from '@/components/app-layout';
-import highVoltageEmoji from '@/assets/high-voltage-emoji.svg';
-import { CircularProgressBar } from '@/components/circular-progress-bar';
-import star from '@/assets/star.svg';
+import vanityXp from '@/assets/vanity-xp.svg';
+import daysStreak from '@/assets/days-streak.svg';
+import tenJournalEntries from '@/assets/ten-entries.svg';
+import thirtyJournalEntries from '@/assets/thirty-entries.svg';
+import hundredJournalEntries from '@/assets/hundred-entries.svg';
+import levelOne from '@/assets/level-one.svg';
+import levelTwo from '@/assets/level-two.svg';
+import levelThree from '@/assets/level-three.svg';
+import levelFour from '@/assets/level-four.svg';
+import totalEntries from '@/assets/total-entries.svg';
 
-const CONSISTENCY = [
+const CONSISTENCY_BADGES = [
   {
-    title: 'Seedling',
-    value: '1',
     max: '1',
-    description: 'Earn this badge when you make your first journal entry. Plant the seed, watch it grow.',
-  },
-  {
-    title: 'Firestarter',
-    value: '3',
-    max: '7',
-    description: 'Earn this badge when you journal consistently for 7 days. You are on fire!',
-  },
-  {
-    title: 'Rainbow',
-    value: '3',
-    max: '30',
-    description: 'Earn this badge when you journal consistently for 30 days. Taste the rainbow!',
-  },
-  {
-    value: '67',
-    max: '100',
-    title: 'Zen Master',
-    description: 'Earn this badge when you journal consistently for 100 days. The impossible badge.',
-  },
-];
-
-const MILESTONES = [
-  {
-    name: 'Baby Steps',
     value: '1',
-    max: '1',
+    title: 'Beginner',
+    icon: levelOne,
     description: 'Make your first journal entry',
   },
   {
-    name: 'Stargazer',
-    value: '3',
     max: '10',
-    description: 'Complete 10 journal entries',
+    value: '7',
+    title: 'Novice',
+    icon: levelTwo,
+    description: 'Journal consistently for 10 days',
   },
   {
-    name: 'Sisyphus',
-    value: '3',
+    max: '30',
+    value: '7',
+    title: 'Explorer',
+    icon: levelThree,
+    description: 'Journal consistently for 30 days',
+  },
+  {
     max: '100',
+    value: '7',
+    title: 'Master',
+    icon: levelFour,
+    description: 'Journal consistently for 100 days', // The impossible badge
+  },
+];
+
+const MILESTONE_BADGES = [
+  {
+    max: '10',
+    value: '7',
+    name: 'Decathlon',
+    icon: tenJournalEntries,
+    description: 'Complete 10 total entries',
+  },
+  {
+    max: '30',
+    value: '7',
+    name: 'Stargazer',
+    icon: thirtyJournalEntries,
+    description: 'Complete 30 journal entries',
+  },
+  {
+    max: '100',
+    value: '7',
+    name: 'Sisyphus',
+    icon: hundredJournalEntries,
     description: 'Complete 100 journal entries',
+  },
+];
+
+const STATS = [
+  {
+    title: 'Longest Streak',
+    value: '10',
+    icon: totalEntries,
+  },
+  {
+    title: 'Total Entries',
+    value: '10',
+    icon: totalEntries,
+  },
+  {
+    title: 'Word Count',
+    value: '10K',
+    icon: totalEntries,
   },
 ];
 
 export const Insights = () => {
   return (
     <AppLayout>
-      <div className="flex w-full flex-col gap-4">
+      <div className="flex w-full flex-col gap-6">
         <div className="flex items-center gap-2">
           <h2>Consistency is hard, but you got this!</h2>
         </div>
-
-        <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border border-border bg-gray-50 p-3 backdrop-blur">
-          <Stat title="Vanity XP" value="21" icon={highVoltageEmoji} />
-          <Stat title="Current Streak" value="1" icon={fireEmoji} />
-          <Stat title="Longest Streak" value="10" icon={moaiEmoji} />
-        </div>
-
-        <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur">
-          {/* TODO: fix hack of using negative value */}
-          <div className="-mb-9 w-full">
-            <HeatMap
-              value={[]}
-              weekLabels={false}
-              monthLabels={false}
-              className="w-full"
-              startDate={new Date('2024/01/01')}
-              panelColors={{
-                0: '#ffc8b3',
-                2: '#ffa380',
-                4: '#ff7f4d',
-                10: '#ff5a1a',
-                20: '#FF4800',
-                30: '#e64100',
-              }}
-              rectProps={{
-                rx: 1.8,
-              }}
-            />
-          </div>
-        </div>
-
+        <Activities />
+        <Stats />
         <MilestoneAchievements />
         <ConsistencyBadges />
       </div>
@@ -101,28 +102,74 @@ export const Insights = () => {
   );
 };
 
-interface StatCardProps {
-  title: string;
-  value: string;
-  icon: string;
-  description?: string;
-  className?: string;
-}
-
-const Stat: React.FC<StatCardProps> = ({ value, title, className, icon }) => {
+const Stats = () => {
   return (
-    <div className={cn('flex items-start gap-4 px-4', className)}>
-      <div className="relative">
-        <img
-          src={star}
-          className={cn('w-full max-w-10', {
-            'grayscale filter': value === '0',
-          })}
-        />
+    <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border border-border bg-gray-50 py-3 backdrop-blur">
+      {STATS.map(({ title, value, icon }, index) => {
+        return (
+          <div key={index} className={cn('flex items-center gap-1 px-3')}>
+            <div className="relative -mb-4">
+              <img
+                src={icon}
+                className={cn('w-full max-w-16', {
+                  'grayscale filter': value === '0',
+                })}
+              />
+            </div>
+            <div className="flex flex-col items-start gap-0">
+              <span className="text-xl leading-none text-gray-800">{value}</span>
+              <span className="text-xs capitalize text-gray-600">{title}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const Activities = () => {
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur">
+        <div className="w-full">
+          <HeatMap
+            value={[]}
+            weekLabels={false}
+            monthLabels={false}
+            legendCellSize={0}
+            className="w-full"
+            height={100}
+            startDate={new Date('2024/01/01')}
+            panelColors={{
+              0: '#ffc8b3',
+              2: '#ffa380',
+              4: '#ff7f4d',
+              10: '#ff5a1a',
+              20: '#FF4800',
+              30: '#e64100',
+            }}
+            rectProps={{
+              rx: 1.8,
+            }}
+          />
+        </div>
       </div>
-      <div className="flex flex-col items-start gap-0">
-        <span className="text-xl font-medium leading-none">{value}</span>
-        <span className="text-sm capitalize">{title}</span>
+      <div className="flex gap-4">
+        <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur">
+          <div className="flex items-start gap-2">
+            <div className="relative -mb-7">
+              <img src={vanityXp} className={cn('w-full max-w-16', {})} />
+            </div>
+          </div>
+          <span className="text-base capitalize text-gray-800">188 Vanity XP</span>
+        </div>
+
+        <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur">
+          <div className="relative -mb-7">
+            <img src={daysStreak} className={cn('w-full max-w-16', {})} />
+          </div>
+          <span className="text-base capitalize text-gray-800">7 Day Streak</span>
+        </div>
       </div>
     </div>
   );
@@ -130,26 +177,22 @@ const Stat: React.FC<StatCardProps> = ({ value, title, className, icon }) => {
 
 const MilestoneAchievements = () => {
   return (
-    <div className="grid grid-cols-3 gap-0 divide-x rounded-3xl border border-border bg-gray-50 p-3 py-4 backdrop-blur">
-      {MILESTONES.map(({ name, description, value, max }, index) => {
+    <div className="grid grid-cols-3 gap-0 divide-x rounded-3xl border border-border bg-gray-50 py-4 backdrop-blur">
+      {MILESTONE_BADGES.map(({ name, description, value, max, icon }, index) => {
         return (
-          <div className="flex flex-col items-start gap-1 px-3" key={index}>
-            <div className={cn('flex w-full items-center gap-2')}>
-              {/* <CircularProgressBar
-                max={parseInt(max)}
-                value={parseInt(value)}
-                gaugePrimaryColor="#FF4800"
-                gaugeSecondaryColor="#F3F4F6"
-                size="xs"
-              /> */}
-              <img src={star} className="w-full max-w-[50px]" />
-
-              <div className="flex flex-col items-start gap-0">
-                <span className="text-lg font-medium leading-none text-gray-900">{name}</span>
+          <div className="flex flex-col items-start gap-2 px-3" key={index}>
+            <div className="flex items-center">
+              <div className="relative -mb-4 -ml-2 shrink-0">
+                <img src={icon} className="w-full max-w-14" />
+              </div>
+              <div className={cn('flex w-full flex-col gap-1')}>
+                <span className="text-lg leading-none text-gray-800">{name}</span>
+                <span className="text-xs text-gray-600">{description}</span>
               </div>
             </div>
-            <span className="mt-auto text-xs text-gray-700">{description}</span>
-            <ProgressBar value={parseInt(value)} max={parseInt(max)} />
+            <div className="mt-auto w-full">
+              <ProgressBar value={parseInt(value)} max={parseInt(max)} />
+            </div>
           </div>
         );
       })}
@@ -160,22 +203,23 @@ const MilestoneAchievements = () => {
 const ConsistencyBadges = () => {
   return (
     <div className="grid w-full grid-cols-2 gap-4">
-      {CONSISTENCY.map(({ max, title, value, description }, index) => {
+      {CONSISTENCY_BADGES.map(({ max, title, value, description, icon }, index) => {
         return (
-          <div className="flex w-full items-center gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur" key={index}>
-            <div className="shrink-0">
-              {/* <CircularProgressBar
-                max={parseInt(max)}
-                value={parseInt(value)}
-                gaugePrimaryColor="#FF4800"
-                gaugeSecondaryColor="#F3F4F6"
-                size="sm"
-              /> */}
-              <img src={star} className="w-full max-w-[50px]" />
+          <div
+            key={index}
+            className="flex w-full flex-col items-center gap-2 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur"
+          >
+            <div className="flex w-full items-center">
+              <div className="-mb-5 -ml-2 shrink-0">
+                <img src={icon} className="w-full max-w-16" />
+              </div>
+              <div className="flex max-w-sm flex-col gap-0">
+                <span className="text-lg text-gray-800">{title}</span>
+                <span className="text-xs text-gray-600">{description}</span>
+              </div>
             </div>
-            <div className="flex max-w-sm flex-col gap-0">
-              <span className="text-sm font-medium text-gray-800">{title}</span>
-              <span className="text-[10px]">{description}</span>
+            <div className="mt-auto w-full">
+              <ProgressBar value={parseInt(value)} max={parseInt(max)} />
             </div>
           </div>
         );
