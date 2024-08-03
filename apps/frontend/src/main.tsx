@@ -17,6 +17,7 @@ import { redirect } from '@tanstack/react-router';
 import type { TrpcClient } from '@/lib/trpc';
 import { trpc, trpcClient } from '@/lib/trpc';
 import { createTRPCQueryUtils } from '@trpc/react-query';
+import { AppLayout } from '@/components/app-layout';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcClient: TrpcClient }>()({
   component: () => (
@@ -64,10 +65,17 @@ const onboardingRoute = createRoute({
   pendingComponent: PageLoading,
 });
 
+const appRoute = createRoute({
+  id: 'layout',
+  component: AppLayout,
+  // pendingComponent: PageLoading,
+  getParentRoute: () => rootRoute,
+});
+
 const journalRoute = createRoute({
   path: 'journal',
   component: Journal,
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appRoute,
   pendingComponent: PageLoading,
   loader: async ({ context }) => {
     const clientUtils = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
@@ -78,14 +86,14 @@ const journalRoute = createRoute({
 const insightsRoute = createRoute({
   path: 'insights',
   component: Insights,
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appRoute,
   pendingComponent: PageLoading,
 });
 
 const settingsRoute = createRoute({
   path: 'settings',
   component: Settings,
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appRoute,
   pendingComponent: PageLoading,
   loader: async ({ context }) => {
     const client = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
@@ -93,7 +101,7 @@ const settingsRoute = createRoute({
   },
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, onboardingRoute, journalRoute, loginRoute, insightsRoute, settingsRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, appRoute, onboardingRoute, journalRoute, loginRoute, insightsRoute, settingsRoute]);
 
 export const queryClient = new QueryClient({});
 

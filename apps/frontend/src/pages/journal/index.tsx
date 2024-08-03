@@ -1,19 +1,18 @@
-import { Drawer } from 'vaul';
-import { AppLayout } from '@/components/app-layout';
-import { Plus, CheckCircle, TrashSimple } from '@phosphor-icons/react';
 import { z } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { cn } from '@/lib/utils';
 import React from 'react';
+import { Drawer } from 'vaul';
+import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
-import { formatRelative } from 'date-fns';
-import { ArrowCircleUp } from '@phosphor-icons/react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ChatBubble } from '@/components/chat-bubble';
-import { ThreeDotsScale } from 'react-svg-spinners';
-import { JournalEntrySchema } from '@innkeeper/db';
 import mergeRefs from 'merge-refs';
+import { formatRelative } from 'date-fns';
+import { JournalEntrySchema } from '@innkeeper/db';
+import { ThreeDotsScale } from 'react-svg-spinners';
+import { useForm, Controller } from 'react-hook-form';
+import { ArrowCircleUp } from '@phosphor-icons/react';
+import { ChatBubble } from '@/components/chat-bubble';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Plus, CheckCircle } from '@phosphor-icons/react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 const journalEntrySchema = z.object({
   entry: z.string().min(1),
@@ -22,35 +21,33 @@ const journalEntrySchema = z.object({
 type JournalEntry = z.infer<typeof journalEntrySchema>;
 
 export const Journal = () => {
-  const prompts = trpc.journal.getPrompts.useQuery().data ?? [];
+  const [prompts] = trpc.journal.getPrompts.useSuspenseQuery();
   return (
-    <AppLayout className="gap-6">
-      <div className="grid auto-rows-fr grid-cols-2 gap-6">
-        <NewJournalEntry />
-        <AnimatePresence>
-          {prompts.map(({ prompt, id, updatedAt, createdAt, journalEntries }) => (
-            <motion.div
-              className="w-full"
-              layout
+    <div className="grid auto-rows-fr grid-cols-2 gap-6">
+      <NewJournalEntry />
+      <AnimatePresence>
+        {prompts.map(({ prompt, id, updatedAt, createdAt, journalEntries }) => (
+          <motion.div
+            className="w-full"
+            layout
+            key={id}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <JournalEntries
+              promptId={id}
               key={id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
-            >
-              <JournalEntries
-                promptId={id}
-                key={id}
-                prompt={prompt}
-                updatedAt={updatedAt}
-                createdAt={createdAt}
-                journalEntries={journalEntries ?? []}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-    </AppLayout>
+              prompt={prompt}
+              updatedAt={updatedAt}
+              createdAt={createdAt}
+              journalEntries={journalEntries ?? []}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
   );
 };
 
@@ -144,7 +141,7 @@ const NewJournalEntry = () => {
         <motion.div
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          className="z-50 flex h-full min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-gray-200 bg-white p-4 pt-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50"
+          className="z-50 flex h-full min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-border bg-white p-4 pt-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50"
         >
           <div className="flex w-full items-center justify-center">
             <Plus className="text-orange-300" weight="light" size={40} />
@@ -319,17 +316,17 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.02 }}
           className={cn(
-            'z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-gray-200 bg-white p-4 pt-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50',
+            'z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-border bg-white p-4 py-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50',
             {
               'border-orange-200 bg-orange-50 bg-opacity-50': createdToday,
             },
           )}
         >
-          <span className="text-pretty text-base text-gray-700">{truncateText(prompt, 140)}</span>
+          <span className="text-pretty text-base text-gray-800">{truncateText(prompt, 140)}</span>
 
-          <div className="mt-auto flex w-full items-center gap-1 text-gray-600">
-            <CheckCircle size={20} weight="light" />
-            <span className="rounded-full text-xs">Last edited {formatRelative(new Date(updatedAt ?? createdAt), new Date())}</span>
+          <div className="mt-auto flex w-full items-center gap-1 text-orange-400">
+            <CheckCircle size={18} weight="light" />
+            <p className="rounded-full text-[10px]">Last edited {formatRelative(new Date(updatedAt ?? createdAt), new Date())}</p>
           </div>
         </motion.div>
       </Drawer.Trigger>

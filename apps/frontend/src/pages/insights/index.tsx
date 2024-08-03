@@ -1,7 +1,6 @@
 import { cn } from '@/lib/utils';
 import HeatMap from '@uiw/react-heat-map';
 import { ProgressBar } from '@/components/progress-bar';
-import { AppLayout } from '@/components/app-layout';
 import vanityXp from '@/assets/vanity-xp.svg';
 import daysStreak from '@/assets/days-streak.svg';
 import tenJournalEntries from '@/assets/ten-entries.svg';
@@ -88,17 +87,15 @@ const STATS = [
 
 export const Insights = () => {
   return (
-    <AppLayout>
-      <div className="flex w-full flex-col gap-6">
-        <div className="flex items-center gap-2">
-          <h2>Consistency is hard, but you got this!</h2>
-        </div>
-        <Activities />
-        <Stats />
-        <MilestoneAchievements />
-        <ConsistencyBadges />
+    <div className="flex w-full flex-col gap-6">
+      <div className="flex items-center gap-2">
+        <h2>Consistency is hard, but you got this!</h2>
       </div>
-    </AppLayout>
+      <Activities />
+      <Stats />
+      <MilestoneAchievements />
+      <ConsistencyBadges />
+    </div>
   );
 };
 
