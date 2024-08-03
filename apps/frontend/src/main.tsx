@@ -22,7 +22,7 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
   component: () => (
     <React.Fragment>
       <Outlet />
-      <Toaster />
+      <Toaster richColors closeButton />
     </React.Fragment>
   ),
   onError: (error) => {
