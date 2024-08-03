@@ -19,13 +19,18 @@ export default {
         sans: ['Inter', ...defaultTheme.fontFamily.sans],
       },
       keyframes: {
-        'pulse-loader': {
-          '0%': { opacity: '0' },
-          '50%': { transform: 'scale(1.4)', opacity: '0.4' },
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(calc(-100% - var(--gap)))' },
+        },
+        'marquee-vertical': {
+          from: { transform: 'translateY(0)' },
+          to: { transform: 'translateY(calc(-100% - var(--gap)))' },
         },
       },
       animation: {
-        'pulse-loader': 'pulse-loader 1000ms cubic-bezier(0.9, 0.7, 0.5, 0.9) infinite',
+        marquee: 'marquee var(--duration) linear infinite',
+        'marquee-vertical': 'marquee-vertical var(--duration) linear infinite',
       },
       colors: {
         border: 'hsl(var(--border))',

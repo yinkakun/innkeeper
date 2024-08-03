@@ -1,39 +1,51 @@
 import React from 'react';
-import { motion, Transition, Variants } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface MarqueeProps {
-  speed?: number;
-  direction?: 'left' | 'right';
-  children: React.ReactNode;
+  repeat?: number;
+  reverse?: boolean;
+  className?: string;
+  vertical?: boolean;
+  pauseOnHover?: boolean;
+  children?: React.ReactNode;
 }
 
-export const Marquee: React.FC<MarqueeProps> = ({ children, direction = 'left', speed = 50 }) => {
-  const transition: Transition = {
-    x: {
-      ease: 'linear',
-      repeat: Infinity,
-      repeatType: 'loop',
-      duration: 1000 / speed,
-    },
-  };
-
-  const variants: Variants = {
-    second: {
-      x: direction === 'left' ? [1000, 0] : [0, 1000],
-    },
-    first: {
-      x: direction === 'left' ? [0, -1000] : [-1000, 0],
-    },
-  };
-
+export const Marquee: React.FC<MarqueeProps> = ({
+  reverse,
+  children,
+  className,
+  repeat = 4,
+  vertical = false,
+  pauseOnHover = false,
+  ...props
+}) => {
   return (
-    <div className="overflow-hidden whitespace-nowrap">
-      <motion.div className="inline-block" variants={variants} animate="first" transition={transition}>
-        {children}
-      </motion.div>
-      <motion.div className="inline-block" variants={variants} animate="second" transition={transition}>
-        {children}
-      </motion.div>
+    <div
+      {...props}
+      className={cn(
+        'group flex overflow-hidden p-2 [--duration:40s] [--gap:1rem] [gap:var(--gap)]',
+        {
+          'flex-row': !vertical,
+          'flex-col': vertical,
+        },
+        className,
+      )}
+    >
+      {Array(repeat)
+        .fill(0)
+        .map((_, i) => (
+          <div
+            key={i}
+            className={cn('flex shrink-0 justify-around [gap:var(--gap)]', {
+              'animate-marquee flex-row': !vertical,
+              'animate-marquee-vertical flex-col': vertical,
+              'group-hover:[animation-play-state:paused]': pauseOnHover,
+              '[animation-direction:reverse]': reverse,
+            })}
+          >
+            {children}
+          </div>
+        ))}
     </div>
   );
 };
