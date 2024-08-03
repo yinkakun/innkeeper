@@ -104,10 +104,10 @@ export const Insights = () => {
 
 const Stats = () => {
   return (
-    <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border border-border bg-gray-50 py-3 backdrop-blur">
+    <div className="grid grid-cols-3 gap-0 divide-x rounded-2xl border border-border bg-white py-3 backdrop-blur">
       {STATS.map(({ title, value, icon }, index) => {
         return (
-          <div key={index} className={cn('flex items-center gap-1 px-3')}>
+          <div key={index} className={cn('flex items-center gap-1 pr-3')}>
             <div className="relative -mb-4">
               <img
                 src={icon}
@@ -130,7 +130,7 @@ const Stats = () => {
 const Activities = () => {
   return (
     <div className="grid grid-cols-2 gap-4">
-      <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur">
+      <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
         <div className="w-full">
           <HeatMap
             value={[]}
@@ -155,7 +155,7 @@ const Activities = () => {
         </div>
       </div>
       <div className="flex gap-4">
-        <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur">
+        <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
           <div className="flex items-start gap-2">
             <div className="relative -mb-7">
               <img src={vanityXp} className={cn('w-full max-w-16', {})} />
@@ -164,7 +164,7 @@ const Activities = () => {
           <span className="text-base capitalize text-gray-800">188 Vanity XP</span>
         </div>
 
-        <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur">
+        <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
           <div className="relative -mb-7">
             <img src={daysStreak} className={cn('w-full max-w-16', {})} />
           </div>
@@ -177,13 +177,13 @@ const Activities = () => {
 
 const MilestoneAchievements = () => {
   return (
-    <div className="grid grid-cols-3 gap-0 divide-x rounded-3xl border border-border bg-gray-50 py-4 backdrop-blur">
+    <div className="grid grid-cols-3 gap-0 divide-x rounded-3xl border border-border bg-white py-4 backdrop-blur">
       {MILESTONE_BADGES.map(({ name, description, value, max, icon }, index) => {
         return (
           <div className="flex flex-col items-start gap-2 px-3" key={index}>
             <div className="flex items-center">
               <div className="relative -mb-4 -ml-2 shrink-0">
-                <img src={icon} className="w-full max-w-14" />
+                <img src={icon} className="w-full max-w-16" />
               </div>
               <div className={cn('flex w-full flex-col gap-1')}>
                 <span className="text-lg leading-none text-gray-800">{name}</span>
@@ -205,10 +205,7 @@ const ConsistencyBadges = () => {
     <div className="grid w-full grid-cols-2 gap-4">
       {CONSISTENCY_BADGES.map(({ max, title, value, description, icon }, index) => {
         return (
-          <div
-            key={index}
-            className="flex w-full flex-col items-center gap-2 rounded-3xl border border-border bg-gray-50 p-3 backdrop-blur"
-          >
+          <div key={index} className="flex w-full flex-col items-center gap-2 rounded-3xl border border-border bg-white p-3 backdrop-blur">
             <div className="flex w-full items-center">
               <div className="-mb-5 -ml-2 shrink-0">
                 <img src={icon} className="w-full max-w-16" />

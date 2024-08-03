@@ -201,7 +201,7 @@ const TimeSettings = () => {
             <Label className="w-full font-medium text-gray-700">How often would you like to journal?</Label>
             {['Daily', 'Weekly'].map((item) => (
               <Radio
-                className="group cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50"
+                className="group cursor-pointer rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 hover:bg-opacity-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50 data-[selected]:bg-opacity-50 hover:data-[selected]:bg-opacity-100"
                 key={item}
                 value={item.toLowerCase()}
               >
@@ -241,7 +241,7 @@ const TimeSettings = () => {
             <Label className="w-full font-medium text-gray-700">What time of the day do you prefer to journal?</Label>
             {['Morning', 'Afternoon', 'Evening', 'Night'].map((item) => (
               <Radio
-                className="group cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50"
+                className="group cursor-pointer rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 hover:bg-opacity-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50 data-[selected]:bg-opacity-50 hover:data-[selected]:bg-opacity-100"
                 key={item}
                 value={item.toLowerCase()}
               >
@@ -326,7 +326,7 @@ const PrimaryGoal = () => {
                 </div>
                 {GOALS.map((goal) => (
                   <Radio
-                    className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50"
+                    className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 hover:bg-opacity-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50 data-[selected]:bg-opacity-50 hover:data-[selected]:bg-opacity-100"
                     key={goal.title}
                     value={goal.title}
                   >
@@ -437,7 +437,7 @@ const PreferredTone = () => {
             </Label>
             {TONES.map((tone) => (
               <Radio
-                className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50"
+                className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-300 hover:bg-orange-50 hover:bg-opacity-50 data-[selected]:border-orange-500 data-[selected]:bg-orange-50 data-[selected]:bg-opacity-50 hover:data-[selected]:bg-opacity-100"
                 key={tone.title}
                 value={tone.title.toLowerCase()}
               >

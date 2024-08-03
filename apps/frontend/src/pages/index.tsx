@@ -44,7 +44,7 @@ const REVIEWS = [
 export const Index = () => {
   return (
     <div className="flex min-h-dvh w-full flex-col">
-      <main className="xdivide-y mx-auto flex max-w-md grow flex-col gap-10 divide-orange-50 border-x border-orange-50 pt-20">
+      <main className="xborder-x mx-auto flex max-w-screen-sm grow flex-col gap-10 divide-orange-50 border-orange-50 pt-20">
         <div className="items- text- flex flex-col gap-4 text-pretty px-4">
           <span className="text-3xl leading-none">💌</span>
           <h1 className="max-w-[90%] text-pretty text-xl font-bold text-gray-700 md:text-3xl">
@@ -66,7 +66,7 @@ export const Index = () => {
         </div>
 
         <div className="pt-10">
-          <Marquee>
+          <Marquee pauseOnHover>
             <div className="flex flex-row items-stretch gap-4">
               {REVIEWS.map(({ name, review }) => (
                 <div className="flex w-fit max-w-sm shrink-0 flex-col gap-4 text-pretty rounded-2xl border border-orange-50 bg-orange-50 bg-opacity-10 p-4 px-4 py-2 tracking-tight text-white text-opacity-90">
@@ -138,7 +138,7 @@ export const Index = () => {
         </div>
 
         <div className="px-4 pt-10">
-          <div className="flex flex-col divide-y divide-orange-50 overflow-hidden rounded-3xl border border-orange-50 bg-white text-gray-600 hover:divide-orange-100 hover:border-orange-100">
+          <div className="divide-orange-5=100 flex flex-col divide-y overflow-hidden rounded-3xl border border-orange-100 bg-white text-gray-600 hover:divide-orange-100 hover:border-orange-100">
             {RESOURCES.map(({ title, url }) => (
               <a
                 href={url}
@@ -162,13 +162,13 @@ export const Index = () => {
             <img
               src={carlJung}
               alt="Carl Jung"
-              className="mx-auto h-[300px] w-full max-w-[250px] rounded-[40px] border-8 border-orange-50 object-cover"
+              className="mx-auto h-[300px] w-full max-w-[250px] rounded-[40px] border-8 border-gray-100 object-cover"
             />
 
             <div className="absolute inset-0 flex items-center justify-center opacity-0 duration-200 group-hover:opacity-100">
               <Link
                 to="/journal"
-                className="flex w-[120px] items-center justify-center rounded-xl border border-transparent bg-orange-500 py-1.5 text-xs font-medium text-white duration-200"
+                className="flex w-[120px] items-center justify-center rounded-xl border border-gray-800 bg-black py-1.5 text-xs font-medium text-white duration-200"
               >
                 Get Started
               </Link>

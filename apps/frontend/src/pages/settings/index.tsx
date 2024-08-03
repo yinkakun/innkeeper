@@ -106,7 +106,7 @@ export const Settings = () => {
                 id="name"
                 placeholder="Enter your first name"
                 {...form.register('name')}
-                className="h-8 grow rounded-lg border border-orange-400 bg-orange-50 px-2 py-1 text-xs outline-none duration-200 placeholder:text-gray-500 placeholder-shown:border-border placeholder-shown:bg-gray-50 hover:border-orange-300 hover:bg-orange-50 focus:border-orange-300 focus:bg-orange-50"
+                className="h-8 grow rounded-lg border border-orange-400 bg-orange-50 bg-opacity-50 px-2 py-1 text-xs outline-none duration-200 placeholder:text-gray-500 placeholder-shown:border-border placeholder-shown:bg-gray-50 hover:border-orange-300 hover:bg-orange-50 focus:border-orange-300 focus:bg-orange-50"
               />
             </div>
           </div>
@@ -122,7 +122,7 @@ export const Settings = () => {
                     <div className="grid w-full shrink-0 grid-cols-2 gap-4">
                       {['Daily', 'Weekly'].map((item) => (
                         <Radio
-                          className="group cursor-pointer rounded-lg border border-border bg-gray-50 p-2 py-1 text-sm text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50 data-[selected]:border-orange-300 data-[selected]:bg-orange-50"
+                          className="group cursor-pointer rounded-lg border border-border bg-gray-50 bg-opacity-50 p-2 py-1 text-sm text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50 data-[selected]:border-orange-300 data-[selected]:bg-orange-50 data-[selected]:bg-opacity-50 hover:data-[selected]:bg-opacity-100"
                           key={item}
                           value={item.toLowerCase()}
                         >
@@ -159,7 +159,7 @@ export const Settings = () => {
                         <Radio
                           key={time}
                           value={time.toLowerCase()}
-                          className="group cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-2 py-1 text-sm text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50"
+                          className="group cursor-pointer rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-2 py-1 text-sm text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-100 data-[selected]:border-orange-400 data-[selected]:bg-orange-50 data-[selected]:bg-opacity-50 hover:data-[selected]:bg-opacity-100"
                         >
                           {({ isSelected }) => (
                             <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ export const Settings = () => {
                     className={cn(
                       'flex items-center justify-between gap-2 rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-2 py-1.5 duration-200 hover:border-orange-300 hover:bg-orange-50',
                       {
-                        'border-orange-300 bg-orange-50': field.value,
+                        'border-orange-300 bg-orange-50 bg-opacity-50': field.value,
                       },
                     )}
                   >
@@ -220,7 +220,7 @@ export const Settings = () => {
                         <Radio
                           key={goal.title}
                           value={goal.title}
-                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3 text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50"
+                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-3 text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50 data-[selected]:bg-opacity-50 hover:data-[selected]:bg-opacity-100"
                         >
                           {({ isSelected }) => (
                             <React.Fragment>
@@ -258,7 +258,7 @@ export const Settings = () => {
                         <Radio
                           key={tone.title}
                           value={tone.title.toLowerCase()}
-                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 data-[selected]:border-orange-400 data-[selected]:bg-orange-50"
+                          className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 bg-opacity-50 p-2 text-gray-700 transition-colors duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-100 data-[selected]:border-orange-400 data-[selected]:bg-orange-50 data-[selected]:bg-opacity-50 hover:data-[selected]:bg-opacity-100"
                         >
                           {({ isSelected }) => (
                             <React.Fragment>
@@ -287,7 +287,7 @@ export const Settings = () => {
           <div className="flex items-center justify-between gap-4">
             <button
               type="submit"
-              className="ml-auto flex h-8 w-[150px] items-center justify-center rounded-lg bg-orange-500 px-6 py-1 text-sm font-medium text-gray-50 duration-200"
+              className="ml-auto flex h-8 w-[150px] items-center justify-center rounded-lg border border-orange-600/30 bg-orange-500 px-6 py-1 text-sm font-medium text-gray-50 duration-200"
             >
               <span>{mutation.isPending ? <Spinner /> : 'Save Changes'}</span>
             </button>

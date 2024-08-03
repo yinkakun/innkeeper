@@ -144,7 +144,7 @@ const NewJournalEntry = () => {
         <motion.div
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          className="z-50 flex h-full min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50"
+          className="z-50 flex h-full min-h-32 flex-col items-center justify-center gap-3 rounded-3xl border border-gray-200 bg-white p-4 pt-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50"
         >
           <div className="flex w-full items-center justify-center">
             <Plus className="text-orange-300" weight="light" size={40} />
@@ -153,13 +153,13 @@ const NewJournalEntry = () => {
       </Drawer.Trigger>
 
       <Drawer.Portal>
-        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[450px] flex-col overflow-hidden rounded-[36px] border border-orange-100 bg-white">
-          <div className="relative flex flex-1 flex-col gap-4 pt-4">
+        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[400px] flex-col overflow-hidden rounded-[36px] border border-orange-300/50 bg-white">
+          <div className="relative flex flex-1 flex-col gap-3 pt-3">
             <div className="sr-only">
               <Drawer.Title>Journal Entry</Drawer.Title>
               <Drawer.Description>Journal Entry</Drawer.Description>
             </div>
-            <Drawer.Handle className="absolute top-0 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-border" />
+            <Drawer.Handle className="absolute top-0 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
             <motion.div layout className="no-scrollbar max-h-full grow basis-0 overflow-y-auto scroll-smooth px-4" ref={chatContainerRef}>
               <AnimatePresence mode="wait">
                 {generatePromptMutation.isPending && (
@@ -264,9 +264,15 @@ interface JournalEntryProps {
 const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, promptId, updatedAt, journalEntries }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
   const newJournalEntryMutation = trpc.journal.addJournalEntry.useMutation();
   const updateJournalEntryMutation = trpc.journal.updateJournalEntry.useMutation();
   const deleteJournalEntryMutation = trpc.journal.deleteJournalEntry.useMutation();
+
+  React.useEffect(() => {
+    if (!chatContainerRef.current) return;
+    chatContainerRef.current.scrollTo(0, chatContainerRef.current.scrollHeight);
+  }, [journalEntries]);
 
   const form = useForm<JournalEntry>({
     resolver: zodResolver(journalEntrySchema),
@@ -296,6 +302,8 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
     );
   };
 
+  const createdToday = isToday(new Date(createdAt));
+
   return (
     <Drawer.Root
       open={isOpen}
@@ -309,29 +317,32 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
       <Drawer.Trigger className="h-full w-full">
         <motion.div
           whileTap={{ scale: 0.95 }}
-          whileHover={{ scale: 1.03 }}
-          className="z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 pt-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50"
+          whileHover={{ scale: 1.02 }}
+          className={cn(
+            'z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-gray-200 bg-white p-4 pt-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50',
+            {
+              'border-orange-200 bg-orange-50 bg-opacity-50': createdToday,
+            },
+          )}
         >
-          <span className="text-pretty text-xs text-gray-500">{truncateText(prompt, 140)}</span>
+          <span className="text-pretty text-base text-gray-700">{truncateText(prompt, 140)}</span>
 
-          <div className="mt-auto flex w-full items-center gap-1 text-gray-500">
+          <div className="mt-auto flex w-full items-center gap-1 text-gray-600">
             <CheckCircle size={20} weight="light" />
-            <span className="rounded-full text-xs capitalize">
-              {updatedAt ? 'Updated' : 'Created'} {formatRelative(new Date(updatedAt ?? createdAt), new Date())}
-            </span>
+            <span className="rounded-full text-xs">Last edited {formatRelative(new Date(updatedAt ?? createdAt), new Date())}</span>
           </div>
         </motion.div>
       </Drawer.Trigger>
 
       <Drawer.Portal>
-        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[450px] flex-col overflow-hidden rounded-[36px] border border-orange-100 bg-white">
-          <div className="relative flex flex-1 flex-col gap-4 pt-4">
+        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[400px] flex-col overflow-hidden rounded-[36px] border border-orange-300/50 bg-white">
+          <div className="relative flex flex-1 flex-col gap-3 pt-3">
             <div className="sr-only">
               <Drawer.Title>Journal Entry</Drawer.Title>
               <Drawer.Description>Journal Entry</Drawer.Description>
             </div>
             <Drawer.Handle className="absolute top-0 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
-            <motion.div layout className="no-scrollbar max-h-full grow basis-0 overflow-y-auto scroll-smooth px-4">
+            <motion.div layout className="no-scrollbar max-h-full grow basis-0 overflow-y-auto scroll-smooth px-4" ref={chatContainerRef}>
               <div className="flex flex-col">
                 <ChatBubble isSender={false} className="px-8">
                   {prompt}
@@ -395,7 +406,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
             </div>
           </div>
         </Drawer.Content>
-        <Drawer.Overlay className="fixed inset-0 z-20 mx-auto bg-orange-900 bg-opacity-20 p-0 backdrop-blur" />
+        <Drawer.Overlay className="fixed inset-0 z-20 mx-auto bg-orange-900 bg-opacity-20 p-0 backdrop-blur-xl" />
       </Drawer.Portal>
     </Drawer.Root>
   );
@@ -404,3 +415,10 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
 function truncateText(text: string, limit: number) {
   return text.length > limit ? `${text.slice(0, limit)}...` : text;
 }
+
+const isToday = (someDate: Date) => {
+  const today = new Date();
+  return (
+    someDate.getDate() === today.getDate() && someDate.getMonth() === today.getMonth() && someDate.getFullYear() === today.getFullYear()
+  );
+};
