@@ -125,18 +125,28 @@ const Stats = () => {
 };
 
 const Activities = () => {
+  const today = new Date();
+  // 160 days ago
+  const startDate = new Date(today.getTime() - 165 * 24 * 60 * 60 * 1000);
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
         <div className="w-full">
           <HeatMap
-            value={[]}
+            value={[
+              {
+                count: 10,
+                date: '2024/08/03',
+              },
+            ]}
             weekLabels={false}
+            onClick={() => {}}
             monthLabels={false}
             legendCellSize={0}
-            className="w-full"
+            className="pointer-events-none w-full"
             height={100}
-            startDate={new Date('2024/01/01')}
+            // endDate={today}
+            startDate={startDate}
             panelColors={{
               0: '#ffc8b3',
               2: '#ffa380',
