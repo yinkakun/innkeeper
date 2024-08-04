@@ -19,10 +19,10 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ isSender, children, clas
       <div className="relative flex max-w-[80%]">
         <div
           className={cn(
-            'flex w-fit flex-wrap overflow-auto whitespace-pre-line text-pretty rounded-3xl px-4 py-2 tracking-tight text-opacity-90',
+            'xpy-1.5 flex w-fit flex-wrap overflow-auto whitespace-pre-line text-pretty rounded-3xl px-3 py-2 tracking-tight text-opacity-90',
             {
               'bg-orange-500 text-white': isSender,
-              'bg-gray-100 text-gray-700': !isSender,
+              'bg-gray-100 text-gray-800': !isSender,
             },
             className,
           )}
