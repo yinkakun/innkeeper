@@ -31,19 +31,6 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
   },
   notFoundComponent: NotFound,
   pendingComponent: PageLoading,
-  beforeLoad: async ({ context }) => {
-    const { queryClient, trpcClient } = context;
-    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
-    await clientUtils.login.status.fetch().catch((err) => {
-      console.log('err', err);
-      throw redirect({
-        to: '/login',
-        search: {
-          redirect: location.href,
-        },
-      });
-    });
-  },
 });
 
 const indexRoute = createRoute({
@@ -68,8 +55,21 @@ const onboardingRoute = createRoute({
 const appRoute = createRoute({
   id: 'layout',
   component: AppLayout,
-  // pendingComponent: PageLoading,
+  pendingComponent: PageLoading,
   getParentRoute: () => rootRoute,
+  beforeLoad: async ({ context }) => {
+    const { queryClient, trpcClient } = context;
+    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
+    await clientUtils.login.status.fetch().catch((err) => {
+      console.log('err', err);
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      });
+    });
+  },
 });
 
 const journalRoute = createRoute({
