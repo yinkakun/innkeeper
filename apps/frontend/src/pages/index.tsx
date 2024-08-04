@@ -65,7 +65,7 @@ export const Index = () => {
 
           <Link
             to="/journal"
-            className="flex h-8 w-full max-w-[200px] items-center justify-center rounded-full border border-orange-500 bg-white px-8 py-2 text-sm font-normal text-orange-500 duration-200 hover:bg-orange-500 hover:text-white"
+            className="flex h-8 w-full max-w-[200px] items-center justify-center rounded-full border border-orange-300 bg-white px-8 py-2 text-sm font-normal text-orange-500 duration-200 hover:bg-orange-50 hover:bg-opacity-80"
           >
             Get Started
           </Link>
@@ -171,7 +171,7 @@ export const Index = () => {
 
           <Link
             to="/journal"
-            className="flex h-8 w-full max-w-[200px] items-center justify-center rounded-full border border-orange-500 bg-white px-8 py-2 text-sm font-normal text-orange-500 duration-200 hover:bg-orange-500 hover:text-white"
+            className="flex h-8 w-full max-w-[200px] items-center justify-center rounded-full border border-orange-300 bg-white px-8 py-2 text-sm font-normal text-orange-500 duration-200 hover:bg-orange-50 hover:bg-opacity-80"
           >
             Get Started
           </Link>
