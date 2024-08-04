@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
 import mergeRefs from 'merge-refs';
 import { formatRelative } from 'date-fns';
+import { createId } from '@paralleldrive/cuid2';
 import { JournalEntrySchema } from '@innkeeper/db';
 import { ThreeDotsScale } from 'react-svg-spinners';
 import { useForm, Controller } from 'react-hook-form';
@@ -13,12 +14,6 @@ import { ChatBubble } from '@/components/chat-bubble';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, CheckCircle } from '@phosphor-icons/react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-
-const journalEntrySchema = z.object({
-  entry: z.string().min(1),
-});
-
-type JournalEntry = z.infer<typeof journalEntrySchema>;
 
 export const Journal = () => {
   const [prompts] = trpc.journal.getPrompts.useSuspenseQuery();
@@ -87,16 +82,81 @@ const chatBubbleVariants: Variants = {
   },
 };
 
+const newJournalEntrySchema = z.object({
+  entry: z.string().min(1),
+});
+
+type NewJournalEntry = z.infer<typeof newJournalEntrySchema>;
+
 const NewJournalEntry = () => {
+  const trpcUtils = trpc.useUtils();
   const [isOpened, setIsOpened] = React.useState(false);
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
-  const mutation = trpc.journal.addJournalEntry.useMutation();
   const generatePromptMutation = trpc.journal.generatePrompt.useMutation();
-  const [journalEntries, setJournalEntries] = React.useState<string[]>([]);
+  const promptsQuery = trpc.journal.getPrompts.useQuery();
 
-  const form = useForm<JournalEntry>({
-    resolver: zodResolver(journalEntrySchema),
+  const getJournalEntries = (promptId: string | undefined) =>
+    promptsQuery.data?.find((prompt) => prompt.id === promptId)?.journalEntries ?? [];
+
+  const journalEntries = getJournalEntries(generatePromptMutation.data?.id);
+
+  const newJournalEntryMutation = trpc.journal.addJournalEntry.useMutation({
+    onMutate: async ({ entry, promptId }) => {
+      // cancel any pending fetches
+      await trpcUtils.journal.getPrompts.cancel();
+      // capture the current value
+      const prevJournalEntries = trpcUtils.journal.getPrompts.getData();
+      // create a temporary id
+      const temporaryJournalId = createId();
+      // optimistic update
+      trpcUtils.journal.getPrompts.setData(undefined, (old) => {
+        if (!old) return [];
+        return old.map((prompt) => ({
+          ...prompt,
+          journalEntries:
+            prompt.id === promptId
+              ? [
+                  ...(prompt.journalEntries ?? []),
+                  {
+                    entry,
+                    promptId,
+                    updatedAt: null,
+                    userId: prompt.userId,
+                    id: temporaryJournalId,
+                    createdAt: new Date().toISOString(),
+                  },
+                ]
+              : prompt.journalEntries,
+        }));
+      });
+      return { prevJournalEntries, temporaryJournalId };
+    },
+    onSuccess: (data, _variables, context) => {
+      if (context && data) {
+        trpcUtils.journal.getPrompts.setData(undefined, (old) =>
+          old?.map((prompt) => ({
+            ...prompt,
+            journalEntries: prompt.journalEntries?.map((entry) =>
+              entry.id === context.temporaryJournalId ? { ...entry, id: data.id } : entry,
+            ),
+          })),
+        );
+      }
+    },
+    onError: (error, _variables, context) => {
+      console.error('Error adding journal entry:', error);
+      if (context?.prevJournalEntries) {
+        trpcUtils.journal.getPrompts.setData(undefined, context.prevJournalEntries);
+      }
+    },
+    onSettled: () => {
+      trpcUtils.journal.getPrompts.invalidate();
+    },
+  });
+
+  const form = useForm<NewJournalEntry>({
+    resolver: zodResolver(newJournalEntrySchema),
     defaultValues: {
       entry: '',
     },
@@ -113,14 +173,13 @@ const NewJournalEntry = () => {
     chatContainerRef.current.scrollTo(0, chatContainerRef.current.scrollHeight);
   }, [journalEntries]);
 
-  const onSubmit = ({ entry }: JournalEntry) => {
-    if (mutation.isPending) return;
-    if (generatePromptMutation.status !== 'success') return;
-    setJournalEntries((prev) => [...prev, entry]);
-    mutation.mutate(
+  const onSubmit = ({ entry }: NewJournalEntry) => {
+    if (!generatePromptMutation.isSuccess) return;
+    if (newJournalEntryMutation.isPending) return;
+    newJournalEntryMutation.mutate(
       {
         entry,
-        promptId: generatePromptMutation.data.id,
+        promptId: generatePromptMutation.data?.id,
       },
       {
         onSuccess: () => {
@@ -192,7 +251,7 @@ const NewJournalEntry = () => {
 
               <div className="flex flex-col">
                 <AnimatePresence>
-                  {journalEntries.map((entry, index) => (
+                  {journalEntries.map(({ entry }, index) => (
                     <motion.div
                       key={index}
                       exit="isSenderExit"
@@ -229,14 +288,18 @@ const NewJournalEntry = () => {
                               form.handleSubmit(onSubmit)();
                             }
                           }}
-                          readOnly={mutation.isPending}
+                          // readOnly={mutation.isPending}
                           className="w-full grow resize-none columns-1 overflow-hidden rounded-3xl border border-orange-100 bg-orange-50 bg-opacity-20 p-2 text-sm text-gray-800 outline-none duration-200 placeholder:text-xs placeholder:text-gray-600 hover:border-orange-500 focus:border-orange-500"
                           placeholder="What's on your mind?"
                         />
                       );
                     }}
                   />
-                  <button type="submit" disabled={mutation.isPending} className="text-orange-500 duration-200 hover:text-orange-400">
+                  <button
+                    type="submit"
+                    // disabled={mutation.isPending}
+                    className="text-orange-500 duration-200 hover:text-orange-400"
+                  >
                     <ArrowCircleUp size={24} weight="fill" />
                   </button>
                 </div>
@@ -259,20 +322,72 @@ interface JournalEntryProps {
 }
 
 const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, promptId, updatedAt, journalEntries }) => {
+  const trpcUtils = trpc.useUtils();
   const [isOpen, setIsOpen] = React.useState(false);
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
-  const newJournalEntryMutation = trpc.journal.addJournalEntry.useMutation();
-  const updateJournalEntryMutation = trpc.journal.updateJournalEntry.useMutation();
-  const deleteJournalEntryMutation = trpc.journal.deleteJournalEntry.useMutation();
+
+  const newJournalEntryMutation = trpc.journal.addJournalEntry.useMutation({
+    onMutate: async ({ entry, promptId }) => {
+      // cancel any pending fetches
+      await trpcUtils.journal.getPrompts.cancel();
+      // capture the current value
+      const prevJournalEntries = trpcUtils.journal.getPrompts.getData();
+      // create a temporary id
+      const temporaryJournalId = createId();
+      // optimistic update
+      trpcUtils.journal.getPrompts.setData(undefined, (old) => {
+        if (!old) return [];
+        return old.map((prompt) => ({
+          ...prompt,
+          journalEntries:
+            prompt.id === promptId
+              ? [
+                  ...(prompt.journalEntries ?? []),
+                  {
+                    entry,
+                    promptId,
+                    updatedAt: null,
+                    userId: prompt.userId,
+                    id: temporaryJournalId,
+                    createdAt: new Date().toISOString(),
+                  },
+                ]
+              : prompt.journalEntries,
+        }));
+      });
+      return { prevJournalEntries, temporaryJournalId };
+    },
+    onSuccess: (data, _variables, context) => {
+      if (context && data) {
+        trpcUtils.journal.getPrompts.setData(undefined, (old) =>
+          old?.map((prompt) => ({
+            ...prompt,
+            journalEntries: prompt.journalEntries?.map((entry) =>
+              entry.id === context.temporaryJournalId ? { ...entry, id: data.id } : entry,
+            ),
+          })),
+        );
+      }
+    },
+    onError: (error, _variables, context) => {
+      console.error('Error adding journal entry:', error);
+      if (context?.prevJournalEntries) {
+        trpcUtils.journal.getPrompts.setData(undefined, context.prevJournalEntries);
+      }
+    },
+    onSettled: () => {
+      trpcUtils.journal.getPrompts.invalidate();
+    },
+  });
 
   React.useEffect(() => {
     if (!chatContainerRef.current) return;
     chatContainerRef.current.scrollTo(0, chatContainerRef.current.scrollHeight);
   }, [journalEntries]);
 
-  const form = useForm<JournalEntry>({
-    resolver: zodResolver(journalEntrySchema),
+  const form = useForm<NewJournalEntry>({
+    resolver: zodResolver(newJournalEntrySchema),
     defaultValues: {
       entry: '',
     },
@@ -284,12 +399,12 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
     textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
   }, [form.watch('entry')]);
 
-  const onSubmit = (data: JournalEntry) => {
+  const onSubmit = ({ entry }: NewJournalEntry) => {
     if (newJournalEntryMutation.isPending) return;
     newJournalEntryMutation.mutate(
       {
+        entry,
         promptId,
-        entry: data.entry,
       },
       {
         onSuccess: () => {
@@ -299,7 +414,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
     );
   };
 
-  const createdToday = isToday(new Date(createdAt));
+  const isCreatedToday = isToday(new Date(createdAt));
 
   return (
     <Drawer.Root
@@ -318,7 +433,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
           className={cn(
             'z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-border bg-white p-4 py-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50',
             {
-              'border-orange-200 bg-orange-50 bg-opacity-50': createdToday,
+              'border-orange-200 bg-orange-50 bg-opacity-50': isCreatedToday,
             },
           )}
         >

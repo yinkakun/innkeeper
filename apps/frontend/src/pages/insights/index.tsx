@@ -127,7 +127,7 @@ const Stats = () => {
 const Activities = () => {
   const today = new Date();
   // 160 days ago
-  const startDate = new Date(today.getTime() - 165 * 24 * 60 * 60 * 1000);
+  const startDate = new Date(today.getTime() - 160 * 24 * 60 * 60 * 1000);
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
@@ -136,7 +136,7 @@ const Activities = () => {
             value={[
               {
                 count: 10,
-                date: '2024/08/03',
+                date: '2024/08/04',
               },
             ]}
             weekLabels={false}
@@ -145,7 +145,7 @@ const Activities = () => {
             legendCellSize={0}
             className="pointer-events-none w-full"
             height={100}
-            // endDate={today}
+            endDate={today}
             startDate={startDate}
             panelColors={{
               0: '#ffc8b3',

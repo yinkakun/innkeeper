@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { UpdateJournalEntrySchema, CreateJournalEntrySchema, CreatePromptSchema, UpdatePromptSchema } from '@innkeeper/db';
+import { UpdateJournalEntrySchema, CreateJournalEntrySchema } from '@innkeeper/db';
 import { TRPCError } from '@trpc/server';
 
 export const journalRouter = createTRPCRouter({
@@ -91,6 +91,12 @@ export const journalRouter = createTRPCRouter({
     const prompts = await ctx.db.getPromptsByUserId({
       userId: ctx.user.id,
     });
+    if (!prompts) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to get prompts',
+      });
+    }
     return prompts;
   }),
 });
