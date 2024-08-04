@@ -428,8 +428,8 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
           <span className="text-pretty text-base text-gray-800">{truncateText(prompt, 140)}</span>
 
           <div className="mt-auto flex w-full items-center gap-1 text-orange-400">
-            <CheckCircle size={18} weight="light" />
-            <p className="rounded-full text-[10px]">Last edited {formatRelative(new Date(updatedAt ?? createdAt), new Date())}</p>
+            <CheckCircle size={16} weight="light" />
+            <p className="rounded-full text-xs">Last edited {formatRelative(new Date(updatedAt ?? createdAt), new Date())}</p>
           </div>
         </motion.div>
       </Drawer.Trigger>
