@@ -103,6 +103,7 @@ const NewJournalEntry = () => {
 
   const newJournalEntryMutation = trpc.journal.addJournalEntry.useMutation({
     onMutate: async ({ entry, promptId }) => {
+      form.reset();
       // cancel any pending fetches
       await trpcUtils.journal.getPrompts.cancel();
       // capture the current value
@@ -176,17 +177,10 @@ const NewJournalEntry = () => {
   const onSubmit = ({ entry }: NewJournalEntry) => {
     if (!generatePromptMutation.isSuccess) return;
     if (newJournalEntryMutation.isPending) return;
-    newJournalEntryMutation.mutate(
-      {
-        entry,
-        promptId: generatePromptMutation.data?.id,
-      },
-      {
-        onSuccess: () => {
-          form.reset();
-        },
-      },
-    );
+    newJournalEntryMutation.mutate({
+      entry,
+      promptId: generatePromptMutation.data?.id,
+    });
   };
 
   React.useEffect(() => {
@@ -329,6 +323,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
 
   const newJournalEntryMutation = trpc.journal.addJournalEntry.useMutation({
     onMutate: async ({ entry, promptId }) => {
+      form.reset();
       // cancel any pending fetches
       await trpcUtils.journal.getPrompts.cancel();
       // capture the current value
@@ -401,17 +396,10 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
 
   const onSubmit = ({ entry }: NewJournalEntry) => {
     if (newJournalEntryMutation.isPending) return;
-    newJournalEntryMutation.mutate(
-      {
-        entry,
-        promptId,
-      },
-      {
-        onSuccess: () => {
-          form.reset();
-        },
-      },
-    );
+    newJournalEntryMutation.mutate({
+      entry,
+      promptId,
+    });
   };
 
   const isCreatedToday = isToday(new Date(createdAt));
