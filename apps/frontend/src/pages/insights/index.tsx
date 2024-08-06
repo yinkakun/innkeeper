@@ -108,7 +108,7 @@ const Stats = () => {
             <div className="relative -mb-4">
               <img
                 src={icon}
-                className={cn('w-full max-w-16', {
+                className={cn('aspect-square w-16', {
                   'grayscale filter': value === '0',
                 })}
               />
@@ -165,7 +165,7 @@ const Activities = () => {
         <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
           <div className="flex items-start gap-2">
             <div className="relative -mb-7">
-              <img src={vanityXp} className={cn('w-full max-w-16', {})} />
+              <img src={vanityXp} className={cn('aspect-square w-16', {})} />
             </div>
           </div>
           <span className="text-base capitalize text-gray-800">188 Vanity XP</span>
@@ -173,7 +173,7 @@ const Activities = () => {
 
         <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
           <div className="relative -mb-7">
-            <img src={daysStreak} className={cn('w-full max-w-16', {})} />
+            <img src={daysStreak} className={cn('aspect-square w-16', {})} />
           </div>
           <span className="text-base capitalize text-gray-800">7 Day Streak</span>
         </div>
@@ -190,7 +190,7 @@ const MilestoneAchievements = () => {
           <div className="flex flex-col items-start gap-2 px-3" key={index}>
             <div className="flex items-center">
               <div className="relative -mb-4 -ml-2 shrink-0">
-                <img src={icon} className="w-full max-w-16" />
+                <img src={icon} className="aspect-square w-16" />
               </div>
               <div className={cn('flex w-full flex-col gap-1')}>
                 <span className="text-lg leading-none text-gray-800">{name}</span>
@@ -215,7 +215,7 @@ const ConsistencyBadges = () => {
           <div key={index} className="flex w-full flex-col items-center gap-2 rounded-3xl border border-border bg-white p-3 backdrop-blur">
             <div className="flex w-full items-center">
               <div className="-mb-5 -ml-2 shrink-0">
-                <img src={icon} className="w-full max-w-16" />
+                <img src={icon} className="aspect-square w-16" />
               </div>
               <div className="flex max-w-sm flex-col gap-0">
                 <span className="text-lg text-gray-800">{title}</span>
