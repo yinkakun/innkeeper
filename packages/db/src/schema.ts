@@ -1,7 +1,7 @@
 import { relations, sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { pgTable, text, timestamp, uniqueIndex, index, boolean, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uniqueIndex, index, boolean, pgEnum, integer } from 'drizzle-orm/pg-core';
 
 export const promptFrequencyEnum = pgEnum('prompt_frequency', ['daily', 'weekly']);
 export const promptToneEnum = pgEnum('prompt_tone', ['neutral', 'nurturing', 'challenging']);
@@ -84,7 +84,9 @@ export const promptsTable = pgTable(
     userId: text('userId')
       .notNull()
       .references(() => usersTable.id, { onDelete: 'cascade' }),
+    email: text('email').notNull(),
     id: text('id').notNull().primaryKey().$default(createId),
+    promptNumber: integer('promptNumber').notNull().default(0),
     prompt: text('prompt').notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'string',
@@ -98,7 +100,7 @@ export const promptsTable = pgTable(
     }).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
   },
   (table) => ({
-    promptUserIdIndex: index('promptUserIdIndex').on(table.userId),
+    promptUserIdIndex: index('promptUserIdIndex').on(table.userId, table.promptNumber),
   }),
 );
 

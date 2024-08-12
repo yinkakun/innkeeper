@@ -158,15 +158,26 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
     },
 
     // PROMPTS
-    async createPrompt({ prompt, userId }: { prompt: string; userId: string }) {
-      const [newPrompt] = await db
-        .insert(promptsTable)
-        .values({
-          prompt,
-          userId,
-        })
-        .returning();
-      return newPrompt;
+    async createPrompt({ prompt, userId, userEmail }: { prompt: string; userId: string; userEmail: string }) {
+      return db.transaction(async (tx) => {
+        const maxPrompt = await tx.query.promptsTable
+          .findFirst({
+            where: eq(promptsTable.userId, userId),
+            orderBy: (table, { desc }) => [desc(table.promptNumber)],
+          })
+          .catch(() => null);
+
+        const [newPrompt] = await tx
+          .insert(promptsTable)
+          .values({
+            prompt,
+            userId,
+            email: userEmail,
+            promptNumber: (maxPrompt?.promptNumber ?? 0) + 1,
+          })
+          .returning();
+        return newPrompt;
+      });
     },
 
     async getPromptsByUserId({ userId }: { userId: string }) {
@@ -176,6 +187,12 @@ export const createDbRepository = ({ db }: { db: PostgresJsDatabase<typeof schem
           journalEntries: true,
         },
         orderBy: (table, { desc }) => [desc(table.createdAt)],
+      });
+    },
+
+    async getPromptByUserEmailAndPromptNumber({ email, promptNumber }: { email: string; promptNumber: number }) {
+      return db.query.promptsTable.findFirst({
+        where: and(eq(usersTable.email, email), eq(promptsTable.promptNumber, promptNumber)),
       });
     },
 

@@ -43,7 +43,9 @@ CREATE TABLE IF NOT EXISTS "journal_entries" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "prompts" (
 	"userId" text NOT NULL,
+	"email" text NOT NULL,
 	"id" text PRIMARY KEY NOT NULL,
+	"promptNumber" integer DEFAULT 0 NOT NULL,
 	"prompt" text NOT NULL,
 	"createdAt" timestamp with time zone DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	"updatedAt" timestamp with time zone
@@ -106,6 +108,6 @@ END $$;
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "journalEntriesUserIdIndex" ON "journal_entries" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "journalEntryPromptIdIndex" ON "journal_entries" USING btree ("promptId");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "promptUserIdIndex" ON "prompts" USING btree ("userId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "promptUserIdIndex" ON "prompts" USING btree ("userId","promptNumber");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "emailIndex" ON "users" USING btree ("email");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "lastEntryTimeIndex" ON "users" USING btree ("lastEntryTime","isPaused");

@@ -1,5 +1,5 @@
 {
-  "id": "b67d2c0d-977b-4200-9246-acaa1ee6bdb2",
+  "id": "9bfbe911-421f-4e58-a9cd-4a3307c3b6af",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -186,11 +186,24 @@
           "primaryKey": false,
           "notNull": true
         },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true
+        },
+        "promptNumber": {
+          "name": "promptNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
         },
         "prompt": {
           "name": "prompt",
@@ -218,6 +231,12 @@
           "columns": [
             {
               "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "promptNumber",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
