@@ -23,7 +23,7 @@
     "dotenv-cli": "^7.4.2"
   },
   "devDependencies": {
-    "@trigger.dev/sdk": "3.0.0-beta.51",
+    "@trigger.dev/sdk": "3.0.0-beta.52",
     "@types/node": "^22.1.0",
     "dotenv-cli": "^7.3.0",
     "eslint": "^9.7.0",

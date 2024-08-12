@@ -1,4 +1,4 @@
-import { sendEmail, db } from '../lib';
+import { email, db } from '../lib';
 import { schedules, task, retry, logger } from '@trigger.dev/sdk/v3';
 
 export const pauseIdleUsersCron = schedules.task({
@@ -44,7 +44,7 @@ interface EmailInactiveUserPayload {
 export const emailInactiveUser = task({
   id: 'email-inactive-user',
   run: async (payload: EmailInactiveUserPayload) => {
-    await sendEmail.alertInactiveUser({ to: payload.email, name: payload.name });
+    await email.alertInactiveUser({ to: payload.email, name: payload.name });
   },
 });
 

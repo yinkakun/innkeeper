@@ -1,6 +1,7 @@
-import { sendEmail, db } from '../lib';
-import { logger, task, retry, AbortTaskRunError } from '@trigger.dev/sdk/v3';
+import { db } from '../lib';
 import type { Email } from 'postal-mime';
+import { task, retry, AbortTaskRunError } from '@trigger.dev/sdk/v3';
+
 interface JournalEntryPayload {
   email: Email;
 }
@@ -8,21 +9,66 @@ interface JournalEntryPayload {
 export const saveJournalEntry = task({
   id: 'save-journal-entry',
   run: async ({ email }: JournalEntryPayload) => {
-    logger.info('Saving Journal Entry 🔥');
-    // const user = await retry.onThrow(
-    //   async () => {
-    //     return await db.getUserByPromptId({ promptId });
-    //   },
-    //   { maxAttempts: 3 },
-    // );
+    const subject = email.subject || '';
+    const userEmail = email.from.address;
+    const promptNumber = extractNumberAfterHash(subject);
 
-    // if (!user) {
-    //   logger.log('User not found');
-    //   throw new AbortTaskRunError('User not found');
-    // }
+    if (!userEmail) {
+      throw new AbortTaskRunError('Email from address not found');
+    }
 
-    // await db.createJournalEntry({ entry, promptId, userId: user.user.id });
+    if (!promptNumber) {
+      throw new AbortTaskRunError('Prompt number not found in email subject');
+    }
 
-    return { email };
+    const prompt = await retry.onThrow(async () => {
+      return await db.getPromptByUserEmailAndPromptNumber({
+        email: userEmail,
+        promptNumber: promptNumber,
+      });
+    }, {});
+
+    if (!prompt) {
+      throw new AbortTaskRunError('Prompt not found');
+    }
+
+    const emailText = email.text || '';
+    const entry = extractLatestMessage(emailText);
+
+    const entryResponse = await retry.onThrow(async () => {
+      return await db.createJournalEntry({
+        entry: entry || '',
+        promptId: prompt.id,
+        userId: prompt.userId,
+      });
+    }, {});
+
+    return { entryResponse };
   },
 });
+
+const extractNumberAfterHash = (text: string): number | undefined => {
+  const match = text.match(/#(\d+)/);
+  return match && match[1] ? parseInt(match[1], 10) : undefined;
+};
+
+const extractLatestMessage = (emailText: string): string | undefined => {
+  const separators = [/\nOn .* wrote:\n/, /\n-{3,}.*Original Message.*-{3,}\n/, /\n>.*\n/, /\nFrom:.*\nSent:.*\nTo:.*\nSubject:.*/];
+
+  for (const separator of separators) {
+    const parts = emailText.split(separator);
+    if (parts.length > 1) {
+      // get all content before the separator
+      const latestContent = parts[0];
+
+      // remove quoted lines
+      return latestContent
+        ?.split('\n')
+        .filter((line) => !line.trim().startsWith('>') && !line.trim().startsWith('On ') && !line.includes(' wrote:'))
+        .join('\n')
+        .trim();
+    }
+  }
+
+  return emailText.trim();
+};
