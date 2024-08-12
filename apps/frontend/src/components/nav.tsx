@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from '@tanstack/react-router';
 import { type Icon } from '@phosphor-icons/react';
 
@@ -22,38 +22,35 @@ export const Nav: React.FC<Props> = ({ links }) => {
       )}
     >
       {links.map(({ icon: Icon, slug, title }) => (
-        <motion.div key={slug} whileTap={{ scale: 0.9 }} transition={{ duration: 0.3, ease: 'easeInOut' }}>
+        <motion.div key={slug} whileTap={{ scale: 0.95 }} transition={{ duration: 0.3, ease: 'easeOut' }}>
           <Link
             to={slug}
             className={cn(
               'group relative z-10 inline-block w-full rounded-full border border-transparent px-4 py-1 duration-200 hover:bg-orange-50',
             )}
-            style={{
-              transformStyle: 'preserve-3d',
-            }}
           >
             {({ isActive }) => {
               return (
-                <React.Fragment>
+                <div>
                   {isActive && (
                     <motion.div
                       layoutId="clicked"
-                      transition={{ duration: 0.6, ease: 'easeInOut' }}
+                      transition={{ duration: 0.6, ease: 'easeOut' }}
                       className={cn('absolute inset-0 w-full rounded-full border border-orange-300 bg-orange-50')}
                     />
                   )}
 
-                  <div className="relative flex w-full items-center justify-center gap-2">
+                  <div className="relative flex w-full items-center justify-center gap-2 text-sm">
                     <Icon
                       size={20}
                       weight="light"
-                      className={cn('shrink-0 duration-200 group-hover:text-orange-500', {
+                      className={cn('duration-200 group-hover:text-orange-500', {
                         'text-orange-500': isActive,
                       })}
                     />
-                    <span className={cn('shrink-0 text-sm')}>{title}</span>
+                    <span className="relative z-10">{title}</span>
                   </div>
-                </React.Fragment>
+                </div>
               );
             }}
           </Link>

@@ -8,7 +8,7 @@ export const AppLayout = () => {
   return (
     <div className={cn('flex min-h-[100dvh] basis-0 flex-col overflow-y-auto bg-gray-50')}>
       <header className="fixed inset-x-0 top-4 z-20 mx-auto flex max-w-md items-center rounded-full border border-gray-200 bg-gray-50 bg-opacity-50 p-0 backdrop-blur-sm">
-        <Nav links={LINKS} key="header" />
+        <Nav links={LINKS} />
       </header>
       <DotPattern className="fixed inset-0" />
       <main
