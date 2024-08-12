@@ -1,5 +1,5 @@
 import { task, retry, schedules } from '@trigger.dev/sdk/v3';
-import { sendEmail, db, llm } from '../lib';
+import { email, db, llm } from '../lib';
 import { getHours } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 
@@ -27,7 +27,9 @@ export const sendDailyPromptsCron = schedules.task({
   cron: '0 * * * *',
   id: 'send-daily-prompts',
   run: async () => {
-    const users = await retry.onThrow(async () => await db.getUsersWithEmailNotificationsEnabled(), { maxAttempts: 3 });
+    const users = await retry.onThrow(async () => {
+      return await db.getUsersWithEmailNotificationsEnabled();
+    }, {});
 
     if (users.length === 0) {
       return { message: 'No users' };
@@ -36,12 +38,13 @@ export const sendDailyPromptsCron = schedules.task({
     const usersToPrompt = users.filter(({ timezone, promptPeriod }) => shouldSendPrompt(timezone, promptPeriod));
 
     await sendPrompt.batchTrigger(
-      usersToPrompt.map(({ email, id, primaryGoal, promptTone }) => ({
+      usersToPrompt.map(({ email, id: userId, primaryGoal, promptTone, name }) => ({
         payload: {
+          name,
           email,
-          userId: id,
-          promptTone: promptTone ?? '',
-          primaryGoal: primaryGoal ?? '',
+          userId,
+          promptTone,
+          primaryGoal,
         },
       })),
     );
@@ -53,40 +56,44 @@ export const sendDailyPromptsCron = schedules.task({
 interface SendPromptPayload {
   email: string;
   userId: string;
-  promptTone: string;
-  primaryGoal: string;
+  name: string | null;
+  promptTone: string | null;
+  primaryGoal: string | null;
 }
 
 export const sendPrompt = task({
   id: 'send-prompt',
   run: async (payload: SendPromptPayload) => {
-    const response = await retry.onThrow(
-      async () => {
-        return await llm.generatePrompt({
-          goal: payload.primaryGoal,
-          tone: payload.promptTone,
-        });
-      },
-      { maxAttempts: 3 },
-    );
+    const response = await retry.onThrow(async () => {
+      return await llm.generatePrompt({
+        tone: payload.promptTone,
+        goal: payload.primaryGoal,
+      });
+    }, {});
 
     const prompt = response.content[0]?.type === 'text' ? response.content[0].text : '';
 
-    // await db.createP({
-    //   prompt,
-    //   userId: payload.userId,
-    // });
+    const createPromptResponse = await db.createPrompt({
+      prompt,
+      userId: payload.userId,
+      userEmail: payload.email,
+    });
 
-    await retry.onThrow(
-      async () => {
-        await sendEmail.prompt({
-          prompt,
-          to: payload.email,
-          senderUsername: 'innkeeper-staging',
-        });
-      },
-      { maxAttempts: 3 },
-    );
+    if (!createPromptResponse) {
+      throw new Error('Failed to create prompt');
+    }
+
+    const promptNumber = createPromptResponse.promptNumber;
+
+    await retry.onThrow(async () => {
+      return await email.sendPrompt({
+        prompt,
+        name: 'User',
+        to: payload.email,
+        senderUsername: 'innkeeper-staging',
+        subject: `Innkeeper Journal Prompt #${promptNumber}`,
+      });
+    }, {});
 
     return { message: 'Prompt sent', prompt: prompt };
   },
