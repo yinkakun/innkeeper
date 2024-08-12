@@ -4,8 +4,8 @@ import { SHADOW_WORK_SYSTEM_PROMPT, createShadowWorkUserPrompt } from './llm-pro
 type Model = Anthropic;
 
 interface GeneratePromptPayload {
-  tone?: string;
-  goal?: string;
+  tone: string | null;
+  goal: string | null;
 }
 
 export const initLlm = (model: Model) => {

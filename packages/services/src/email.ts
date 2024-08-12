@@ -16,11 +16,10 @@ const insightsOptions = withName.extend({
   insights: z.string(),
 });
 
-const promptOptions = withName
-  .extend({
-    prompt: z.string(),
-  })
-  .omit({ name: true });
+const promptOptions = withName.extend({
+  prompt: z.string(),
+  subject: z.string(),
+});
 
 const otpOptions = sendEmailOptions.extend({
   otp: z.string(),
@@ -32,7 +31,7 @@ const emailSchema = sendEmailOptions.extend({
     text: z.string().optional(),
   }),
   subject: z.string(),
-  headers: z.array(z.object({ name: z.string(), value: z.string() })).optional(),
+  headers: z.record(z.string()).optional(),
 });
 
 const baseConfigSchema = z.object({
@@ -79,7 +78,7 @@ export const initEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchem
               Html: email.body.html ? { Data: email.body.html } : undefined,
             },
             Subject: { Data: email.subject },
-            Headers: email.headers?.map(({ name, value }) => ({
+            Headers: Object.entries(email.headers ?? {}).map(([name, value]) => ({
               Name: name,
               Value: value,
             })),
@@ -101,14 +100,14 @@ export const initEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchem
 
       const plunkPayload = {
         to: email.to,
-        subject: email.subject,
         headers: email.headers,
+        subject: email.subject,
         body: email.body.html ?? email.body.text,
         from: email.senderUsername ? emailAddress(email.senderUsername) : noReplyEmailAddress,
         replyTo: email.replyToUsername ? emailAddress(email.replyToUsername) : noReplyEmailAddress,
       };
 
-      return ky
+      const response = await ky
         .post(plunkApiUrl, {
           json: plunkPayload,
           headers: {
@@ -117,9 +116,15 @@ export const initEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchem
         })
         .json()
         .catch((error) => {
-          console.error('Plunk API error:', error);
-          throw new Error('Failed to send email with Plunk');
+          if (error instanceof Error) {
+            // stringify the whole error message
+            console.info('👀 Plunk API error:', JSON.stringify(error, null, 2));
+            throw error;
+          }
+          throw new Error('Failed to send email with Plunk', error);
         });
+      console.log('🌱 plunk response:', JSON.stringify(response, null, 2));
+      return response;
     }
   };
 
@@ -151,14 +156,17 @@ export const initEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchem
         },
       });
     },
-    prompt: async ({ prompt, to, replyToUsername, senderUsername }: z.infer<typeof promptOptions>) => {
+    sendPrompt: async ({ prompt, to, replyToUsername, senderUsername, subject, name }: z.infer<typeof promptOptions>) => {
       return sendEmail({
-        to: to,
-        subject: 'Daily Prompt',
+        to,
+        subject,
         senderUsername,
         replyToUsername,
         body: {
-          text: `${prompt}`,
+          text: `
+            Hey ${name}, here's your daily prompt:
+            ${prompt}
+          `,
         },
       });
     },

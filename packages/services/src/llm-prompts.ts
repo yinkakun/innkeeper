@@ -342,8 +342,8 @@ const PROMPT_TONES = [
 ];
 
 interface CreateUserPromptPayload {
-  tone?: string;
-  goal?: string;
+  tone: string | undefined | null;
+  goal: string | undefined | null;
 }
 
 export const createShadowWorkUserPrompt = ({ tone, goal }: CreateUserPromptPayload) => {
