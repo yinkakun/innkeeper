@@ -21,7 +21,7 @@ export const Journal = () => {
     <div className="grid auto-rows-fr grid-cols-2 gap-6">
       <NewJournalEntry />
       <AnimatePresence>
-        {prompts.map(({ prompt, id, updatedAt, createdAt, journalEntries }) => (
+        {prompts.map(({ prompt, id, updatedAt, createdAt, journalEntries, promptNumber }) => (
           <motion.div
             className="w-full"
             layout
@@ -37,6 +37,7 @@ export const Journal = () => {
               prompt={prompt}
               updatedAt={updatedAt}
               createdAt={createdAt}
+              promptNumber={promptNumber}
               journalEntries={journalEntries ?? []}
             />
           </motion.div>
@@ -311,11 +312,12 @@ interface JournalEntryProps {
   promptId: string;
   prompt: string;
   createdAt: string;
+  promptNumber: number;
   updatedAt: string | null;
   journalEntries: z.infer<typeof JournalEntrySchema>[];
 }
 
-const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, promptId, updatedAt, journalEntries }) => {
+const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, promptId, updatedAt, journalEntries, promptNumber }) => {
   const trpcUtils = trpc.useUtils();
   const [isOpen, setIsOpen] = React.useState(false);
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -419,17 +421,20 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.02 }}
           className={cn(
-            'z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-border bg-white p-4 py-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50',
+            'z-50 flex min-h-32 flex-col items-start justify-center gap-3 rounded-3xl border border-gray-300 border-opacity-50 bg-white p-4 py-2 text-left backdrop-blur-md duration-200 hover:border-orange-200 hover:bg-orange-50 hover:bg-opacity-50',
             {
               'border-orange-200 bg-orange-50 bg-opacity-50': isCreatedToday,
             },
           )}
         >
-          <span className="text-pretty text-base text-gray-800">{truncateText(prompt, 140)}</span>
+          <span className="text-pretty text-sm text-gray-700">{truncateText(prompt, 140)}</span>
 
-          <div className="mt-auto flex w-full items-center gap-1 text-orange-400">
-            <CheckCircle size={16} weight="light" />
-            <p className="rounded-full text-xs">Last edited {formatRelative(new Date(updatedAt ?? createdAt), new Date())}</p>
+          <div className="mt-auto flex w-full items-center gap-2 text-xs text-orange-400">
+            <span className="flex items-center gap-1">
+              <CheckCircle size={16} />
+              <span>Prompt #{promptNumber}</span>
+            </span>
+            <span className="capitalize">{formatRelative(new Date(updatedAt ?? createdAt), new Date())}</span>
           </div>
         </motion.div>
       </Drawer.Trigger>

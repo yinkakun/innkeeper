@@ -49,12 +49,14 @@ export const journalRouter = createTRPCRouter({
     return deletedJournalEntry;
   }),
   generatePrompt: protectedProcedure.mutation(async ({ input, ctx }) => {
-    const generatedPrompt = 'What are you grateful for today?';
+    const generatedPrompt = `The unexamined life is not worth living, said Socrates. Consider a belief or behavior you've never questioned. How has your cultural background shaped this aspect of yourself? If you were born into a different culture, how might your perspective on this matter change? Reflect on the possibility that what you consider 'normal' or 'right' might simply be a product of your environment. How does this realization affect your sense of self?`;
+
     const user = ctx.user;
     // delay to simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const newPrompt = await ctx.db.createPrompt({
       userId: user.id,
+      userEmail: user.email,
       prompt: generatedPrompt,
     });
     if (!newPrompt) {
@@ -72,7 +74,7 @@ export const journalRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const generatedPrompt = 'What are you grateful for today?';
+      const generatedPrompt = `The unexamined life is not worth living, said Socrates. Consider a belief or behavior you've never questioned. How has your cultural background shaped this aspect of yourself? If you were born into a different culture, how might your perspective on this matter change? Reflect on the possibility that what you consider 'normal' or 'right' might simply be a product of your environment. How does this realization affect your sense of self?`;
       const updatedPrompt = await ctx.db.updatePrompt({
         id: input.promptId,
         prompt: generatedPrompt,
