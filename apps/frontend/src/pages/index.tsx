@@ -65,7 +65,7 @@ export const Index = () => {
 
           <Link
             to="/journal"
-            className="flex h-8 w-full max-w-[200px] items-center justify-center rounded-full border border-orange-300 bg-white px-8 py-2 text-sm font-normal text-orange-500 duration-200 hover:bg-orange-50 hover:bg-opacity-80"
+            className="flex h-10 w-full max-w-[200px] items-center justify-center rounded-3xl border border-orange-400 bg-white px-8 py-2 text-sm font-normal text-orange-500 duration-200 hover:bg-orange-400 hover:text-white"
           >
             Get Started
           </Link>
@@ -76,10 +76,10 @@ export const Index = () => {
           <div className="relative mx-auto flex w-full max-w-xs flex-col gap-4 rounded-[32px] rounded-b-none border border-b-0 !border-primary/20 bg-white p-3 pb-1">
             {QA.map(({ answer, question }) => (
               <React.Fragment>
-                <ChatBubble isLast isSender={true} className="rounded-2xl text-xs">
+                <ChatBubble isLast isSender={true} className="rounded-2xl text-sm">
                   {question}
                 </ChatBubble>
-                <ChatBubble isLast isSender={false} className="rounded-2xl text-xs">
+                <ChatBubble isLast isSender={false} className="rounded-2xl text-sm">
                   {answer}
                 </ChatBubble>
               </React.Fragment>
@@ -90,32 +90,32 @@ export const Index = () => {
         <div className="flex flex-col items-center gap-4 px-4">
           <h2 className="text-3xl">Features</h2>
           <div className="grid max-w-lg auto-rows-fr grid-cols-2 gap-2 rounded-3xl border border-orange-100 bg-orange-50 p-1.5 text-gray-600">
-            <div className="flex flex-col gap-3 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80">
+            <div className="flex flex-col gap-2 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80">
               <Notification size={20} />
-              <h2 className="text-sm font-medium text-gray-800">Notification</h2>
-              <div className="mt-auto flex flex-col gap-1">
-                <p className="text-xs">Get daily shadow work prompts via email.</p>
+              <h2 className="text-lg text-gray-800">Notification</h2>
+              <div className="flex flex-col gap-1">
+                <p className="text-sm">Get daily shadow work prompts via email.</p>
               </div>
             </div>
-            <div className="flex flex-col gap-3 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80">
+            <div className="flex flex-col gap-2 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80">
               <DownloadSimple size={20} />
-              <h2 className="text-sm font-medium text-gray-800">Export your data</h2>
-              <div className="mt-auto flex flex-col gap-1">
-                <p className="text-xs">Download your data in JSON format..</p>
+              <h2 className="text-lg text-gray-800">Export your data</h2>
+              <div className="flex flex-col gap-1">
+                <p className="text-sm">Download your data in JSON format..</p>
               </div>
             </div>
-            <div className="flex flex-col gap-3 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80">
+            <div className="flex flex-col gap-2 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80">
               <EyeClosed size={20} />
-              <h2 className="text-sm font-medium text-gray-800">For your eyes only</h2>
-              <div className="mt-auto flex flex-col gap-1">
-                <p className="text-xs">Your data is encrypted and secure. We do not share your data with third parties.</p>
+              <h2 className="text-lg text-gray-800">For your eyes only</h2>
+              <div className="flex flex-col gap-1">
+                <p className="text-sm">Your data is encrypted and secure. We do not share your data with third parties.</p>
               </div>
             </div>
-            <div className="flex flex-col gap-3 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80">
+            <div className="flex flex-col gap-2 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80">
               <Lightning size={20} />
-              <h2 className="text-sm font-medium text-gray-800">Track Progress</h2>
-              <div className="mt-auto flex flex-col gap-1">
-                <p className="text-xs">Stay motivated by tracking your progress.</p>
+              <h2 className="text-lg text-gray-800">Track Progress</h2>
+              <div className="flex flex-col gap-1">
+                <p className="text-sm">Stay motivated by tracking your progress.</p>
               </div>
             </div>
           </div>
@@ -126,11 +126,10 @@ export const Index = () => {
           <div className="w-full max-w-lg rounded-3xl border border-orange-100 bg-orange-50 p-1.5">
             <div className="flex w-full max-w-lg flex-col items-stretch gap-0 divide-y divide-orange-50 rounded-[20px] border border-orange-100 bg-white">
               {REVIEWS.map(({ name, review }) => (
-                <div className="flex w-full shrink-0 flex-col gap-4 text-pretty p-4 px-4 py-2 tracking-tight hover:bg-orange-50 hover:bg-opacity-30">
-                  <span className="text-pretty text-sm text-gray-700">"{review}"</span>
-                  <div className="mt-auto flex items-center gap-1 text-sm text-gray-500">
-                    <div className="size-4 rounded-full bg-primary/30" />
-                    <span className="text-xs text-gray-600">{name}</span>
+                <div className="flex w-full shrink-0 flex-col gap-2 text-pretty p-4 px-4 py-3 tracking-tight hover:bg-orange-50 hover:bg-opacity-30">
+                  <span className="text-pretty text-lg text-gray-800">{review}</span>
+                  <div className="mt-auto flex items-center gap-1">
+                    <span className="text-sm text-orange-300">— {name}</span>
                   </div>
                 </div>
               ))}
@@ -148,9 +147,9 @@ export const Index = () => {
                   key={title}
                   className="group flex items-center justify-between gap-1 p-3 backdrop-blur-sm duration-150 hover:bg-orange-50 hover:bg-opacity-30"
                 >
-                  <div className="flex flex-col gap-2">
-                    <p className="text-xs">{truncate(title, 50)}</p>
-                    <span className="text-xs text-orange-300 duration-200 group-hover:text-orange-400">
+                  <div className="flex flex-col gap-1">
+                    <p className="font-sans text-lg">{truncate(title, 50)}</p>
+                    <span className="text-sm text-orange-300 duration-200 group-hover:text-orange-400">
                       {truncate(url.replace(/(^\w+:|^)\/\//, ''), 40)}
                     </span>
                   </div>
@@ -163,15 +162,14 @@ export const Index = () => {
 
         <div className="flex max-w-lg flex-col items-center gap-6">
           <div className="flex w-full flex-col items-center gap-2 font-serif text-2xl">
-            <p className="text-pretty text-center font-serif text-2xl">
+            <p className="text-pretty text-center font-serif text-2xl text-gray-800">
               Until you make the unconscious conscious, it will direct your life and you will call it fate.
             </p>
             <span className="font-serif text-2xl">— Carl Jung</span>
           </div>
-
           <Link
             to="/journal"
-            className="flex h-8 w-full max-w-[200px] items-center justify-center rounded-full border border-orange-300 bg-white px-8 py-2 text-sm font-normal text-orange-500 duration-200 hover:bg-orange-50 hover:bg-opacity-80"
+            className="flex h-10 w-full max-w-[200px] items-center justify-center rounded-3xl border border-orange-400 bg-white px-8 py-2 text-sm font-normal text-orange-500 duration-200 hover:bg-orange-400 hover:text-white"
           >
             Get Started
           </Link>
@@ -179,7 +177,7 @@ export const Index = () => {
 
         <footer className="flex flex-col gap-2 p-4 pt-20">
           <div>
-            <span className="text-center text-xs text-gray-700">© {new Date().getFullYear()}, Olopo Studio</span>
+            <span className="text-center text-xs text-gray-600">© {new Date().getFullYear()}, Olopo Studio</span>
           </div>
         </footer>
       </main>
