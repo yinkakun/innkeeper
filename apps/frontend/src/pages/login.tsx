@@ -1,7 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
-import { Layout } from '@/components/layout';
 import { Spinner } from '@/components/spinner';
 import { OTPInput, SlotProps } from 'input-otp';
 import googleLogo from '@/assets/google-logo.svg';
@@ -17,14 +16,14 @@ const API_URL = import.meta.env.VITE_API_URL as string;
 
 export const Login = () => {
   return (
-    <Layout className="flex items-center justify-center">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-gray-50">
       <div>
         <Stepper>
           <RequestOtp />
           <VerifyOtp />
         </Stepper>
       </div>
-    </Layout>
+    </div>
   );
 };
 
@@ -56,7 +55,6 @@ const RequestOtp = () => {
   return (
     <StepWrapper>
       <a
-        target="_blank"
         href={`${API_URL}/auth/google`}
         className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-1.5 text-center text-sm font-normal text-gray-800"
       >

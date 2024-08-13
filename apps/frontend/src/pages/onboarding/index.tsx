@@ -1,17 +1,16 @@
+import { z } from 'zod';
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
 import { motion } from 'framer-motion';
-import { RadioButton, Circle, CheckCircle } from '@phosphor-icons/react';
-import { Layout } from '@/components/layout';
+import { atom, useAtom } from 'jotai';
+import { Link } from '@tanstack/react-router';
+import { Spinner } from '@/components/spinner';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, Controller } from 'react-hook-form';
 import { Stepper, useStepper } from '@/components/stepper';
 import { Label, RadioGroup, Radio } from 'react-aria-components';
-import { Link } from '@tanstack/react-router';
-import { z } from 'zod';
-import { atom, useAtom } from 'jotai';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Spinner } from '@/components/spinner';
+import { RadioButton, Circle, CheckCircle } from '@phosphor-icons/react';
 
 const firstNameSchema = z.object({
   name: z
@@ -67,7 +66,7 @@ const useOnboardingData = () => {
 
 export const Onboarding = () => {
   return (
-    <Layout className="flex grow flex-row items-center justify-center">
+    <div className="flex min-h-[100dvh] grow flex-col items-center justify-center bg-gray-50">
       <div>
         <Stepper>
           <FirstName />
@@ -77,7 +76,7 @@ export const Onboarding = () => {
           <Done />
         </Stepper>
       </div>
-    </Layout>
+    </div>
   );
 };
 

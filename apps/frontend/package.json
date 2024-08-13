@@ -16,6 +16,7 @@
     "@innkeeper/trpc": "*",
     "@paralleldrive/cuid2": "^2.2.2",
     "@phosphor-icons/react": "^2.1.7",
+    "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.0",
     "@tanstack/react-query": "^5.51.11",
