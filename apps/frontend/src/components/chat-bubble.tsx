@@ -21,7 +21,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ isSender, children, clas
           className={cn(
             'xpy-1.5 flex w-fit flex-wrap overflow-auto whitespace-pre-line text-pretty rounded-3xl px-3 py-2 tracking-tight text-opacity-90',
             {
-              'bg-orange-500 text-white': isSender,
+              'bg-orange-400 text-white': isSender,
               'bg-gray-100 text-gray-800': !isSender,
             },
             className,
@@ -32,7 +32,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ isSender, children, clas
         <div
           className={cn('absolute -bottom-[2px] z-20 h-[20px] w-[15px]', {
             '-left-[7px] rounded-br-[32px_28px] bg-gray-100': !isSender,
-            '-right-[7px] rounded-bl-[32px_28px] bg-orange-500': isSender,
+            '-right-[7px] rounded-bl-[32px_28px] bg-orange-400': isSender,
             hidden: !isLast,
           })}
         />
