@@ -11,7 +11,6 @@ import levelTwo from '@/assets/level-two.svg';
 import levelThree from '@/assets/level-three.svg';
 import levelFour from '@/assets/level-four.svg';
 import totalEntries from '@/assets/total-entries.svg';
-import { motion, Variants } from 'framer-motion';
 
 const CONSISTENCY_BADGES = [
   {
@@ -86,27 +85,15 @@ const STATS = [
   },
 ];
 
-const variants: Variants = {
-  initial: { opacity: 0, scale: 0.8 },
-  animate: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
-};
-
 export const Insights = () => {
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="flex items-center gap-2">
         <h2>Consistency is hard, but you got this!</h2>
       </div>
-
       <Activities />
-
-      <motion.div variants={variants} initial="initial" animate="animate">
-        <Stats />
-      </motion.div>
-      <motion.div variants={variants} initial="initial" animate="animate">
-        <MilestoneAchievements />
-      </motion.div>
-
+      <Stats />
+      <MilestoneAchievements />
       <ConsistencyBadges />
     </div>
   );
@@ -143,59 +130,55 @@ const Activities = () => {
   const startDate = new Date(today.getTime() - 160 * 24 * 60 * 60 * 1000);
   return (
     <div className="grid grid-cols-2 gap-4">
-      <motion.div variants={variants} initial="initial" animate="animate">
-        <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
-          <div className="w-full">
-            <HeatMap
-              value={[
-                {
-                  count: 10,
-                  date: '2024/08/04',
-                },
-              ]}
-              weekLabels={false}
-              onClick={() => {}}
-              monthLabels={false}
-              legendCellSize={0}
-              className="pointer-events-none w-full"
-              height={100}
-              endDate={today}
-              startDate={startDate}
-              panelColors={{
-                0: '#ffc8b3',
-                2: '#ffa380',
-                4: '#ff7f4d',
-                10: '#ff5a1a',
-                20: '#FF4800',
-                30: '#e64100',
-              }}
-              rectProps={{
-                rx: 1.8,
-              }}
-            />
-          </div>
+      <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
+        <div className="w-full">
+          <HeatMap
+            value={[
+              {
+                count: 10,
+                date: '2024/08/04',
+              },
+            ]}
+            weekLabels={false}
+            onClick={() => {}}
+            monthLabels={false}
+            legendCellSize={0}
+            className="pointer-events-none w-full"
+            height={100}
+            endDate={today}
+            startDate={startDate}
+            panelColors={{
+              0: '#ffc8b3',
+              2: '#ffa380',
+              4: '#ff7f4d',
+              10: '#ff5a1a',
+              20: '#FF4800',
+              30: '#e64100',
+            }}
+            rectProps={{
+              rx: 1.8,
+            }}
+          />
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div variants={variants} initial="initial" animate="animate">
-        <div className="flex gap-4">
-          <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
-            <div className="flex items-start gap-2">
-              <div className="relative -mb-7">
-                <img src={vanityXp} className={cn('aspect-square w-16', {})} />
-              </div>
-            </div>
-            <span className="text-base capitalize text-gray-800">188 Vanity XP</span>
-          </div>
-
-          <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
+      <div className="flex gap-4">
+        <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
+          <div className="flex items-start gap-2">
             <div className="relative -mb-7">
-              <img src={daysStreak} className={cn('aspect-square w-16', {})} />
+              <img src={vanityXp} className={cn('aspect-square w-16', {})} />
             </div>
-            <span className="text-base capitalize text-gray-800">7 Day Streak</span>
           </div>
+          <span className="text-base capitalize text-gray-800">188 Vanity XP</span>
         </div>
-      </motion.div>
+
+        <div className="flex w-full grow flex-col items-center justify-center gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
+          <div className="relative -mb-7">
+            <img src={daysStreak} className={cn('aspect-square w-16', {})} />
+          </div>
+          <span className="text-base capitalize text-gray-800">7 Day Streak</span>
+        </div>
+      </div>
     </div>
   );
 };
@@ -230,22 +213,20 @@ const ConsistencyBadges = () => {
     <div className="grid w-full grid-cols-2 gap-4">
       {CONSISTENCY_BADGES.map(({ max, title, value, description, icon }, index) => {
         return (
-          <motion.div key={index} variants={variants} initial="initial" animate="animate">
-            <div className="flex w-full flex-col items-center gap-2 rounded-3xl border border-border bg-white p-3 backdrop-blur">
-              <div className="flex w-full items-center">
-                <div className="-mb-5 -ml-2 shrink-0">
-                  <img src={icon} className="aspect-square w-16" />
-                </div>
-                <div className="flex max-w-sm flex-col gap-0">
-                  <span className="text-lg text-gray-800">{title}</span>
-                  <span className="text-xs text-gray-600">{description}</span>
-                </div>
+          <div className="flex w-full flex-col items-center gap-2 rounded-3xl border border-border bg-white p-3 backdrop-blur">
+            <div className="flex w-full items-center">
+              <div className="-mb-5 -ml-2 shrink-0">
+                <img src={icon} className="aspect-square w-16" />
               </div>
-              <div className="mt-auto w-full">
-                <ProgressBar value={parseInt(value)} max={parseInt(max)} />
+              <div className="flex max-w-sm flex-col gap-0">
+                <span className="text-lg text-gray-800">{title}</span>
+                <span className="text-xs text-gray-600">{description}</span>
               </div>
             </div>
-          </motion.div>
+            <div className="mt-auto w-full">
+              <ProgressBar value={parseInt(value)} max={parseInt(max)} />
+            </div>
+          </div>
         );
       })}
     </div>

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import { DotPattern } from './dot-pattern';
 import { Outlet } from '@tanstack/react-router';
@@ -30,7 +30,7 @@ export const Layout = () => {
                       {isActive && (
                         <motion.div
                           layoutId="clicked"
-                          transition={{ duration: 0.6, ease: 'easeOut' }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
                           className={cn('absolute inset-0 w-full rounded-full border border-orange-300 bg-orange-50')}
                         />
                       )}
@@ -56,20 +56,22 @@ export const Layout = () => {
       <DotPattern className="fixed inset-0" />
       <main
         className={cn(
-          'z-10 mx-auto mt-8 flex h-full w-full max-w-screen-md grow basis-0 flex-col rounded-t-3xl border border-gray-200 bg-white px-6 pb-4 pt-12',
+          'z-10 mx-auto mt-8 flex h-full w-full max-w-screen-md grow basis-0 flex-col overflow-hidden rounded-t-3xl border border-gray-200 bg-white px-6 pb-4 pt-12',
         )}
       >
         <motion.div
           key={pathname}
           initial={{
-            opacity: 0.1,
+            scale: 1.1,
+            opacity: 0,
           }}
           animate={{
+            scale: 1,
             opacity: 1,
           }}
           transition={{
-            duration: 0.6,
-            ease: 'easeOut',
+            ease: 'easeIn',
+            duration: 0.3,
           }}
         >
           <div className={cn('flex h-full grow basis-0 flex-col pb-4')}>

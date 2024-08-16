@@ -22,15 +22,7 @@ export const Journal = () => {
       <NewJournalEntry />
       <AnimatePresence>
         {prompts.map(({ prompt, id, updatedAt, createdAt, journalEntries, promptNumber }) => (
-          <motion.div
-            className="w-full"
-            layout
-            key={id}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div layout key={id} className="w-full">
             <JournalEntries
               promptId={id}
               key={id}
@@ -526,37 +518,4 @@ const isToday = (someDate: Date) => {
   return (
     someDate.getDate() === today.getDate() && someDate.getMonth() === today.getMonth() && someDate.getFullYear() === today.getFullYear()
   );
-};
-
-[1, 5, null, 7, 2, 9, null, 4]
-  .toString()
-  .split(',,')
-  .map((x) => x.split(' '))
-  .map((x) =>
-    x
-      .toString()
-      .split(',')
-      .map((y) => parseInt(y)),
-  );
-
-const splitArrByNull = (arr: Array<number | null>) => {
-  let part: Array<number> = [];
-  const splitArr: Array<Array<number>> = [];
-
-  for (const item of arr) {
-    if (item !== null) {
-      part.push(item);
-    }
-
-    if (item === null) {
-      splitArr.push(part);
-      part = [];
-    }
-  }
-
-  if (part.length > 0) {
-    splitArr.push(part);
-  }
-
-  return splitArr;
 };
