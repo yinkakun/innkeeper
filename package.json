@@ -24,9 +24,9 @@
     "toolings/*"
   ],
   "devDependencies": {
-    "prettier": "^3.0.3",
+    "prettier": "^3.3.3",
     "prettier-config": "*",
     "turbo": "^2.0.6 d",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.3"
   }
 }
