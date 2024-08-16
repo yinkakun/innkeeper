@@ -222,7 +222,7 @@ const NewJournalEntry = () => {
                     animate="animate"
                     transition={{ duration: 0.2 }}
                   >
-                    <ChatBubble isSender={false} className="px-8">
+                    <ChatBubble isSender={false} isLast className="px-8">
                       <ThreeDotsScale color="#6B7280" height={20} className="border border-red-500" />
                     </ChatBubble>
                   </motion.div>
@@ -237,7 +237,7 @@ const NewJournalEntry = () => {
                     variants={chatBubbleVariants}
                     transition={{ duration: 0.2 }}
                   >
-                    <ChatBubble isSender={false}>
+                    <ChatBubble isSender={false} isLast>
                       <span className="text-sm text-gray-600">{generatePromptMutation.data?.prompt}</span>
                     </ChatBubble>
                   </motion.div>
@@ -449,7 +449,7 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
             <Drawer.Handle className="absolute top-0 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
             <motion.div layout className="no-scrollbar max-h-full grow basis-0 overflow-y-auto scroll-smooth px-4" ref={chatContainerRef}>
               <div className="flex flex-col">
-                <ChatBubble isSender={false} className="px-8">
+                <ChatBubble isSender={false} isLast className="px-8">
                   {prompt}
                 </ChatBubble>
                 <AnimatePresence>
@@ -526,4 +526,37 @@ const isToday = (someDate: Date) => {
   return (
     someDate.getDate() === today.getDate() && someDate.getMonth() === today.getMonth() && someDate.getFullYear() === today.getFullYear()
   );
+};
+
+[1, 5, null, 7, 2, 9, null, 4]
+  .toString()
+  .split(',,')
+  .map((x) => x.split(' '))
+  .map((x) =>
+    x
+      .toString()
+      .split(',')
+      .map((y) => parseInt(y)),
+  );
+
+const splitArrByNull = (arr: Array<number | null>) => {
+  let part: Array<number> = [];
+  const splitArr: Array<Array<number>> = [];
+
+  for (const item of arr) {
+    if (item !== null) {
+      part.push(item);
+    }
+
+    if (item === null) {
+      splitArr.push(part);
+      part = [];
+    }
+  }
+
+  if (part.length > 0) {
+    splitArr.push(part);
+  }
+
+  return splitArr;
 };
