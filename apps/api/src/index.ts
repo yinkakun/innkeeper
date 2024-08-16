@@ -7,12 +7,11 @@ import { trpcServer } from '@hono/trpc-server';
 import { authRouter } from './routes/auth';
 import { tasks } from '@trigger.dev/sdk/v3';
 import type { saveJournalEntry } from '@innkeeper/jobs';
-import type { HonoOptions, Bindings, HonoContext } from './context';
 import { appRouter, createContext } from '@innkeeper/trpc';
-import type { ReadableStream } from 'web-streams-polyfill';
+import type { HonoOptions, Bindings, HonoContext } from './context';
 import { authMiddleware, dbMiddleware, triggerMiddleware, emailMiddleware } from './middleware';
 export type { HonoContext } from './context';
-import PostalMime from 'postal-mime';
+import PostalMime, { RawEmail } from 'postal-mime';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
 
 const app = new Hono<HonoOptions>();
@@ -65,24 +64,8 @@ export default {
 };
 
 export interface EmailMessage {
-  /**
-   * Envelope From attribute of the email message.
-   */
-  readonly from: string;
-  /**
-   * Envelope To attribute of the email message.
-   */
   readonly to: string;
-  /**
-   * Stream of the email message content.
-   */
-  readonly raw: ReadableStream<Uint8Array>;
-  /**
-   * An [Headers object](https://developer.mozilla.org/en-US/docs/Web/API/Headers).
-   */
+  readonly from: string;
+  readonly raw: RawEmail;
   readonly headers: Headers;
-  /**
-   * Size of the email message content.
-   */
-  readonly rawSize: number;
 }
