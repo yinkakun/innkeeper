@@ -117,13 +117,11 @@ export const initEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchem
         .json()
         .catch((error) => {
           if (error instanceof Error) {
-            // stringify the whole error message
-            console.info('👀 Plunk API error:', JSON.stringify(error, null, 2));
+            console.info('Plunk API error:', JSON.stringify(error, null, 2));
             throw error;
           }
           throw new Error('Failed to send email with Plunk', error);
         });
-      console.log('🌱 plunk response:', JSON.stringify(response, null, 2));
       return response;
     }
   };
