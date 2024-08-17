@@ -16,6 +16,7 @@
     "@innkeeper/trpc": "*",
     "@paralleldrive/cuid2": "^2.2.2",
     "@phosphor-icons/react": "^2.1.7",
+    "@radix-ui/react-context-menu": "^2.2.1",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.0",
@@ -43,6 +44,7 @@
     "sonner": "^1.5.0",
     "superjson": "2.2.1",
     "tailwind-merge": "^2.4.0",
+    "tailwindcss-animate": "^1.0.7",
     "tailwindcss-react-aria-components": "1.1.2",
     "vaul": "^0.9.1",
     "zod": "^3.23.8"
