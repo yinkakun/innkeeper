@@ -307,7 +307,7 @@ export const Settings = () => {
             <div className="flex flex-col gap-5 pt-3">
               <div className="flex flex-col gap-3 px-5">
                 <h2 className="text-center text-sm font-medium">Delete Account</h2>
-                <div className="flex w-full flex-col gap-1 rounded-xl border-[0.5px] border-orange-300 bg-orange-50/50 p-2 text-sm text-gray-700">
+                <div className="flex w-full flex-col gap-1 rounded-xl border-[0.5px] border-orange-200 bg-orange-50/50 p-2 text-sm text-gray-700">
                   <span>Are you sure you want to delete your account?</span>
                   <span>This action is irreversible and will permanently delete all your data.</span>
                 </div>
@@ -316,7 +316,7 @@ export const Settings = () => {
                 <DialogClose>
                   <button
                     type="button"
-                    className="flex h-8 w-full items-center justify-center text-sm text-gray-800 duration-200 hover:bg-gray-50"
+                    className="flex h-8 w-full items-center justify-center text-sm text-gray-800 duration-200 hover:bg-orange-50/50"
                   >
                     <span>Cancel</span>
                   </button>
@@ -324,7 +324,7 @@ export const Settings = () => {
 
                 <button
                   type="button"
-                  className="flex h-8 w-full items-center justify-center text-sm text-red-500 duration-200 hover:bg-gray-50"
+                  className="flex h-8 w-full items-center justify-center text-sm text-red-500 duration-200 hover:bg-red-50"
                 >
                   <span>Delete Account</span>
                 </button>
