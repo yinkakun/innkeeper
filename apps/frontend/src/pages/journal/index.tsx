@@ -12,8 +12,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { ArrowCircleUp } from '@phosphor-icons/react';
 import { ChatBubble } from '@/components/chat-bubble';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, CheckCircle } from '@phosphor-icons/react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { Plus, CheckCircle, TrashSimple, CopySimple, ArrowClockwise, type Icon } from '@phosphor-icons/react';
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSeparator } from '@/components/context-menu';
 
 export const Journal = () => {
   const [prompts] = trpc.journal.getPrompts.useSuspenseQuery();
@@ -214,7 +215,7 @@ const NewJournalEntry = () => {
                     animate="animate"
                     transition={{ duration: 0.2 }}
                   >
-                    <ChatBubble isSender={false} isLast className="px-8">
+                    <ChatBubble isSender={false} renderTail className="px-8">
                       <ThreeDotsScale color="#6B7280" height={20} className="border border-red-500" />
                     </ChatBubble>
                   </motion.div>
@@ -229,7 +230,7 @@ const NewJournalEntry = () => {
                     variants={chatBubbleVariants}
                     transition={{ duration: 0.2 }}
                   >
-                    <ChatBubble isSender={false} isLast>
+                    <ChatBubble isSender={false} renderTail>
                       <span className="text-sm text-gray-600">{generatePromptMutation.data?.prompt}</span>
                     </ChatBubble>
                   </motion.div>
@@ -432,31 +433,38 @@ const JournalEntries: React.FC<JournalEntryProps> = ({ prompt, createdAt, prompt
       </Drawer.Trigger>
 
       <Drawer.Portal>
-        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[400px] flex-col overflow-hidden rounded-[36px] border border-orange-300/50 bg-white">
+        <Drawer.Content className="fixed inset-x-0 top-32 z-50 mx-auto flex max-h-[96%] min-h-[70dvh] w-full max-w-[400px] flex-col overflow-hidden rounded-[36px] border-[0.5px] border-orange-300/50 bg-background shadow-lg">
           <div className="relative flex flex-1 flex-col gap-3 pt-3">
             <div className="sr-only">
               <Drawer.Title>Journal Entry</Drawer.Title>
               <Drawer.Description>Journal Entry</Drawer.Description>
             </div>
             <Drawer.Handle className="absolute top-0 mx-auto h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
-            <motion.div layout className="no-scrollbar max-h-full grow basis-0 overflow-y-auto scroll-smooth px-4" ref={chatContainerRef}>
+
+            <motion.div
+              layout
+              className="no-scrollbar relative max-h-full grow basis-0 overflow-y-auto scroll-smooth px-4 pt-2"
+              ref={chatContainerRef}
+            >
               <div className="flex flex-col">
-                <ChatBubble isSender={false} isLast className="px-8">
-                  {prompt}
-                </ChatBubble>
+                <JournalPromptCard prompt={prompt} menuItems={journalEntryMenuItems} />
+
                 <AnimatePresence>
-                  {journalEntries.map(({ entry }, index) => (
-                    <motion.div
-                      key={index}
-                      exit="isSenderExit"
-                      initial="isSenderInitial"
-                      animate="isSenderAnimate"
-                      variants={chatBubbleVariants}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ChatBubble isSender={true}>{entry}</ChatBubble>
-                    </motion.div>
-                  ))}
+                  {journalEntries.map(({ entry }, index) => {
+                    const isLast = index === journalEntries.length - 1;
+                    return (
+                      <motion.div
+                        key={index}
+                        exit="isSenderExit"
+                        initial="isSenderInitial"
+                        animate="isSenderAnimate"
+                        variants={chatBubbleVariants}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <JournalEntryCard entry={entry} isLast={isLast} menuItems={journalEntryMenuItems} />
+                      </motion.div>
+                    );
+                  })}
                 </AnimatePresence>
               </div>
             </motion.div>
@@ -519,3 +527,106 @@ const isToday = (someDate: Date) => {
     someDate.getDate() === today.getDate() && someDate.getMonth() === today.getMonth() && someDate.getFullYear() === today.getFullYear()
   );
 };
+
+interface JournalPromptCardProps {
+  prompt: string;
+  menuItems?: MenuItem[];
+}
+
+const JournalPromptCard: React.FC<JournalPromptCardProps> = ({ prompt, menuItems }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  return (
+    <ContextMenu onOpenChange={setIsOpen} modal>
+      <ContextMenuTrigger>
+        <motion.div
+          animate={{
+            scale: isOpen ? 0.95 : 1,
+            transition: {
+              ease: 'easeInOut',
+            },
+          }}
+        >
+          <ChatBubble isSender={false} renderTail className="group relative shrink-0 px-6">
+            {prompt}
+          </ChatBubble>
+        </motion.div>
+      </ContextMenuTrigger>
+      <ContextMenuContent loop>
+        {menuItems?.map(({ icon: Icon, label, onClick }, index) => {
+          const isLast = index === menuItems.length - 1;
+          return (
+            <React.Fragment>
+              <ContextMenuItem onClick={onClick} key={label}>
+                <Icon size={16} className="text-orange-400" />
+                <span>{label}</span>
+              </ContextMenuItem>
+              {isLast ? null : <ContextMenuSeparator />}
+            </React.Fragment>
+          );
+        })}
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+};
+
+interface JournalEntryCardProps {
+  entry: string;
+  isLast: boolean;
+  menuItems?: MenuItem[];
+}
+
+const JournalEntryCard: React.FC<JournalEntryCardProps> = ({ entry, isLast, menuItems = [] }, index) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  return (
+    <ContextMenu onOpenChange={setIsOpen} modal>
+      <ContextMenuTrigger>
+        <motion.div
+          animate={{
+            scale: isOpen ? 0.95 : 1,
+            transition: {
+              ease: 'easeInOut',
+            },
+          }}
+        >
+          <ChatBubble isSender={true} renderTail={isLast} className="px-6">
+            {entry}
+          </ChatBubble>
+        </motion.div>
+      </ContextMenuTrigger>
+      <ContextMenuContent loop>
+        {menuItems.map(({ icon: Icon, label, onClick }, index) => {
+          const isLast = index === menuItems.length - 1;
+
+          return (
+            <React.Fragment>
+              <ContextMenuItem onClick={onClick} key={label}>
+                <Icon size={16} className="text-orange-400" />
+                <span>{label}</span>
+              </ContextMenuItem>
+              {isLast ? null : <ContextMenuSeparator />}
+            </React.Fragment>
+          );
+        })}
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+};
+
+interface MenuItem {
+  icon: Icon;
+  label: string;
+  onClick: () => void;
+}
+
+const journalEntryMenuItems: MenuItem[] = [
+  {
+    label: 'Delete',
+    onClick: () => {},
+    icon: TrashSimple,
+  },
+  {
+    label: 'Copy',
+    onClick: () => {},
+    icon: CopySimple,
+  },
+];
