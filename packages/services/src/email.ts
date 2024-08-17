@@ -120,7 +120,6 @@ export const initEmailSender = (emailConfig: z.infer<typeof sendEmailConfigSchem
             console.info('Plunk API error:', JSON.stringify(error, null, 2));
             throw error;
           }
-          throw new Error('Failed to send email with Plunk', error);
         });
       return response;
     }
