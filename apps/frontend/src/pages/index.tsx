@@ -42,12 +42,12 @@ export const Index = () => {
               {QA.map(({ answer, question }, index) => (
                 <React.Fragment>
                   <FadeIn delay={index * 0.0}>
-                    <ChatBubble isLast isSender={true} className="rounded-2xl text-sm">
+                    <ChatBubble renderTail isSender={true} className="rounded-2xl text-sm">
                       {question}
                     </ChatBubble>
                   </FadeIn>
                   <FadeIn delay={index * 0.05}>
-                    <ChatBubble isLast isSender={false} className="rounded-2xl text-sm">
+                    <ChatBubble renderTail isSender={false} className="rounded-2xl text-sm">
                       {answer}
                     </ChatBubble>
                   </FadeIn>
