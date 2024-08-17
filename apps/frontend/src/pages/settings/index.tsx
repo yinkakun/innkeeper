@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import { Circle, RadioButton } from '@phosphor-icons/react';
 import { Label, RadioGroup, Radio } from 'react-aria-components';
+import { Dialog, DialogTrigger, DialogClose, DialogContent } from '@/components/dialog';
 
 const formSchema = z.object({
   name: z.string().min(1, 'First name is required').max(100, 'First name must be 100 characters or less'),
@@ -285,7 +286,7 @@ export const Settings = () => {
         <div className="flex items-center justify-between gap-4">
           <button
             type="submit"
-            className="ml-auto flex h-8 w-[150px] items-center justify-center rounded-lg border border-orange-600/30 bg-orange-500 px-6 py-1 text-sm font-medium text-gray-50 duration-200"
+            className="ml-auto flex h-8 w-[150px] items-center justify-center rounded-lg border border-orange-600/30 bg-orange-400 px-6 py-1 text-sm text-gray-50 duration-200"
           >
             <span>{mutation.isPending ? <Spinner /> : 'Save Changes'}</span>
           </button>
@@ -293,18 +294,44 @@ export const Settings = () => {
       </form>
       <div className="divide-y-gray-200 flex flex-col divide-y overflow-hidden rounded-xl border border-border">
         <button type="button" className="group w-full px-6 py-2 text-left text-sm duration-200 hover:bg-gray-50">
-          <span>Logout</span>
+          <span>Sign out</span>
         </button>
 
-        <button
-          type="button"
-          onClick={() => {
-            alert('Coming soon');
-          }}
-          className="w-full p-2 px-4 text-left text-sm text-red-600 duration-200 hover:bg-gray-50"
-        >
-          Delete Account
-        </button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <button type="button" className="w-full p-2 px-4 text-left text-sm text-red-600 duration-200 hover:bg-gray-50">
+              Delete Account
+            </button>
+          </DialogTrigger>
+          <DialogContent className="max-w-sm overflow-hidden rounded-3xl border-[0.5px] border-orange-300/50 p-0">
+            <div className="flex flex-col gap-5 pt-3">
+              <div className="flex flex-col gap-3 px-5">
+                <h2 className="text-center text-sm font-medium">Delete Account</h2>
+                <div className="flex w-full flex-col gap-1 rounded-xl border-[0.5px] border-orange-300 bg-orange-50/50 p-2 text-sm text-gray-700">
+                  <span>Are you sure you want to delete your account?</span>
+                  <span>This action is irreversible and will permanently delete all your data.</span>
+                </div>
+              </div>
+              <div className="grid w-full grid-cols-2 gap-0 divide-x-[0.5px] divide-orange-300/50 border-t-[0.5px] border-orange-300/50">
+                <DialogClose>
+                  <button
+                    type="button"
+                    className="flex h-8 w-full items-center justify-center text-sm text-gray-800 duration-200 hover:bg-gray-50"
+                  >
+                    <span>Cancel</span>
+                  </button>
+                </DialogClose>
+
+                <button
+                  type="button"
+                  className="flex h-8 w-full items-center justify-center text-sm text-red-500 duration-200 hover:bg-gray-50"
+                >
+                  <span>Delete Account</span>
+                </button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
