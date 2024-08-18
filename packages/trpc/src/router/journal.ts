@@ -1,7 +1,7 @@
 import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { UpdateJournalEntrySchema, CreateJournalEntrySchema } from '@innkeeper/db';
-import { TRPCError } from '@trpc/server';
 
 export const journalRouter = createTRPCRouter({
   addJournalEntry: protectedProcedure

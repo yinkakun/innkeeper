@@ -1,22 +1,25 @@
 import '@/main.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createRouter, Outlet, createRoute, createRootRouteWithContext } from '@tanstack/react-router';
-import { QueryClient } from '@tanstack/react-query';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { Index } from '@/pages';
 import { NotFound } from '@/pages/not-found';
+import { Index } from '@/pages';
 import { Journal } from '@/pages/journal';
 import { Insights } from '@/pages/insights';
 import { Login } from '@/pages/login';
 import { Settings } from '@/pages/settings';
 import { Onboarding } from '@/pages/onboarding';
-import { PageLoading } from '@/components/page-loading';
 import { Toaster } from '@/components/toaster';
 import type { TrpcClient } from '@/lib/trpc';
 import { trpc, trpcClient } from '@/lib/trpc';
-import { createTRPCQueryUtils } from '@trpc/react-query';
 import { Layout } from '@/components/layout';
+import { QueryCache, QueryClient } from '@tanstack/react-query';
+import { PageLoading } from '@/components/page-loading';
+import { createTRPCQueryUtils } from '@trpc/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { TRPCError } from '@trpc/server';
+import { RouterProvider, createRouter, Outlet, createRoute, createRootRouteWithContext, redirect } from '@tanstack/react-router';
+import { getHTTPStatusCodeFromError } from '@trpc/server/http';
+import { TRPCClientError } from '@trpc/react-query';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcClient: TrpcClient }>()({
   component: () => (
@@ -28,6 +31,12 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
   onError: (error) => {
     console.error('error', error);
   },
+  errorComponent: (error) => (
+    <div>
+      <h1>Oops! Something went wrong</h1>
+      <pre className="text-sm">{JSON.stringify(error, null, 4)}</pre>
+    </div>
+  ),
   notFoundComponent: NotFound,
   pendingComponent: PageLoading,
 });
@@ -56,19 +65,19 @@ const layoutRoute = createRoute({
   component: Layout,
   pendingComponent: PageLoading,
   getParentRoute: () => rootRoute,
-  // beforeLoad: async ({ context }) => {
-  //   const { queryClient, trpcClient } = context;
-  //   const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
-  //   await clientUtils.login.status.fetch().catch((err) => {
-  //     console.log('err', err);
-  //     throw redirect({
-  //       to: '/login',
-  //       search: {
-  //         redirect: location.href,
-  //       },
-  //     });
-  //   });
-  // },
+  beforeLoad: async ({ context }) => {
+    const { queryClient, trpcClient } = context;
+    const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
+    await clientUtils.auth.status.fetch().catch((err) => {
+      console.log('err', err);
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      });
+    });
+  },
 });
 
 const journalRoute = createRoute({
@@ -87,6 +96,10 @@ const insightsRoute = createRoute({
   component: Insights,
   getParentRoute: () => layoutRoute,
   pendingComponent: PageLoading,
+  loader: async ({ context }) => {
+    const clientUtils = createTRPCQueryUtils({ queryClient: context.queryClient, client: context.trpcClient });
+    await clientUtils.user.details.ensureData();
+  },
 });
 
 const settingsRoute = createRoute({
@@ -102,7 +115,7 @@ const settingsRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([indexRoute, layoutRoute, onboardingRoute, journalRoute, loginRoute, insightsRoute, settingsRoute]);
 
-export const queryClient = new QueryClient({});
+export const queryClient = new QueryClient();
 
 const router = createRouter({
   routeTree,
@@ -115,7 +128,6 @@ const router = createRouter({
   },
 });
 
-//  register route types
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;

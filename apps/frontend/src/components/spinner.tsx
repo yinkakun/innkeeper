@@ -1,11 +1,17 @@
-import { cn } from '@/lib/utils';
-import { Spinner as Icon } from '@phosphor-icons/react';
+import { ThreeDotsScale } from 'react-svg-spinners';
 
 interface SpinnerProps {
   size?: number;
   className?: string;
+  color?: 'white' | 'black' | 'orange';
 }
 
-export const Spinner: React.FC<SpinnerProps> = ({ className, size = 20 }) => {
-  return <Icon className={cn('animate-spin text-white duration-300', className)} size={size} />;
+const colorMap = {
+  white: '#fff',
+  black: '#000',
+  orange: '#f54100',
+};
+
+export const Spinner: React.FC<SpinnerProps> = ({ className, size = 20, color }) => {
+  return <ThreeDotsScale width={size} height={size} color={color ? colorMap[color] : '#fff'} className={className} />;
 };

@@ -52,12 +52,11 @@ export const authRouter = createTRPCRouter({
 
     return { success: true, onboarded };
   }),
-  logout: publicProcedure.mutation(async ({ ctx }) => {
+  clearSession: publicProcedure.mutation(async ({ ctx }) => {
     const sessionId = ctx.hono.get('session')?.id;
     if (!sessionId) return { success: true };
 
     await ctx.lucia.invalidateSession(sessionId);
-
     ctx.hono.header('Set-Cookie', ctx.lucia.createBlankSessionCookie().serialize(), {
       append: true,
     });

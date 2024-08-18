@@ -8,8 +8,8 @@ import { journalRouter } from './journal';
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  auth: authRouter,
   user: userRouter,
-  login: authRouter,
   journal: journalRouter,
 });
 

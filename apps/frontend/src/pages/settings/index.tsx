@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
 import { Switch } from '@/components/switch';
 import { Spinner } from '@/components/spinner';
+import { useNavigate } from '@tanstack/react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import { Circle, RadioButton } from '@phosphor-icons/react';
@@ -66,6 +67,10 @@ const GOALS = [
 ];
 
 export const Settings = () => {
+  const navigate = useNavigate();
+  const deleteAccountMutation = trpc.user.delete.useMutation();
+  const signOutMutation = trpc.auth.clearSession.useMutation();
+
   const [user] = trpc.user.details.useSuspenseQuery();
   const mutation = trpc.user.update.useMutation();
   const form = useForm<FormSchemaType>({
@@ -293,8 +298,16 @@ export const Settings = () => {
         </div>
       </form>
       <div className="divide-y-gray-200 flex flex-col divide-y overflow-hidden rounded-xl border border-border">
-        <button type="button" className="group w-full px-6 py-2 text-left text-sm duration-200 hover:bg-gray-50">
-          <span>Sign out</span>
+        <button
+          type="button"
+          onClick={() => {
+            navigate({ to: '/' });
+            signOutMutation.mutate();
+          }}
+          disabled={signOutMutation.isPending}
+          className="group w-full px-6 py-2 text-left text-sm duration-200 hover:bg-gray-50"
+        >
+          <span>{signOutMutation.isPending ? <Spinner color="orange" /> : 'Sign Out'}</span>
         </button>
 
         <Dialog>
@@ -318,7 +331,7 @@ export const Settings = () => {
                 <DialogClose>
                   <button
                     type="button"
-                    className="flex h-8 w-full items-center justify-center text-sm text-gray-800 duration-200 hover:bg-orange-50/50"
+                    className="flex h-10 w-full items-center justify-center text-sm text-gray-800 duration-200 hover:bg-orange-50/50"
                   >
                     <span>Cancel</span>
                   </button>
@@ -326,9 +339,14 @@ export const Settings = () => {
 
                 <button
                   type="button"
-                  className="flex h-8 w-full items-center justify-center text-sm text-red-500 duration-200 hover:bg-red-50"
+                  onClick={() => {
+                    navigate({ to: '/' });
+                    deleteAccountMutation.mutate();
+                  }}
+                  disabled={deleteAccountMutation.isPending}
+                  className="flex h-10 w-full items-center justify-center text-sm text-red-500 duration-200 hover:bg-red-50"
                 >
-                  <span>Delete Account</span>
+                  <span>{deleteAccountMutation.isPending ? <Spinner color="orange" /> : 'Delete Account'}</span>
                 </button>
               </div>
             </div>

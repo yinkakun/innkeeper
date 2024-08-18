@@ -68,4 +68,16 @@ export const userRouter = createTRPCRouter({
     }
     return await ctx.db.getUserById({ userId: user.id });
   }),
+  delete: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = ctx.hono.get('user');
+    if (!user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'User not found',
+      });
+    }
+    // await ctx.lucia.
+    const deletedUser = await ctx.db.deleteUser({ userId: user.id });
+    return deletedUser;
+  }),
 });

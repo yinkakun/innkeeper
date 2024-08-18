@@ -36,7 +36,7 @@ type RequestEmailOtp = z.infer<typeof requestEmailOtpSchema>;
 const RequestOtp = () => {
   const { nextStep } = useStepper();
   const setEmail = useSetAtom(emailAtom);
-  const mutation = trpc.login.requestEmailOtp.useMutation();
+  const mutation = trpc.auth.requestEmailOtp.useMutation();
 
   const form = useForm<RequestEmailOtp>({
     resolver: zodResolver(requestEmailOtpSchema),
@@ -95,7 +95,7 @@ type VerifyEmailOtp = z.infer<typeof verifyEmailOtpSchema>;
 const VerifyOtp = () => {
   const navigate = useNavigate();
   const email = useAtomValue(emailAtom);
-  const verifyOtpMutation = trpc.login.verifyEmailOtp.useMutation();
+  const verifyOtpMutation = trpc.auth.verifyEmailOtp.useMutation();
 
   const form = useForm<VerifyEmailOtp>({
     resolver: zodResolver(verifyEmailOtpSchema),

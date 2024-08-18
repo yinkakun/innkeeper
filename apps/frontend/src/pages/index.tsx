@@ -40,7 +40,7 @@ export const Index = () => {
             <div className="absolute inset-x-0 top-[2px] mx-auto h-1 w-[45px] rounded-full bg-orange-200"></div>
             <div className="relative mx-auto flex w-full max-w-xs flex-col gap-4 rounded-[32px] rounded-b-none border border-b-0 !border-primary/20 bg-white p-3 pb-1">
               {QA.map(({ answer, question }, index) => (
-                <React.Fragment>
+                <React.Fragment key={index}>
                   <FadeIn delay={index * 0.0}>
                     <ChatBubble renderTail isSender={true} className="rounded-2xl text-sm">
                       {question}
@@ -62,7 +62,10 @@ export const Index = () => {
             <h2 className="text-3xl">Features</h2>
             <div className="grid max-w-lg auto-rows-fr grid-cols-2 gap-2 rounded-3xl border border-orange-100 bg-orange-50 p-1.5 text-gray-600">
               {FEATURES.map(({ icon: Icon, title, description }) => (
-                <div className="flex flex-col gap-2 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80">
+                <div
+                  key={title}
+                  className="flex flex-col gap-2 rounded-[20px] border border-orange-100 bg-white p-2 py-4 hover:bg-white hover:bg-opacity-80"
+                >
                   <Icon size={20} />
                   <h2 className="text-lg text-gray-800">{title}</h2>
                   <div className="flex flex-col gap-1">
@@ -81,7 +84,10 @@ export const Index = () => {
             <div className="w-full max-w-lg rounded-3xl border border-orange-100 bg-orange-50 p-1.5">
               <div className="flex w-full max-w-lg flex-col items-stretch gap-0 divide-y divide-orange-50 rounded-[20px] border border-orange-100 bg-white">
                 {REVIEWS.map(({ name, review }) => (
-                  <div className="flex w-full shrink-0 flex-col gap-2 text-pretty p-4 px-4 py-3 tracking-tight hover:bg-orange-50 hover:bg-opacity-30">
+                  <div
+                    key={name}
+                    className="flex w-full shrink-0 flex-col gap-2 text-pretty p-4 px-4 py-3 tracking-tight hover:bg-orange-50 hover:bg-opacity-30"
+                  >
                     <span className="text-pretty text-lg text-gray-800">{review}</span>
                     <div className="mt-auto flex items-center gap-1">
                       <span className="text-sm text-orange-300">— {name}</span>
