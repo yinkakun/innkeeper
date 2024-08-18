@@ -88,8 +88,8 @@ export const sendPrompt = task({
     await retry.onThrow(async () => {
       return await email.sendPrompt({
         prompt,
-        name: 'User',
         to: payload.email,
+        name: payload.name ?? 'Anon',
         senderUsername: 'innkeeper-staging',
         subject: `Innkeeper Journal Prompt #${promptNumber}`,
       });
