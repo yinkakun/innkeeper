@@ -1,6 +1,8 @@
 import { TRPCError } from '@trpc/server';
-import { OnboardUserSchema, UpdateUserSchema } from '@innkeeper/db';
+import { tasks } from '@trigger.dev/sdk/v3';
+import type { sendWelcomeEmail } from '@innkeeper/jobs';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
+import { OnboardUserSchema, UpdateUserSchema } from '@innkeeper/db';
 
 export const userRouter = createTRPCRouter({
   onboard: protectedProcedure
@@ -25,6 +27,19 @@ export const userRouter = createTRPCRouter({
         primaryGoal: input.primaryGoal,
         promptPeriod: input.promptPeriod,
         promptFrequency: input.promptFrequency,
+      });
+      if (!updatedUser) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to onboard user',
+        });
+      }
+      await tasks.trigger<typeof sendWelcomeEmail>('send-welcome-email', {
+        name: updatedUser.name,
+        userId: updatedUser.id,
+        email: updatedUser.email,
+        promptTone: updatedUser.promptTone,
+        primaryGoal: updatedUser.primaryGoal,
       });
       return updatedUser;
     }),
@@ -76,7 +91,6 @@ export const userRouter = createTRPCRouter({
         message: 'User not found',
       });
     }
-    // await ctx.lucia.
     const deletedUser = await ctx.db.deleteUser({ userId: user.id });
     return deletedUser;
   }),

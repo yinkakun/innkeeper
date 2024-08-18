@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createId } from '@paralleldrive/cuid2';
-import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
+import { createTRPCRouter, publicProcedure } from '../trpc';
 
 export const authRouter = createTRPCRouter({
   requestEmailOtp: publicProcedure.input(z.object({ email: z.string().email() })).mutation(async ({ input, ctx }) => {
