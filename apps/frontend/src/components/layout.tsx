@@ -56,7 +56,7 @@ export const Layout = () => {
       <DotPattern className="fixed inset-0" />
       <main
         className={cn(
-          'z-10 mx-auto mt-8 flex h-full w-full max-w-screen-md grow basis-0 flex-col overflow-hidden rounded-t-3xl border border-gray-200 bg-white px-6 pb-4 pt-12',
+          'z-10 mx-auto mt-8 flex h-full w-full max-w-screen-md grow basis-0 flex-col rounded-t-3xl border border-gray-200 bg-white px-6 pb-4 pt-12',
         )}
       >
         <motion.div
