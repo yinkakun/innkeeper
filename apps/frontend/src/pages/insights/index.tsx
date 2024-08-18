@@ -126,8 +126,8 @@ const Stats = () => {
 
 const Activities = () => {
   const today = new Date();
-  // 160 days ago
-  const startDate = new Date(today.getTime() - 160 * 24 * 60 * 60 * 1000);
+  // 167 days ago
+  const startDate = new Date(today.getTime() - 167 * 24 * 60 * 60 * 1000);
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="flex w-full flex-col gap-4 rounded-3xl border border-border bg-white p-3 backdrop-blur">
