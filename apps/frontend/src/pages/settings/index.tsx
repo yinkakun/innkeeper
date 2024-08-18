@@ -303,11 +303,13 @@ export const Settings = () => {
               Delete Account
             </button>
           </DialogTrigger>
-          <DialogContent className="max-w-sm overflow-hidden rounded-3xl border-[0.5px] border-orange-300/50 p-0">
-            <div className="flex flex-col gap-5 pt-3">
-              <div className="flex flex-col gap-3 px-5">
-                <h2 className="text-center text-sm font-medium">Delete Account</h2>
-                <div className="flex w-full flex-col gap-1 rounded-xl border-[0.5px] border-orange-200 bg-orange-50/50 p-2 text-sm text-gray-700">
+          <DialogContent className="max-w-sm overflow-hidden rounded-3xl border-[0.5px] border-orange-300/50 bg-white bg-opacity-80 p-0 backdrop-blur-md">
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-3">
+                <div className="border-b-[0.5px] border-orange-300/50 py-2">
+                  <h2 className="text-center text-sm font-medium">Delete Account</h2>
+                </div>
+                <div className="flex w-full flex-col gap-1 rounded-xl p-2 px-5 text-center text-sm text-gray-800">
                   <span>Are you sure you want to delete your account?</span>
                   <span>This action is irreversible and will permanently delete all your data.</span>
                 </div>
