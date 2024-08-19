@@ -13,6 +13,7 @@ import { authMiddleware, dbMiddleware, triggerMiddleware, emailMiddleware } from
 export type { HonoContext } from './context';
 import PostalMime, { RawEmail } from 'postal-mime';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
+import EmailReplyParser from 'email-reply-parser';
 
 const app = new Hono<HonoOptions>();
 
@@ -57,8 +58,11 @@ export default {
     });
     const parser = new PostalMime();
     const email = await parser.parse(message.raw);
+    const reply = new EmailReplyParser().read(email.text || '');
     await tasks.trigger<typeof saveJournalEntry>('save-journal-entry', {
-      email: email,
+      subject: email.subject || '',
+      entry: reply.getVisibleText(),
+      userEmail: email.from.address || '',
     });
   },
 };

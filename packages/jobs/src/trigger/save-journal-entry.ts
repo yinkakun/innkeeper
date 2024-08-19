@@ -1,18 +1,15 @@
 import { db } from '../lib';
-import type { Email } from 'postal-mime';
 import { task, retry, AbortTaskRunError } from '@trigger.dev/sdk/v3';
-// @ts-ignore
-import EmailReplyParser from 'email-reply-parser';
 
 interface JournalEntryPayload {
-  email: Email;
+  entry: string;
+  subject: string;
+  userEmail: string;
 }
 
 export const saveJournalEntry = task({
   id: 'save-journal-entry',
-  run: async ({ email }: JournalEntryPayload) => {
-    const subject = email.subject || '';
-    const userEmail = email.from.address;
+  run: async ({ entry, subject, userEmail }: JournalEntryPayload) => {
     const promptNumber = extractNumberAfterHash(subject);
 
     if (!userEmail) {
@@ -34,12 +31,11 @@ export const saveJournalEntry = task({
       throw new AbortTaskRunError('Prompt not found');
     }
 
-    const reply = new EmailReplyParser().read(email.text || '');
     const entryResponse = await retry.onThrow(async () => {
       return await db.createJournalEntry({
         promptId: prompt.id,
         userId: prompt.userId,
-        entry: reply.getVisibleText(),
+        entry,
       });
     }, {});
 
