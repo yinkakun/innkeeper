@@ -12,14 +12,11 @@ import { Toaster } from '@/components/toaster';
 import type { TrpcClient } from '@/lib/trpc';
 import { trpc, trpcClient } from '@/lib/trpc';
 import { Layout } from '@/components/layout';
-import { QueryCache, QueryClient } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 import { PageLoading } from '@/components/page-loading';
 import { createTRPCQueryUtils } from '@trpc/react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { TRPCError } from '@trpc/server';
 import { RouterProvider, createRouter, Outlet, createRoute, createRootRouteWithContext, redirect } from '@tanstack/react-router';
-import { getHTTPStatusCodeFromError } from '@trpc/server/http';
-import { TRPCClientError } from '@trpc/react-query';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcClient: TrpcClient }>()({
   component: () => (
@@ -31,12 +28,6 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient; trpcCli
   onError: (error) => {
     console.error('error', error);
   },
-  errorComponent: (error) => (
-    <div>
-      <h1>Oops! Something went wrong</h1>
-      <pre className="text-sm">{JSON.stringify(error, null, 4)}</pre>
-    </div>
-  ),
   notFoundComponent: NotFound,
   pendingComponent: PageLoading,
 });
@@ -68,14 +59,15 @@ const layoutRoute = createRoute({
   beforeLoad: async ({ context }) => {
     const { queryClient, trpcClient } = context;
     const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient });
-    await clientUtils.auth.status.fetch().catch((err) => {
-      console.log('err', err);
-      throw redirect({
-        to: '/login',
-        search: {
-          redirect: location.href,
-        },
-      });
+    return await clientUtils.auth.status.fetch().then(({ session }) => {
+      if (!session) {
+        throw redirect({
+          to: '/login',
+          search: {
+            redirect: location.href,
+          },
+        });
+      }
     });
   },
 });
