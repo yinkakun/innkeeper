@@ -13,7 +13,7 @@ import { authMiddleware, dbMiddleware, triggerMiddleware, emailMiddleware } from
 export type { HonoContext } from './context';
 import PostalMime, { RawEmail } from 'postal-mime';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
-import EmailReplyParser from 'email-reply-parser';
+import EmailReplyParser from '@innkeeper/email-reply-parser';
 
 const app = new Hono<HonoOptions>();
 
