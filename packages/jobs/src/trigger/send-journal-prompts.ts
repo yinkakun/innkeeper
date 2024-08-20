@@ -64,14 +64,12 @@ interface SendPromptPayload {
 export const sendPrompt = task({
   id: 'send-prompt',
   run: async (payload: SendPromptPayload) => {
-    const response = await retry.onThrow(async () => {
+    const prompt = await retry.onThrow(async () => {
       return await llm.generatePrompt({
         tone: payload.promptTone,
         goal: payload.primaryGoal,
       });
     }, {});
-
-    const prompt = response.content[0]?.type === 'text' ? response.content[0].text : '';
 
     const createPromptResponse = await db.createPrompt({
       prompt,

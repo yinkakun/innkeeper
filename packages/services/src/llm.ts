@@ -11,7 +11,7 @@ interface GeneratePromptPayload {
 export const initLlm = (model: Model) => {
   return {
     generatePrompt: async ({ goal, tone }: GeneratePromptPayload) => {
-      return await model.messages.create({
+      const response = await model.messages.create({
         model: 'claude-3-5-sonnet-20240620',
         max_tokens: 1000,
         temperature: 0.5,
@@ -28,6 +28,8 @@ export const initLlm = (model: Model) => {
           },
         ],
       });
+      const prompt = response.content[0]?.type === 'text' ? response.content[0].text : '';
+      return prompt;
     },
   };
 };
