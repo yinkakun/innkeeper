@@ -1,15 +1,25 @@
 import { z } from 'zod';
 import { initLucia } from './lib';
+import Anthropic from '@anthropic-ai/sdk';
 import type { HonoOptions } from './context';
 import { getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { zValidator } from '@hono/zod-validator';
 import { initDbRepository } from '@innkeeper/db';
 import { configure as configureTriggerClient } from '@trigger.dev/sdk/v3';
-import { initEmailSender } from '@innkeeper/services';
+import { initEmailSender, initLlm } from '@innkeeper/services';
 
 // TODO: Implement validation middleware
 // export const validationMiddleware = createMiddleware<HonoOptions>(async (c, next) => {});
+
+export const llmMiddleware = createMiddleware<HonoOptions>(async (c, next) => {
+  const anthropic = new Anthropic({
+    apiKey: c.env.ANTHROPIC_API_KEY,
+  });
+  const llm = initLlm(anthropic);
+  c.set('llm', llm);
+  await next();
+});
 
 export const emailMiddleware = createMiddleware<HonoOptions>(async (c, next) => {
   const sendEmail = initEmailSender({
