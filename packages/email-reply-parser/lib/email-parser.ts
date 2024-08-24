@@ -120,11 +120,13 @@ export class EmailParser {
     return new Email(fragments);
   }
 
-  private isQuoteHeader(line: string) {
+  private isQuoteHeader(line?: string) {
+    if (!line) return false;
     return regexList.quoteHeadersRegex.some((regex) => regex.test(this.stringReverse(line)));
   }
 
-  private isSignature(line: string) {
+  private isSignature(line?: string) {
+    if (!line) return false;
     const text = this.stringReverse(line);
     return regexList.signatureRegex.some((regex: RegExp) => regex.test(text));
   }
