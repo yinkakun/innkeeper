@@ -1,18 +1,19 @@
-
-
 class RegexList {
+  public readonly signatureRegex: RegExp[];
+  public readonly quoteHeadersRegex: RegExp[];
+
   constructor() {
-    this.quoteHeadersRegex = this.buildRe2([
+    this.quoteHeadersRegex = this.buildRegex([
       /^-*\s*(On\s.+\s.+\n?wrote:{0,1})\s{0,1}-*$/m, // On DATE, NAME <EMAIL> wrote:
       /^-*\s*(Le\s.+\s.+\n?écrit\s?:{0,1})\s{0,1}-*$/m, // Le DATE, NAME <EMAIL> a écrit :
       /^-*\s*(El\s.+\s.+\n?escribió:{0,1})\s{0,1}-*$/m, // El DATE, NAME <EMAIL> escribió:
-      /^-*\s*(Il\s.+\s.+\n?scritto:{0,1})\s{0,1}-*$/m,  // Il DATE, NAME <EMAIL> ha scritto:
-      /^-*\s*(Em\s.+\s.+\n?escreveu:{0,1})\s{0,1}-*$/m,  // Em DATE, NAME <EMAIL> ha escreveu:
+      /^-*\s*(Il\s.+\s.+\n?scritto:{0,1})\s{0,1}-*$/m, // Il DATE, NAME <EMAIL> ha scritto:
+      /^-*\s*(Em\s.+\s.+\n?escreveu:{0,1})\s{0,1}-*$/m, // Em DATE, NAME <EMAIL> ha escreveu:
       /^\s*(Am\s.+\s)\n?\n?schrieb.+\s?(\[|<).+(\]|>):$/m, // Am DATE schrieb NAME <EMAIL>:
       /^\s*(Op\s[\s\S]+?\n?schreef[\s\S]+:)$/m, // Il DATE, schreef NAME <EMAIL>:
       /^\s*((W\sdniu|Dnia)\s[\s\S]+?(pisze|napisał(\(a\))?):)$/mu, // W dniu DATE, NAME <EMAIL> pisze|napisał:
       /^\s*(Den\s.+\s\n?skrev\s.+:)$/m, // Den DATE skrev NAME <EMAIL>:
-      /^\s*(pe\s.+\s.+\n?kirjoitti:)$/m, // pe DATE NAME <EMAIL> kirjoitti: 
+      /^\s*(pe\s.+\s.+\n?kirjoitti:)$/m, // pe DATE NAME <EMAIL> kirjoitti:
       /^\s*(Am\s.+\sum\s.+\s\n?schrieb\s.+:)$/m, // Am DATE um TIME schrieb NAME:
       /^(在[\s\S]+写道：)$/m, // > 在 DATE, TIME, NAME 写道：
       /^(20[0-9]{2}\..+\s작성:)$/m, // DATE TIME NAME 작성:
@@ -31,10 +32,10 @@ class RegexList {
       /^(.*)[0-9]{4}(.*)from(.*)<(.*)>:$/,
       /^-{1,10} ?(O|o)riginal (M|m)essage ?-{1,10}$/i,
       /^-{1,10} ?(O|o)prindelig (B|b)esked ?-{1,10}$/i,
-      /^-{1,10} ?(M|m)essage d\'origine ?-{1,10}$/i
+      /^-{1,10} ?(M|m)essage d\'origine ?-{1,10}$/i,
     ]);
 
-    this.signatureRegex = this.buildRe2([
+    this.signatureRegex = this.buildRegex([
       /^\s*-{2,4}$/, // Separator
       /^\s*_{2,4}$/, // Separator
       /^-- $/, // Separator
@@ -46,9 +47,9 @@ class RegexList {
       // EN
       /^Sent from (?:\s*.+)$/, // en
       /^Get Outlook for (?:\s*.+).*/m, // en
-      /^Cheers,?!?$/mi, // en
-      /^Best wishes,?!?$/mi, // en
-      /^\w{0,20}\s?(\sand\s)?Regards,?!?！?$/mi, //en
+      /^Cheers,?!?$/im, // en
+      /^Best wishes,?!?$/im, // en
+      /^\w{0,20}\s?(\sand\s)?Regards,?!?！?$/im, //en
 
       // DE
       /^Von (?:\s*.+) gesendet$/, // de
@@ -61,9 +62,9 @@ class RegexList {
       /^Envoyé de mon (?:\s*.+)$/, // fr - e.g. Envoyé de mon iPhone
       /^Envoyé à partir de (?:\s*.+)$/, //fr
       /^Télécharger Outlook pour (?:\s*.+).*/m, // fr
-      /^Bien . vous,?!?$/mi, // fr
-      /^\w{0,20}\s?cordialement,?!?$/mi, // fr
-      /^Bonne (journ.e|soir.e)!?$/mi, // fr
+      /^Bien . vous,?!?$/im, // fr
+      /^\w{0,20}\s?cordialement,?!?$/im, // fr
+      /^Bonne (journ.e|soir.e)!?$/im, // fr
 
       // ES
       /^Enviado desde (?:\s*.+)$/, // es,
@@ -73,11 +74,23 @@ class RegexList {
     ]);
   }
 
-  buildRe2(regexList) {
+  private buildRegex(regexList: Array<string | RegExp>): RegExp[] {
     return regexList.map((regex) => {
-      return new RegExp(regex);
+      return regex instanceof RegExp ? regex : new RegExp(regex);
     });
+  }
+
+  addQuoteHeaderRegex(regex: string | RegExp): void {
+    this.quoteHeadersRegex.push(this.createRegExp(regex));
+  }
+
+  addSignatureRegex(regex: string | RegExp): void {
+    this.signatureRegex.push(this.createRegExp(regex));
+  }
+
+  createRegExp(pattern: string | RegExp): RegExp {
+    return pattern instanceof RegExp ? pattern : new RegExp(pattern);
   }
 }
 
-module.exports = new RegexList();
+export const regexList = new RegexList();
