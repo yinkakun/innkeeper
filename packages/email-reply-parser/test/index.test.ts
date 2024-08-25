@@ -1,4 +1,4 @@
-import { expect, test, describe, it } from 'vitest';
+import { expect, describe, it } from 'vitest';
 import { readFile } from 'fs/promises';
 import { EmailReplyParser } from '../lib/index';
 

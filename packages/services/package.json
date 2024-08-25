@@ -15,25 +15,25 @@
     "format": "prettier --check . --ignore-path ../../.gitignore"
   },
   "dependencies": {
-    "@aws-sdk/client-sesv2": "^3.620.0",
+    "@aws-sdk/client-sesv2": "^3.637.0",
     "@innkeeper/db": "*",
-    "@lucia-auth/adapter-drizzle": "^1.0.7",
+    "@lucia-auth/adapter-drizzle": "^1.1.0",
     "date-fns": "^3.6.0",
-    "drizzle-orm": "^0.32.1",
-    "ky": "^1.5.0",
+    "drizzle-orm": "^0.33.0",
+    "ky": "^1.7.1",
     "otplib": "^12.0.1",
     "postgres": "^3.4.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^22.1.0",
+    "@types/node": "^22.5.0",
     "dotenv-cli": "^7.3.0",
-    "eslint": "^9.7.0",
+    "eslint": "^9.9.1",
     "eslint-config-custom": "*",
     "prettier": "^3.3.3",
     "prettier-config": "*",
     "tsconfig": "*",
-    "turbo": "^2.0.7",
+    "turbo": "^2.0.14",
     "typescript": "^5.5.3"
   },
   "prettier": "prettier-config"

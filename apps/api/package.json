@@ -15,28 +15,28 @@
     "@hono/trpc-server": "^0.3.2",
     "@hono/zod-validator": "^0.2.2",
     "@innkeeper/db": "*",
+    "@innkeeper/email-reply-parser": "*",
     "@innkeeper/jobs": "*",
     "@innkeeper/services": "*",
     "@innkeeper/trpc": "*",
     "@paralleldrive/cuid2": "^2.2.2",
-    "@supabase/supabase-js": "^2.44.4",
+    "@supabase/supabase-js": "^2.45.2",
     "arctic": "^2.0.0-next.5",
-    "@innkeeper/email-reply-parser": "*",
-    "hono": "^4.5.1",
-    "ky": "^1.5.0",
+    "hono": "^4.5.8",
+    "ky": "^1.7.1",
     "lucia": "^3.2.0",
-    "postal-mime": "^2.2.6"
+    "postal-mime": "^2.2.7"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240725.0",
-    "drizzle-kit": "^0.22.7",
-    "eslint": "^9.7.0",
+    "@cloudflare/workers-types": "^4.20240821.1",
+    "drizzle-kit": "^0.24.1",
+    "eslint": "^9.9.1",
     "eslint-config-custom": "*",
     "prettier": "^3.3.3",
     "prettier-config": "*",
-    "tsx": "^4.16.2",
+    "tsx": "^4.18.0",
     "typescript": "^5.5.3",
-    "wrangler": "^3.67.0"
+    "wrangler": "^3.72.2"
   },
   "prettier": "prettier-config"
 }
