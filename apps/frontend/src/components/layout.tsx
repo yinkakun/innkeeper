@@ -9,13 +9,9 @@ import { useLocation } from '@tanstack/react-router';
 export const Layout = () => {
   const { pathname } = useLocation();
   return (
-    <div className={cn('flex min-h-[100dvh] basis-0 flex-col overflow-y-auto bg-gray-50')}>
+    <div className={cn('no-scrollbar flex min-h-[100dvh] basis-0 flex-col overflow-y-auto bg-gray-50')}>
       <header className="fixed inset-x-0 top-4 z-20 mx-auto flex max-w-md items-center rounded-full border border-gray-200 bg-gray-50 bg-opacity-50 p-0 backdrop-blur-sm">
-        <nav
-          className={cn(
-            'no-visible-scrollbar relative grid w-full max-w-full grid-cols-3 overflow-auto p-0.5 [perspective:1000px] sm:overflow-visible',
-          )}
-        >
+        <nav className={cn('relative grid w-full max-w-full grid-cols-3 overflow-auto p-0.5 [perspective:1000px] sm:overflow-visible')}>
           {LINKS.map(({ icon: Icon, slug, title }) => (
             <motion.div key={slug} whileTap={{ scale: 0.9 }} transition={{ duration: 0.3, ease: 'easeOut' }}>
               <Link
@@ -75,7 +71,7 @@ export const Layout = () => {
           }}
         >
           <div className={cn('flex h-full grow basis-0 flex-col pb-4')}>
-            <Outlet />
+            <Outlet key={pathname} />
           </div>
         </motion.div>
       </main>

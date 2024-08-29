@@ -213,7 +213,7 @@ const ConsistencyBadges = () => {
     <div className="grid w-full grid-cols-2 gap-4">
       {CONSISTENCY_BADGES.map(({ max, title, value, description, icon }, index) => {
         return (
-          <div className="flex w-full flex-col items-center gap-2 rounded-3xl border border-border bg-white p-3 backdrop-blur">
+          <div key={index} className="flex w-full flex-col items-center gap-2 rounded-3xl border border-border bg-white p-3 backdrop-blur">
             <div className="flex w-full items-center">
               <div className="-mb-5 -ml-2 shrink-0">
                 <img src={icon} className="aspect-square w-16" />
